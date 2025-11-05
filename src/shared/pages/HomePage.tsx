@@ -11,7 +11,7 @@ export default function HomePage() {
         },
         {
             name: "VenueService",
-            path: "/venue",
+            path: "/venue/editor",
             color: "from-green-500 to-green-700",
             desc: "Administra lugares y sectores",
             icon: "🏟️",
