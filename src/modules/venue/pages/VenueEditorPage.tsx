@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import VenueCanvas from "../components/VenueCanvas";
 import SectorSidebar from "../components/SectorSidebar";
 import { getSectorsForVenue, createSector, updateSector, getVenueById, updateVenue } from "../api/sectorApi";
 
 const CANVAS_WIDTH = 900;
 
-// PONER ID DEL VENUE DE TU BD
-const VENUE_ID = "7fcd3fe6-504c-4f34-affa-6ef9f9031645";
-
 export default function VenueEditorPage() {
+  const { venueId } = useParams<{ venueId: string }>();
   const [background, setBackground] = useState<string | null>(null);
   const [sectors, setSectors] = useState<any[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -16,14 +15,17 @@ export default function VenueEditorPage() {
   const [backgroundImageUrlInput, setBackgroundImageUrlInput] = useState<string>("");
 
   useEffect(() => {
-    loadVenue();
-    loadSectors();
-  }, []);
+    if (venueId) {
+      loadVenue();
+      loadSectors();
+    }
+  }, [venueId]);
 
   const loadVenue = async () => {
-    console.log("[LOAD] Loading venue", VENUE_ID);
+    if (!venueId) return;
+    console.log("[LOAD] Loading venue", venueId);
     try {
-      const data = await getVenueById(VENUE_ID);
+      const data = await getVenueById(venueId);
       setVenue(data);
       setBackgroundImageUrlInput(data.backgroundImageUrl || "");
       if (data.backgroundImageUrl) {
@@ -35,9 +37,10 @@ export default function VenueEditorPage() {
   };
 
   const loadSectors = async () => {
-    console.log("[LOAD] Loading sectors for venue", VENUE_ID);
+    if (!venueId) return;
+    console.log("[LOAD] Loading sectors for venue", venueId);
     try {
-      const data = await getSectorsForVenue(VENUE_ID);
+      const data = await getSectorsForVenue(venueId);
       setSectors(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("[LOAD] Failed:", err);
@@ -45,11 +48,11 @@ export default function VenueEditorPage() {
   };
 
   const onBackgroundImageUrlChange = async () => {
-    if (!venue) return;
+    if (!venue || !venueId) return;
     const backgroundImageUrl = backgroundImageUrlInput;
     setBackground(backgroundImageUrl);
     try {
-      await updateVenue(VENUE_ID, { name: venue.name, totalCapacity: venue.totalCapacity, venueTypeId: venue.venueType.venueTypeId, address: venue.address, mapUrl: venue.mapUrl, backgroundImageUrl });
+      await updateVenue(venueId, { name: venue.name, totalCapacity: venue.totalCapacity, venueTypeId: venue.venueType.venueType.venueTypeId, address: venue.address, mapUrl: venue.mapUrl, backgroundImageUrl });
       setVenue({ ...venue, backgroundImageUrl });
     } catch (err) {
       console.error("[SAVE] Background Image URL failed:", err);
@@ -57,6 +60,7 @@ export default function VenueEditorPage() {
   };
 
   const createWithShape = async (type: string) => {
+    if (!venueId) return;
     const posX = 80, posY = 80, width = 120, height = 120;
     const payload = {
       name: `Sector ${type}`,
@@ -70,7 +74,7 @@ export default function VenueEditorPage() {
       shape: { type, width, height, x: posX, y: posY, rotation: 0, padding: 0, opacity: 100, colour: "#22c55e" },
     };
     try {
-      const created = await createSector(VENUE_ID, payload);
+      const created = await createSector(venueId, payload);
       setSectors(p => [...p, created]);
       setSelectedId(created.sectorId);
     } catch (err) {
@@ -118,33 +122,37 @@ export default function VenueEditorPage() {
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
       <div className="flex flex-1 overflow-hidden">
         <div className="flex flex-col gap-3 p-4" style={{ width: CANVAS_WIDTH + 32 }}>
-          <div className="flex gap-2 text-black">
-            <input
-              type="text"
-              placeholder="Enter background image URL"
-              value={backgroundImageUrlInput}
-              onChange={(e) => setBackgroundImageUrlInput(e.target.value)}
-              className="border p-2 rounded flex-1"
+          {venueId && (
+            <div className="flex gap-2 text-black">
+              <input
+                type="text"
+                placeholder="Enter background image URL"
+                value={backgroundImageUrlInput}
+                onChange={(e) => setBackgroundImageUrlInput(e.target.value)}
+                className="border p-2 rounded flex-1"
+              />
+              <button
+                onClick={onBackgroundImageUrlChange}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Update Image
+              </button>
+            </div>
+          )}
+          {venueId && (
+            <VenueCanvas
+              background={background}
+              sectors={sectors}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              onTransformLive={replaceLocal}
+              onTransformCommit={handleCommitToDb}
+              onMoveLive={replaceLocal}
+              onMoveCommit={handleCommitToDb}
             />
-            <button
-              onClick={onBackgroundImageUrlChange}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              Update Image
-            </button>
-          </div>
-          <VenueCanvas
-            background={background}
-            sectors={sectors}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            onTransformLive={replaceLocal}
-            onTransformCommit={handleCommitToDb}
-            onMoveLive={replaceLocal}
-            onMoveCommit={handleCommitToDb}
-          />
+          )}
         </div>
-        {selectedId && (
+        {selectedId && venueId && (
           <SectorSidebar
             sector={sectors.find(s => s.sectorId === selectedId)}
             onUpdateLocal={replaceLocal}
@@ -155,13 +163,15 @@ export default function VenueEditorPage() {
           />
         )}
       </div>
-      <div className="h-20 border-t border-gray-700 bg-gray-800 flex items-center justify-center">
-        {["rectangle", "circle", "semicircle", "arc"].map(t => (
-          <button key={t} onClick={() => createWithShape(t)} className="bg-gray-700 px-4 py-2 rounded hover:bg-blue-600">
-            {t}
-          </button>
-        ))}
-      </div>
+      {venueId && (
+        <div className="h-20 border-t border-gray-700 bg-gray-800 flex items-center justify-center">
+          {["rectangle", "circle", "semicircle", "arc"].map(t => (
+            <button key={t} onClick={() => createWithShape(t)} className="bg-gray-700 px-4 py-2 rounded hover:bg-blue-600">
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

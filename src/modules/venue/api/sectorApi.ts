@@ -118,6 +118,20 @@ export const getSeatsForSector = async (sectorId: string) => {
   }
 };
 
+export const getVenues = async () => {
+  const url = `/venues`;
+  logReq("GET venues", url);
+  const t0 = performance.now();
+  try {
+    const { data } = await api.get(url);
+    logRes("GET venues", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("GET venues", url, performance.now() - t0, err);
+    throw err;
+  }
+};
+
 export const getVenueById = async (venueId: string) => {
   const url = `/venues/${venueId}`;
   logReq("GET venue", url);
