@@ -1,13 +1,53 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { updateSector, updateSectorShape, generateSeats, getSeatsForSector, deleteSector } from "../api/sectorApi";
+
+// Simple debounce function
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
+  let timeout: number;
+  return ((...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait) as any;
+  }) as T;
+}
 
 export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: any) {
   const [local, setLocal] = useState(sector);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setLocal(sector);
   }, [sector]);
+
+  // Debounced auto-save for sector updates
+  const autoSaveSector = useCallback(
+    debounce(async (updated: any) => {
+      const payload = buildPayload(updated);
+      try {
+        const res = await updateSector(updated.sectorId, payload);
+        onUpdateLocal({ ...updated, ...res });
+      } catch (err) {
+        console.error("[AUTO-SAVE] Error:", err);
+      }
+    }, 1000),
+    []
+  );
+
+  // Debounced auto-save for shape updates
+  const autoSaveShape = useCallback(
+    debounce(async (shape: any, sectorId: string) => {
+      try {
+        await updateSectorShape(sectorId, shape);
+      } catch (err) {
+        console.error("[AUTO-SAVE SHAPE] Error:", err);
+      }
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    if (local.sectorId && local !== sector) {
+      autoSaveSector(local);
+    }
+  }, [local, autoSaveSector, sector]);
 
   const handleChange = (key: string, value: any) => {
     const updated = { ...local, [key]: value };
@@ -20,6 +60,7 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
     const updated = { ...local, shape };
     setLocal(updated);
     onUpdateLocal(updated);
+    autoSaveShape(shape, local.sectorId);
   };
 
   const buildPayload = (s: any) => ({
@@ -42,31 +83,7 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
     },
   });
 
-  const handleSave = async () => {
-    setSaving(true);
-    const payload = buildPayload(local);
-    console.group("[SAVE]");
-    console.log("sectorId:", local.sectorId);
-    console.log("payload:", payload);
-    console.groupEnd();
-    try {
-      const res = await updateSector(local.sectorId, payload);
-      onUpdateLocal({ ...local, ...res });
-    } catch (err) {
-      console.error("[SAVE] Error:", err);
-    } finally {
-      setSaving(false);
-    }
-  };
 
-  const handleShapeUpdate = async () => {
-    try {
-      await updateSectorShape(local.sectorId, local.shape);
-      console.debug("[SHAPE] PUT /Sector/{id}/shape OK");
-    } catch (err) {
-      console.error("[SHAPE] Error:", err);
-    }
-  };
 
   const handleGenerateSeats = async () => {
     try {
@@ -145,11 +162,13 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
             <input type="number" className="w-full bg-gray-800 border border-gray-700 rounded p-1" value={local.shape?.padding ?? 0} onChange={(e) => handleShapeChange("padding", Number(e.target.value))} />
           </div>
         </div>
+        <div className="mt-2">
+          <label className="text-xs">Opacidad</label>
+          <input type="number" min="0" max="100" className="w-full bg-gray-800 border border-gray-700 rounded p-1" value={local.shape?.opacity ?? 100} onChange={(e) => handleShapeChange("opacity", Number(e.target.value))} />
+        </div>
       </div>
 
       <div className="flex flex-col gap-2 mt-4">
-        <button onClick={handleSave} disabled={saving} className="bg-blue-600 rounded py-1 hover:bg-blue-500 disabled:opacity-50">Guardar cambios</button>
-        <button onClick={handleShapeUpdate} className="bg-gray-700 py-1 rounded hover:bg-gray-600">Actualizar forma</button>
         {local.isControlled && <button onClick={handleGenerateSeats} className="bg-green-600 py-1 rounded hover:bg-green-500">Generar asientos</button>}
         <button onClick={handleDelete} className="bg-red-600 py-1 rounded hover:bg-red-500">Eliminar sector</button>
       </div>
