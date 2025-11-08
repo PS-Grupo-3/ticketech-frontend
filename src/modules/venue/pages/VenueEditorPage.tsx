@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import VenueCanvas from "../components/VenueCanvas";
 import SectorSidebar from "../components/SectorSidebar";
-import { getSectorsForVenue, createSector, updateSector, getVenueById, updateVenue } from "../api/sectorApi";
+import { getSectorsForVenue, createSector, updateSector, getVenueById, updateVenue, getSeatsForSector } from "../api/sectorApi";
 
 const CANVAS_WIDTH = 900;
 
@@ -41,7 +41,25 @@ export default function VenueEditorPage() {
     console.log("[LOAD] Loading sectors for venue", venueId);
     try {
       const data = await getSectorsForVenue(venueId);
-      setSectors(Array.isArray(data) ? data : []);
+      const sectorsData = Array.isArray(data) ? data : [];
+
+      // Load seats for controlled sectors
+      const sectorsWithSeats = await Promise.all(
+        sectorsData.map(async (sector: any) => {
+          if (sector.isControlled) {
+            try {
+              const seats = await getSeatsForSector(sector.sectorId);
+              return { ...sector, seats };
+            } catch (err) {
+              console.error(`[LOAD] Failed to load seats for sector ${sector.sectorId}:`, err);
+              return sector;
+            }
+          }
+          return sector;
+        })
+      );
+
+      setSectors(sectorsWithSeats);
     } catch (err) {
       console.error("[LOAD] Failed:", err);
     }
