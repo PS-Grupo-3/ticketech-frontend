@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { updateSector, updateSectorShape, generateSeats, getSeatsForSector, deleteSector } from "../api/sectorApi";
+import { updateSector, updateSectorShape, generateSeats, getSeatsForSector, deleteSector, getSectorById } from "../api/sectorApi";
 
 // Simple debounce function
 function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
@@ -17,6 +17,21 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
     setLocal(sector);
   }, [sector]);
 
+  const handleRowsColsChange = (key: string, value: any) => {
+    const updated = { ...local, [key]: value };
+    setLocal(updated);
+    onUpdateLocal(updated);
+    // Immediate save for rows/cols changes
+    const payload = buildPayload(updated);
+    updateSector(updated.sectorId, payload).then(async () => {
+      // Fetch the full sector data to ensure we have the latest rows/cols
+      const fullSector = await getSectorById(updated.sectorId);
+      onUpdateLocal(fullSector);
+    }).catch(err => {
+      console.error("[ROWS/COLS SAVE] Error:", err);
+    });
+  };
+
   // Debounced auto-save for sector updates
   const autoSaveSector = useCallback(
     debounce(async (updated: any) => {
@@ -27,7 +42,7 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
       } catch (err) {
         console.error("[AUTO-SAVE] Error:", err);
       }
-    }, 1000),
+    }, 300),
     []
   );
 
@@ -68,6 +83,8 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
     isControlled: s.isControlled ?? false,
     seatCount: s.seatCount ?? 0,
     capacity: s.capacity ?? 0,
+    rows: s.rows ?? 0,
+    cols: s.cols ?? 0,
     width: Math.max(1, s.width ?? s.shape?.width ?? 100),
     height: Math.max(1, s.height ?? s.shape?.height ?? 100),
     shape: {
@@ -87,6 +104,9 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
 
   const handleGenerateSeats = async () => {
     try {
+      // Ensure sector is updated with latest rows/cols before generating
+      const payload = buildPayload(local);
+      await updateSector(local.sectorId, payload);
       await generateSeats(local.sectorId);
       const seats = await getSeatsForSector(local.sectorId);
       onUpdateLocal({ ...local, seats });
@@ -111,16 +131,30 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
       <label className="text-sm">Nombre</label>
       <input className="w-full bg-gray-800 border border-gray-700 rounded p-1" value={local.name ?? ""} onChange={(e) => handleChange("name", e.target.value)} />
 
-      <div className="flex gap-2">
+      {!local.isControlled && (
         <div>
           <label className="text-sm">Capacidad</label>
-          <input type="number" className="w-28 bg-gray-800 border border-gray-700 rounded p-1" value={local.capacity ?? 0} onChange={(e) => handleChange("capacity", Number(e.target.value))} />
+          <input type="number" className="w-full bg-gray-800 border border-gray-700 rounded p-1" value={local.capacity ?? 0} onChange={(e) => handleChange("capacity", Number(e.target.value))} />
         </div>
-        <div>
-          <label className="text-sm">Asientos</label>
-          <input type="number" className="w-28 bg-gray-800 border border-gray-700 rounded p-1" value={local.seatCount ?? 0} onChange={(e) => handleChange("seatCount", Number(e.target.value))} />
-        </div>
-      </div>
+      )}
+      {local.isControlled && (
+        <>
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <label className="text-sm">Asientos</label>
+              <input type="number" className="w-full bg-gray-800 border border-gray-700 rounded p-1" value={local.seatCount ?? 0} onChange={(e) => handleChange("seatCount", Number(e.target.value))} />
+            </div>
+            <div>
+              <label className="text-sm">Filas</label>
+              <input type="number" min="1" className="w-full bg-gray-800 border border-gray-700 rounded p-1" value={local.rows ?? 0} onChange={(e) => handleRowsColsChange("rows", Number(e.target.value))} />
+            </div>
+            <div>
+              <label className="text-sm">Columnas</label>
+              <input type="number" min="1" className="w-full bg-gray-800 border border-gray-700 rounded p-1" value={local.cols ?? 0} onChange={(e) => handleRowsColsChange("cols", Number(e.target.value))} />
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="flex items-center gap-2">
         <input type="checkbox" checked={local.isControlled ?? false} onChange={(e) => handleChange("isControlled", e.target.checked)} />

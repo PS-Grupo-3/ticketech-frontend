@@ -50,7 +50,7 @@ export const createSector = async (venueId: string, payload: any) => {
 };
 
 export const updateSector = async (sectorId: string, payload: any) => {
-  const url = `/Sector/${sectorId}`;
+  const url = `/sector/${sectorId}`;
   logReq("PUT update sector", url, payload);
   const t0 = performance.now();
   try {
@@ -64,7 +64,7 @@ export const updateSector = async (sectorId: string, payload: any) => {
 };
 
 export const deleteSector = async (sectorId: string) => {
-  const url = `/Sector/${sectorId}`;
+  const url = `/sector/${sectorId}`;
   logReq("DELETE sector", url);
   const t0 = performance.now();
   try {
@@ -77,7 +77,7 @@ export const deleteSector = async (sectorId: string) => {
 };
 
 export const updateSectorShape = async (sectorId: string, shape: any) => {
-  const url = `/Sector/${sectorId}/shape`;
+  const url = `/sector/${sectorId}/shape`;
   logReq("PUT shape", url, shape);
   const t0 = performance.now();
   try {
@@ -105,7 +105,7 @@ export const generateSeats = async (sectorId: string) => {
 };
 
 export const getSeatsForSector = async (sectorId: string) => {
-  const url = `/Sector/${sectorId}/seats`;
+  const url = `/sector/${sectorId}/seats`;
   logReq("GET seats", url);
   const t0 = performance.now();
   try {
@@ -156,6 +156,20 @@ export const updateVenue = async (venueId: string, payload: any) => {
     return data;
   } catch (err) {
     logErr("PUT update venue", url, performance.now() - t0, err);
+    throw err;
+  }
+};
+
+export const getSectorById = async (sectorId: string) => {
+  const url = `/sector/${sectorId}`;
+  logReq("GET sector", url);
+  const t0 = performance.now();
+  try {
+    const { data } = await api.get(url);
+    logRes("GET sector", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("GET sector", url, performance.now() - t0, err);
     throw err;
   }
 };

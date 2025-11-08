@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import VenueCanvas from "../components/VenueCanvas";
 import SectorSidebar from "../components/SectorSidebar";
-import { getSectorsForVenue, createSector, updateSector, getVenueById, updateVenue, getSeatsForSector } from "../api/sectorApi";
+import { getSectorsForVenue, createSector, updateSector, getVenueById, updateVenue, getSeatsForSector, getSectorById } from "../api/sectorApi";
 
 const CANVAS_WIDTH = 900;
 
@@ -13,6 +13,7 @@ export default function VenueEditorPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [venue, setVenue] = useState<any>(null);
   const [backgroundImageUrlInput, setBackgroundImageUrlInput] = useState<string>("");
+  const [hoveredSeat, setHoveredSeat] = useState<any>(null);
 
   useEffect(() => {
     if (venueId) {
@@ -43,19 +44,38 @@ export default function VenueEditorPage() {
       const data = await getSectorsForVenue(venueId);
       const sectorsData = Array.isArray(data) ? data : [];
 
+      // Fetch full details for each sector to get rowNumber and columnNumber
+      const sectorsWithDetails = await Promise.all(
+        sectorsData.map(async (sector: any) => {
+          try {
+            const fullSector = await getSectorById(sector.sectorId);
+            return fullSector;
+          } catch (err) {
+            console.error(`[LOAD] Failed to load full details for sector ${sector.sectorId}:`, err);
+            return sector;
+          }
+        })
+      );
+
       // Load seats for controlled sectors
       const sectorsWithSeats = await Promise.all(
-        sectorsData.map(async (sector: any) => {
+        sectorsWithDetails.map(async (sector: any) => {
+          // Map backend fields to frontend fields
+          const mappedSector = {
+            ...sector,
+            rows: sector.rowNumber || 0,
+            cols: sector.columnNumber || 0,
+          };
           if (sector.isControlled) {
             try {
               const seats = await getSeatsForSector(sector.sectorId);
-              return { ...sector, seats };
+              return { ...mappedSector, seats };
             } catch (err) {
               console.error(`[LOAD] Failed to load seats for sector ${sector.sectorId}:`, err);
-              return sector;
+              return mappedSector;
             }
           }
-          return sector;
+          return mappedSector;
         })
       );
 
@@ -85,6 +105,8 @@ export default function VenueEditorPage() {
       isControlled: true,
       seatCount: 100,
       capacity: 100,
+      rowNumber: 10,
+      columnNumber: 10,
       posX,
       posY,
       width,
@@ -105,6 +127,8 @@ export default function VenueEditorPage() {
     isControlled: s.isControlled ?? false,
     seatCount: s.seatCount ?? 0,
     capacity: s.capacity ?? 0,
+    rowNumber: s.rows ?? 0,
+    columnNumber: s.cols ?? 0,
     width: Math.max(1, s.width ?? s.shape?.width ?? 100),
     height: Math.max(1, s.height ?? s.shape?.height ?? 100),
     shape: {
@@ -136,9 +160,17 @@ export default function VenueEditorPage() {
     }
   };
 
+  const handleSeatHoverEnter = (seat: any) => {
+    setHoveredSeat(seat);
+  };
+
+  const handleSeatHoverLeave = () => {
+    setHoveredSeat(null);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden justify-centeres">
         <div className="flex flex-col gap-3 p-4" style={{ width: CANVAS_WIDTH + 32 }}>
           {venueId && (
             <div className="flex gap-2 text-black">
@@ -167,6 +199,8 @@ export default function VenueEditorPage() {
               onTransformCommit={handleCommitToDb}
               onMoveLive={replaceLocal}
               onMoveCommit={handleCommitToDb}
+              onSeatHoverEnter={handleSeatHoverEnter}
+              onSeatHoverLeave={handleSeatHoverLeave}
             />
           )}
         </div>
@@ -179,6 +213,11 @@ export default function VenueEditorPage() {
               if (selectedId === id) setSelectedId(null);
             }}
           />
+        )}
+        {hoveredSeat && (
+          <div className="absolute top-24 left-8 bg-black text-white p-2 rounded shadow-lg">
+            Row {hoveredSeat.rowNumber}, Col {hoveredSeat.columnNumber}
+          </div>
         )}
       </div>
       {venueId && (

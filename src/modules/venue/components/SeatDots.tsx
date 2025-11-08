@@ -1,6 +1,6 @@
 import { Circle, Rect } from "react-konva";
 
-export default function SeatDots({ seats, shape }: { seats: any[]; shape?: any }) {
+export default function SeatDots({ seats, shape, onHoverEnter, onHoverLeave }: { seats: any[]; shape?: any; onHoverEnter?: (seat: any, e: any) => void; onHoverLeave?: () => void }) {
   console.debug("[SeatDots] Rendering seats:", seats.length, "shape:", shape);
 
   if (!shape || shape.type !== "rectangle") {
@@ -10,7 +10,18 @@ export default function SeatDots({ seats, shape }: { seats: any[]; shape?: any }
       const y = (shape?.y || 0) + s.posY;
       console.debug(`[SeatDots] Non-rectangle seat ${i}: posX=${s.posX}, posY=${s.posY}, offsetX=${shape?.x || 0}, offsetY=${shape?.y || 0}, finalX=${x}, finalY=${y}`);
       return (
-        <Circle key={i} x={x} y={y} radius={4} fill="black" opacity={0.9} />
+        <Circle
+          key={i}
+          x={x}
+          y={y}
+          radius={4}
+          fill="black"
+          stroke="white"
+          strokeWidth={1}
+          opacity={0.9}
+          onMouseEnter={(e) => onHoverEnter?.(s, e)}
+          onMouseLeave={onHoverLeave}
+        />
       );
     });
   }
@@ -32,15 +43,17 @@ export default function SeatDots({ seats, shape }: { seats: any[]; shape?: any }
     const y = (shape.y || 0) + padding + (s.rowNumber - 1) * spacingY;
     console.debug(`[SeatDots] Rectangle seat ${i}: row=${s.rowNumber}, col=${s.columnNumber}, calcX=${padding + (s.columnNumber - 1) * spacingX}, calcY=${padding + (s.rowNumber - 1) * spacingY}, finalX=${x}, finalY=${y}`);
     return (
-      <Rect
+      <Circle
         key={i}
-        x={x - 4}
-        y={y - 4}
-        width={8}
-        height={8}
+        x={x}
+        y={y}
+        radius={4}
         fill="black"
+        stroke="white"
+        strokeWidth={1}
         opacity={0.9}
-        cornerRadius={2}
+        onMouseEnter={(e) => onHoverEnter?.(s, e)}
+        onMouseLeave={onHoverLeave}
       />
     );
   });

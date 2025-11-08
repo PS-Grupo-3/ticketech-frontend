@@ -1,4 +1,4 @@
-import { Rect, Circle, Arc, Transformer } from "react-konva";
+import { Rect, Circle, Arc, Transformer, Group } from "react-konva";
 import { useEffect, useRef } from "react";
 import SeatDots from "./SeatDots";
 
@@ -10,6 +10,8 @@ export default function SectorShape({
   onTransformCommit,
   onMoveLive,
   onMoveCommit,
+  onSeatHoverEnter,
+  onSeatHoverLeave,
 }: any) {
   const shapeRef = useRef<any>(null);
   const trRef = useRef<any>(null);
@@ -91,7 +93,7 @@ export default function SectorShape({
       {sector.shape.type === "circle" && <Circle {...props} radius={sector.shape.width / 2} />}
       {sector.shape.type === "semicircle" && <Arc {...props} innerRadius={0} outerRadius={sector.shape.width / 2} angle={180} />}
       {sector.shape.type === "arc" && <Arc {...props} innerRadius={sector.shape.width / 3} outerRadius={sector.shape.width / 2} angle={90} />}
-      {sector.seats && sector.seats.length > 0 && <SeatDots seats={sector.seats} shape={sector.shape} />}
+      {sector.seats && sector.seats.length > 0 && <SeatDots seats={sector.seats} shape={sector.shape} onHoverEnter={onSeatHoverEnter} onHoverLeave={onSeatHoverLeave} />}
       {isSelected && <Transformer ref={trRef} />}
     </>
   );

@@ -14,6 +14,8 @@ export default function VenueCanvas({
   onTransformCommit,
   onMoveLive,
   onMoveCommit,
+  onSeatHoverEnter,
+  onSeatHoverLeave,
 }: any) {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
 
@@ -38,6 +40,8 @@ export default function VenueCanvas({
             onTransformCommit={onTransformCommit}
             onMoveLive={onMoveLive}
             onMoveCommit={onMoveCommit}
+            onSeatHoverEnter={onSeatHoverEnter}
+            onSeatHoverLeave={onSeatHoverLeave}
           />
         ))}
       </Layer>
