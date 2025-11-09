@@ -1,75 +1,99 @@
-import { Circle, Rect } from "react-konva";
+import { Circle } from "react-konva";
 
-export default function SeatDots({ seats, shape, onHoverEnter, onHoverLeave }: { seats: any[]; shape?: any; onHoverEnter?: (seat: any, e: any) => void; onHoverLeave?: () => void }) {
-  console.debug("[SeatDots] Rendering seats:", seats.length, "shape:", shape);
+function getShapeCenter(shape: any) {
+  if (shape.type === "rectangle") {
+    return { cx: shape.x, cy: shape.y };    
+  }
+  return { cx: shape.x, cy: shape.y }; // circle, arc, semicircle
+}
 
+function applyRotation(x: number, y: number, shape: any) {
+  const angle = (shape.rotation || 0) * (Math.PI / 180);
+  const { cx, cy } = getShapeCenter(shape);
+
+  const dx = x - cx;
+  const dy = y - cy;
+
+  return {
+    x: cx + dx * Math.cos(angle) - dy * Math.sin(angle),
+    y: cy + dx * Math.sin(angle) + dy * Math.cos(angle),
+  };
+}
+
+export default function SeatDots({
+  seats,
+  shape,
+  onHoverEnter,
+  onHoverLeave,
+}: {
+  seats: any[];
+  shape?: any;
+  onHoverEnter?: (seat: any, e: any) => void;
+  onHoverLeave?: () => void;
+}) {
   if (!seats || seats.length === 0) return null;
 
-  // Calculate positions based on rowNumber and columnNumber for all shapes
-  const maxRow = Math.max(...seats.map(s => s.rowNumber));
-  const maxCol = Math.max(...seats.map(s => s.columnNumber));
-  const padding = shape?.padding || 10;
-  const shapeX = shape?.x || 0;
-  const shapeY = shape?.y || 0;
-  const width = shape?.width || 100;
-  const height = shape?.height || 100;
+  const maxRow = Math.max(...seats.map((s) => s.rowNumber));
+  const maxCol = Math.max(...seats.map((s) => s.columnNumber));
 
-  console.debug(`[SeatDots] Shape: ${shape?.type}, maxRow=${maxRow}, maxCol=${maxCol}, padding=${padding}, shapeX=${shapeX}, shapeY=${shapeY}, width=${width}, height=${height}`);
+  const padding = shape?.padding ?? 10;
+  const width = shape?.width ?? 100;
+  const height = shape?.height ?? 100;
+
+  const { cx, cy } = getShapeCenter(shape); // always correct now
 
   return seats.map((s, i) => {
-    let x, y;
+    let x = 0,
+      y = 0;
 
     if (shape?.type === "rectangle") {
-      // Rectangle: grid layout
+      const topLeftX = shape.x + padding;
+      const topLeftY = shape.y + padding;
       const availableWidth = width - 2 * padding;
       const availableHeight = height - 2 * padding;
       const spacingX = maxCol > 1 ? availableWidth / (maxCol - 1) : 0;
       const spacingY = maxRow > 1 ? availableHeight / (maxRow - 1) : 0;
-      x = shapeX + padding + (s.columnNumber - 1) * spacingX;
-      y = shapeY + padding + (s.rowNumber - 1) * spacingY;
-    } 
+      x = topLeftX + (s.columnNumber - 1) * spacingX;
+      y = topLeftY + (s.rowNumber - 1) * spacingY;
+    }
+
     else if (shape?.type === "circle") {
-      // Circle: radial layout
-      const centerX = width / height;
-      const centerY = height / width;
       const maxRadius = Math.min(width, height) / 2 - padding;
       const radius = (maxRadius / maxRow) * s.rowNumber;
-      const seatsInRow = Math.floor(maxCol / maxRow) + (s.rowNumber <= maxCol % maxRow ? 1 : 0);
-      const angle = (2 * Math.PI * ((s.columnNumber - 1) % seatsInRow)) / seatsInRow;
-      x = shapeX + centerX + radius * Math.cos(angle);
-      y = shapeY + centerY + radius * Math.sin(angle);
-    } 
-    else if (shape?.type === "semicircle") {
-      const centerX = shapeX;
-      const centerY = shapeY + 10; 
+      const seatsInRow = maxCol;
+      const angle = (2 * Math.PI * (s.columnNumber - 1)) / seatsInRow;
+      x = cx + radius * Math.cos(angle);
+      y = cy + radius * Math.sin(angle);
+    }
 
+    else if (shape?.type === "semicircle") {
       const maxRadius = Math.min(width / 2, height) - padding;
       const radius = (maxRadius / maxRow) * s.rowNumber;
-
-      const startAngle = Math.PI;  // izquierda
-      const endAngle = 0;          // derecha
-      const angle = startAngle + (endAngle - startAngle) * ((s.columnNumber - 1) / (maxCol - 1));
-
-      x = centerX + radius * Math.cos(angle);
-      y = centerY + radius * Math.sin(angle);
+      const startAngle = Math.PI;
+      const endAngle = 0;
+      const t = maxCol > 1 ? (s.columnNumber - 1) / (maxCol - 1) : 0;
+      const angle = startAngle + (endAngle - startAngle) * t;
+      x = cx + radius * Math.cos(angle);
+      y = cy + radius * Math.sin(angle) + 10; // esos 10 para que no este tan pegado
     }
 
     else if (shape?.type === "arc") {
-      // Arc: quarter circle layout
-      const centerX = width / 2;
-      const centerY = height - padding;
-      const maxRadius = Math.min(width / 2, height) - padding;
+      const maxRadius = Math.min(width, height) - padding;
       const radius = (maxRadius / maxRow) * s.rowNumber;
-      const angle = (Math.PI / 2 * (s.columnNumber - 1)) / (maxCol - 1);
-      x = shapeX + centerX + radius * Math.cos(angle);
-      y = shapeY + centerY - radius * Math.sin(angle);
-    } else {
-      // Fallback: use stored posX/posY offset by shape position
-      x = shapeX + (s.posX || 0);
-      y = shapeY + (s.posY || 0);
+      const startAngle = Math.PI; // 180°
+      const endAngle = Math.PI / 2; // 90°
+      const t = maxCol > 1 ? (s.columnNumber - 1) / (maxCol - 1) : 0;
+      const angle = startAngle + (endAngle - startAngle) * t;
+      x = cx + radius * Math.cos(angle);
+      y = cy + radius * Math.sin(angle);
     }
 
-    console.debug(`[SeatDots] Seat ${i}: row=${s.rowNumber}, col=${s.columnNumber}, finalX=${x}, finalY=${y}`);
+    if (shape?.rotation && shape.rotation !== 0) {
+      const rotated = applyRotation(x, y, shape);
+      x = rotated.x;
+      y = rotated.y;
+    }
+
     return (
       <Circle
         key={i}
