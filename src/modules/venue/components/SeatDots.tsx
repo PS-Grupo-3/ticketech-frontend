@@ -27,7 +27,8 @@ export default function SeatDots({ seats, shape, onHoverEnter, onHoverLeave }: {
       const spacingY = maxRow > 1 ? availableHeight / (maxRow - 1) : 0;
       x = shapeX + padding + (s.columnNumber - 1) * spacingX;
       y = shapeY + padding + (s.rowNumber - 1) * spacingY;
-    } else if (shape?.type === "circle") {
+    } 
+    else if (shape?.type === "circle") {
       // Circle: radial layout
       const centerX = width / height;
       const centerY = height / width;
@@ -37,16 +38,23 @@ export default function SeatDots({ seats, shape, onHoverEnter, onHoverLeave }: {
       const angle = (2 * Math.PI * ((s.columnNumber - 1) % seatsInRow)) / seatsInRow;
       x = shapeX + centerX + radius * Math.cos(angle);
       y = shapeY + centerY + radius * Math.sin(angle);
-    } else if (shape?.type === "semicircle") {
-      // Semicircle: semicircular layout
-      const centerX = width / 2;
-      const centerY = height - padding;
+    } 
+    else if (shape?.type === "semicircle") {
+      const centerX = shapeX;
+      const centerY = shapeY + 10; 
+
       const maxRadius = Math.min(width / 2, height) - padding;
       const radius = (maxRadius / maxRow) * s.rowNumber;
-      const angle = (Math.PI * (s.columnNumber - 1)) / (maxCol - 1);
-      x = shapeX + centerX + radius * Math.cos(angle);
-      y = shapeY + centerY - radius * Math.sin(angle);
-    } else if (shape?.type === "arc") {
+
+      const startAngle = Math.PI;  // izquierda
+      const endAngle = 0;          // derecha
+      const angle = startAngle + (endAngle - startAngle) * ((s.columnNumber - 1) / (maxCol - 1));
+
+      x = centerX + radius * Math.cos(angle);
+      y = centerY + radius * Math.sin(angle);
+    }
+
+    else if (shape?.type === "arc") {
       // Arc: quarter circle layout
       const centerX = width / 2;
       const centerY = height - padding;
