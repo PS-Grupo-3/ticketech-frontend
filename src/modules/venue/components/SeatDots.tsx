@@ -77,16 +77,32 @@ export default function SeatDots({
       y = cy + radius * Math.sin(angle) + 10; // esos 10 para que no este tan pegado
     }
 
-    else if (shape?.type === "arc") {
-      const maxRadius = Math.min(width, height) - padding;
-      const radius = (maxRadius / maxRow) * s.rowNumber;
-      const startAngle = Math.PI; // 180°
-      const endAngle = Math.PI / 2; // 90°
-      const t = maxCol > 1 ? (s.columnNumber - 1) / (maxCol - 1) : 0;
-      const angle = startAngle + (endAngle - startAngle) * t;
-      x = cx + radius * Math.cos(angle);
-      y = cy + radius * Math.sin(angle);
-    }
+else if (shape?.type === "arc") {
+  const outerRadius = shape.width / 2;
+  const innerRadius = shape.width / 4;
+
+  const paddingRadius = 30; 
+  const paddingAngleDeg = 6; 
+  const paddingAngle = (paddingAngleDeg * Math.PI) / 180;
+
+  const usableOuter = outerRadius - paddingRadius;
+  const usableInner = innerRadius + paddingRadius;
+
+  const radius = usableInner + ((usableOuter - usableInner) / (maxRow - 1)) * (s.rowNumber - 1);
+
+  const startAngle = Math.PI / 2 - paddingAngle; // 90°
+  const endAngle = 0 + paddingAngle;             // 0°
+
+  const t = maxCol > 1 ? (s.columnNumber - 1) / (maxCol - 1) : 0;
+  const angle = startAngle + (endAngle - startAngle) * t;
+
+  const cx = shape.x;
+  const cy = shape.y;
+
+  x = cx + radius * Math.cos(angle);
+  y = cy + radius * Math.sin(angle);
+}
+
 
     if (shape?.rotation && shape.rotation !== 0) {
       const rotated = applyRotation(x, y, shape);

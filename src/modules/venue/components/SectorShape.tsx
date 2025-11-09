@@ -92,7 +92,7 @@ export default function SectorShape({
       {sector.shape.type === "rectangle" && <Rect {...props} width={sector.shape.width} height={sector.shape.height} />}
       {sector.shape.type === "circle" && <Circle {...props} radius={sector.shape.width / 2} />}
       {sector.shape.type === "semicircle" && <Arc {...props} innerRadius={0} outerRadius={sector.shape.width / 2} angle={180} />}
-      {sector.shape.type === "arc" && <Arc {...props} innerRadius={sector.shape.width / 3} outerRadius={sector.shape.width / 2} angle={90} />}
+      {sector.shape.type === "arc" && <Arc {...props} innerRadius={sector.shape.width / 4} outerRadius={sector.shape.width / 2} angle={90} />}
       {sector.seats && sector.seats.length > 0 && <SeatDots seats={sector.seats} shape={sector.shape} onHoverEnter={onSeatHoverEnter} onHoverLeave={onSeatHoverLeave} />}
       {isSelected && <Transformer ref={trRef} />}
     </>
