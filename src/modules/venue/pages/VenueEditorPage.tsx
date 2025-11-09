@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import VenueCanvas from "../components/VenueCanvas";
 import SectorSidebar from "../components/SectorSidebar";
 import { getSectorsForVenue, createSector, updateSector, getVenueById, updateVenue, getSeatsForSector, getSectorById } from "../api/sectorApi";
+import { generateRectangleSeats, generateCircleSeats, generateSemicircleSeats, generateArcSeats } from "../lib/seatGenerator";
 
 const CANVAS_WIDTH = 900;
 
@@ -49,7 +50,11 @@ export default function VenueEditorPage() {
         sectorsData.map(async (sector: any) => {
           try {
             const fullSector = await getSectorById(sector.sectorId);
-            return fullSector;
+            return {
+              ...fullSector,
+              rows: fullSector.rowNumber || 1,
+              cols: fullSector.columnNumber || 1,
+            };
           } catch (err) {
             console.error(`[LOAD] Failed to load full details for sector ${sector.sectorId}:`, err);
             return sector;
@@ -63,12 +68,45 @@ export default function VenueEditorPage() {
           // Map backend fields to frontend fields
           const mappedSector = {
             ...sector,
-            rows: sector.rowNumber || 0,
-            cols: sector.columnNumber || 0,
+            rows: sector.rowNumber || 1,
+            cols: sector.columnNumber || 1,
           };
           if (sector.isControlled) {
             try {
               const seats = await getSeatsForSector(sector.sectorId);
+              // If no seats from backend, generate locally based on shape
+              if (!seats || seats.length === 0) {
+                const width = mappedSector.shape?.width || mappedSector.width || 100;
+                const height = mappedSector.shape?.height || mappedSector.height || 100;
+                const rows = mappedSector.rows;
+                const cols = mappedSector.cols;
+                let generatedSeats = [];
+                switch (mappedSector.shape?.type) {
+                  case "rectangle":
+                    generatedSeats = generateRectangleSeats(width, height, rows, cols);
+                    break;
+                  case "circle":
+                    generatedSeats = generateCircleSeats(width, height, rows, cols);
+                    break;
+                  case "semicircle":
+                    generatedSeats = generateSemicircleSeats(width, height, rows, cols);
+                    break;
+                  case "arc":
+                    generatedSeats = generateArcSeats(width, height, rows, cols);
+                    break;
+                  default:
+                    generatedSeats = generateRectangleSeats(width, height, rows, cols);
+                }
+                // Convert to backend format with rowNumber and columnNumber
+                const seatsWithNumbers = generatedSeats.map((seat, index) => ({
+                  seatId: `temp-${index}`,
+                  posX: seat.x,
+                  posY: seat.y,
+                  rowNumber: Math.floor(index / cols) + 1,
+                  columnNumber: (index % cols) + 1,
+                }));
+                return { ...mappedSector, seats: seatsWithNumbers };
+              }
               return { ...mappedSector, seats };
             } catch (err) {
               console.error(`[LOAD] Failed to load seats for sector ${sector.sectorId}:`, err);
@@ -111,7 +149,7 @@ export default function VenueEditorPage() {
       posY,
       width,
       height,
-      shape: { type, width, height, x: posX, y: posY, rotation: 0, padding: 0, opacity: 100, colour: "#22c55e" },
+      shape: { type, width, height, x: posX, y: posY, rotation: 0, padding: 10, opacity: 100, colour: "#22c55e" },
     };
     try {
       const created = await createSector(venueId, payload);
@@ -127,8 +165,8 @@ export default function VenueEditorPage() {
     isControlled: s.isControlled ?? false,
     seatCount: s.seatCount ?? 0,
     capacity: s.capacity ?? 0,
-    rowNumber: s.rows ?? 0,
-    columnNumber: s.cols ?? 0,
+    rowNumber: s.rows ?? 1,
+    columnNumber: s.cols ?? 1,
     width: Math.max(1, s.width ?? s.shape?.width ?? 100),
     height: Math.max(1, s.height ?? s.shape?.height ?? 100),
     shape: {
@@ -138,7 +176,7 @@ export default function VenueEditorPage() {
       x: Math.max(0, s.shape?.x ?? s.posX ?? 0),
       y: Math.max(0, s.shape?.y ?? s.posY ?? 0),
       rotation: s.shape?.rotation ?? 0,
-      padding: s.shape?.padding ?? 0,
+      padding: Math.max(10, s.shape?.padding ?? 10),
       opacity: s.shape?.opacity ?? 100,
       colour: s.shape?.colour ?? "#22c55e",
     },
@@ -221,10 +259,21 @@ export default function VenueEditorPage() {
         )}
       </div>
       {venueId && (
-        <div className="h-20 border-t border-gray-700 bg-gray-800 flex items-center justify-center">
-          {["rectangle", "circle", "semicircle", "arc"].map(t => (
-            <button key={t} onClick={() => createWithShape(t)} className="bg-gray-700 px-4 py-2 rounded hover:bg-blue-600">
-              {t}
+        <div className="h-20 border-t border-gray-700 bg-gray-800 flex items-center justify-center gap-4">
+          {[
+            { type: "rectangle", icon: "▭", label: "Rectángulo" },
+            { type: "circle", icon: "○", label: "Círculo" },
+            { type: "semicircle", icon: "◐", label: "Semicírculo" },
+            { type: "arc", icon: "⌒", label: "Arco" }
+          ].map(({ type, icon, label }) => (
+            <button
+              key={type}
+              onClick={() => createWithShape(type)}
+              className="bg-gray-700 px-4 py-2 rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
+              title={label}
+            >
+              <span className="text-lg">{icon}</span>
+              <span className="hidden sm:inline">{label}</span>
             </button>
           ))}
         </div>

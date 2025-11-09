@@ -64,7 +64,7 @@ export const updateSector = async (sectorId: string, payload: any) => {
 };
 
 export const deleteSector = async (sectorId: string) => {
-  const url = `/sector/${sectorId}`;
+  const url = `/Sector/${sectorId}`;
   logReq("DELETE sector", url);
   const t0 = performance.now();
   try {
