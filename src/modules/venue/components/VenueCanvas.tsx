@@ -16,14 +16,18 @@ export default function VenueCanvas({
   onMoveCommit,
   onSeatHoverEnter,
   onSeatHoverLeave,
+  onDragStart,
+  onDragEnd,
 }: any) {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
 
   useEffect(() => {
+    setImage(null); // Clear previous image
     if (!background) return;
     const img = new Image();
-    img.src = background;
     img.onload = () => setImage(img);
+    img.onerror = () => setImage(null); // Clear on error
+    img.src = background;
   }, [background]);
 
   return (
@@ -42,6 +46,8 @@ export default function VenueCanvas({
             onMoveCommit={onMoveCommit}
             onSeatHoverEnter={onSeatHoverEnter}
             onSeatHoverLeave={onSeatHoverLeave}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
           />
         ))}
       </Layer>

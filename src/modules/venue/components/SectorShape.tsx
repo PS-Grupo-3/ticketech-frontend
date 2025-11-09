@@ -12,6 +12,8 @@ export default function SectorShape({
   onMoveCommit,
   onSeatHoverEnter,
   onSeatHoverLeave,
+  onDragStart,
+  onDragEnd,
 }: any) {
   const shapeRef = useRef<any>(null);
   const trRef = useRef<any>(null);
@@ -23,10 +25,18 @@ export default function SectorShape({
     }
   }, [isSelected]);
 
+  useEffect(() => {
+    if (shapeRef.current) {
+      shapeRef.current.fill(sector.shape.colour ?? "#22c55e");
+      shapeRef.current.getLayer().batchDraw();
+    }
+  }, [sector.shape.colour]);
+
   const handleDragMove = (e: any) => {
     const x = Math.round(e.target.x());
     const y = Math.round(e.target.y());
     console.debug("[DRAG move]", sector.sectorId, x, y);
+    if (onDragStart) onDragStart();
     onMoveLive({ ...sector, posX: x, posY: y, shape: { ...sector.shape, x, y } });
   };
 
@@ -35,6 +45,7 @@ export default function SectorShape({
     const y = Math.round(e.target.y());
     console.debug("[DRAG end]", sector.sectorId, x, y);
     onMoveCommit({ ...sector, posX: x, posY: y, shape: { ...sector.shape, x, y } });
+    if (onDragEnd) onDragEnd();
   };
 
   const handleTransform = () => {
@@ -93,7 +104,7 @@ export default function SectorShape({
       {sector.shape.type === "circle" && <Circle {...props} radius={sector.shape.width / 2} />}
       {sector.shape.type === "semicircle" && <Arc {...props} innerRadius={0} outerRadius={sector.shape.width / 2} angle={180} />}
       {sector.shape.type === "arc" && <Arc {...props} innerRadius={sector.shape.width / 4} outerRadius={sector.shape.width / 2} angle={90} />}
-      {sector.seats && sector.seats.length > 0 && <SeatDots seats={sector.seats} shape={sector.shape} onHoverEnter={onSeatHoverEnter} onHoverLeave={onSeatHoverLeave} />}
+      {sector.seats && sector.seats.length > 0 && sector.isControlled && <SeatDots seats={sector.seats} shape={sector.shape} onHoverEnter={onSeatHoverEnter} onHoverLeave={onSeatHoverLeave} />}
       {isSelected && <Transformer ref={trRef} />}
     </>
   );

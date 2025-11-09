@@ -13,7 +13,7 @@ function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
 
 // Removed unused autoSaveSector callback
 
-export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: any) {
+export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal, isDragging }: any) {
   const [local, setLocal] = useState(sector);
 
   useEffect(() => {
@@ -47,6 +47,13 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
     const updated = { ...local, [key]: value };
     setLocal(updated);
     onUpdateLocal(updated);
+    // Auto-save isControlled and capacity changes immediately
+    if (key === "isControlled" || key === "capacity") {
+      const payload = buildPayload(updated);
+      updateSector(updated.sectorId, payload).catch(err => {
+        console.error(`[${key.toUpperCase()} SAVE] Error:`, err);
+      });
+    }
   };
 
   const handleShapeChange = (key: string, value: any) => {
@@ -54,6 +61,7 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
     const updated = { ...local, shape };
     setLocal(updated);
     onUpdateLocal(updated);
+    // Always auto-save shape changes for immediate visual feedback
     autoSaveShape(shape, local.sectorId);
   };
 
@@ -176,7 +184,7 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
               <label className="text-sm font-medium text-gray-300">Filas</label>
               <div className="flex items-center gap-1">
                 <button className="bg-gray-700 px-3 py-2 rounded-md hover:bg-gray-600 transition-colors" onClick={() => handleRowsColsChange("rows", Math.max(1, (local.rows ?? 0) - 1))}>-</button>
-                <span className="flex-1 text-center bg-gray-800 border border-gray-600 rounded-md p-2 text-sm">{local.rows ?? 0}</span>
+                <span className="flex-1 text-center bg-gray-800 border border-gray-600 rounded-md p-2 text-sm">{local.seats && local.seats.length > 0 ? (local.rows ?? 0) : ""}</span>
                 <button className="bg-gray-700 px-3 py-2 rounded-md hover:bg-gray-600 transition-colors" onClick={() => handleRowsColsChange("rows", (local.rows ?? 0) + 1)}>+</button>
               </div>
             </div>
@@ -184,7 +192,7 @@ export default function SectorSidebar({ sector, onUpdateLocal, onRemoveLocal }: 
               <label className="text-sm font-medium text-gray-300">Columnas</label>
               <div className="flex items-center gap-1">
                 <button className="bg-gray-700 px-3 py-2 rounded-md hover:bg-gray-600 transition-colors" onClick={() => handleRowsColsChange("cols", Math.max(1, (local.cols ?? 0) - 1))}>-</button>
-                <span className="flex-1 text-center bg-gray-800 border border-gray-600 rounded-md p-2 text-sm">{local.cols ?? 0}</span>
+                <span className="flex-1 text-center bg-gray-800 border border-gray-600 rounded-md p-2 text-sm">{local.seats && local.seats.length > 0 ? (local.cols ?? 0) : ""}</span>
                 <button className="bg-gray-700 px-3 py-2 rounded-md hover:bg-gray-600 transition-colors" onClick={() => handleRowsColsChange("cols", (local.cols ?? 0) + 1)}>+</button>
               </div>
             </div>

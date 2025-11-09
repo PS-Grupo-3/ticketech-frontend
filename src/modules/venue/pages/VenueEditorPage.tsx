@@ -15,6 +15,7 @@ export default function VenueEditorPage() {
   const [venue, setVenue] = useState<any>(null);
   const [backgroundImageUrlInput, setBackgroundImageUrlInput] = useState<string>("");
   const [hoveredSeat, setHoveredSeat] = useState<any>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   useEffect(() => {
     if (venueId) {
@@ -128,7 +129,7 @@ export default function VenueEditorPage() {
     const backgroundImageUrl = backgroundImageUrlInput;
     setBackground(backgroundImageUrl);
     try {
-      await updateVenue(venueId, { name: venue.name, totalCapacity: venue.totalCapacity, venueTypeId: venue.venueType.venueType.venueTypeId, address: venue.address, mapUrl: venue.mapUrl, backgroundImageUrl });
+      await updateVenue(venueId, { name: venue.name, totalCapacity: venue.totalCapacity, venueTypeId: venue.venueType.venueTypeId, address: venue.address, mapUrl: venue.mapUrl, backgroundImageUrl });
       setVenue({ ...venue, backgroundImageUrl });
     } catch (err) {
       console.error("[SAVE] Background Image URL failed:", err);
@@ -239,6 +240,8 @@ export default function VenueEditorPage() {
               onMoveCommit={handleCommitToDb}
               onSeatHoverEnter={handleSeatHoverEnter}
               onSeatHoverLeave={handleSeatHoverLeave}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={() => setIsDragging(false)}
             />
           )}
         </div>
@@ -250,6 +253,7 @@ export default function VenueEditorPage() {
               setSectors(prev => prev.filter(s => s.sectorId !== id));
               if (selectedId === id) setSelectedId(null);
             }}
+            isDragging={isDragging}
           />
         )}
         {hoveredSeat && (
