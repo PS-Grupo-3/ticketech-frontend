@@ -229,20 +229,33 @@ export default function VenueEditorPage() {
             </div>
           )}
           {venueId && (
-            <VenueCanvas
-              background={background}
-              sectors={sectors}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              onTransformLive={replaceLocal}
-              onTransformCommit={handleCommitToDb}
-              onMoveLive={replaceLocal}
-              onMoveCommit={handleCommitToDb}
-              onSeatHoverEnter={handleSeatHoverEnter}
-              onSeatHoverLeave={handleSeatHoverLeave}
-              onDragStart={() => setIsDragging(true)}
-              onDragEnd={() => setIsDragging(false)}
-            />
+            <div className="relative">
+              <VenueCanvas
+                background={background}
+                sectors={sectors}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                onTransformLive={replaceLocal}
+                onTransformCommit={handleCommitToDb}
+                onMoveLive={replaceLocal}
+                onMoveCommit={handleCommitToDb}
+                onSeatHoverEnter={handleSeatHoverEnter}
+                onSeatHoverLeave={handleSeatHoverLeave}
+                onDragStart={() => setIsDragging(true)}
+                onDragEnd={() => setIsDragging(false)}
+              />
+              <button
+                onClick={() => {
+                  // Reset zoom logic here, but since resetZoom is inside VenueCanvas, we need to expose it
+                  // For now, we'll implement a simple reset by reloading or using a ref
+                  window.location.reload(); // Temporary solution
+                }}
+                className="absolute top-2 right-2 bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600 transition-colors"
+                title="Reset Zoom"
+              >
+                Reset Zoom
+              </button>
+            </div>
           )}
         </div>
         {selectedId && venueId && (

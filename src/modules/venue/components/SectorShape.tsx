@@ -1,4 +1,4 @@
-import { Rect, Circle, Arc, Transformer, Group } from "react-konva";
+import { Rect, Circle, Arc, Transformer, Group, Text } from "react-konva";
 import { useEffect, useRef } from "react";
 import SeatDots from "./SeatDots";
 
@@ -14,6 +14,7 @@ export default function SectorShape({
   onSeatHoverLeave,
   onDragStart,
   onDragEnd,
+  scale,
 }: any) {
   const shapeRef = useRef<any>(null);
   const trRef = useRef<any>(null);
@@ -98,13 +99,103 @@ export default function SectorShape({
     onTransformEnd: handleTransformEnd,
   };
 
+const getCenter = () => {
+  const x = sector.posX;
+  const y = sector.posY;
+  const width = sector.shape.width;
+  const height = sector.shape.height;
+  const rotation = (sector.shape.rotation ?? 0) * (Math.PI / 180);
+
+  if (sector.shape.type === "rectangle") {
+  const innerRadius = width / 4;
+  const outerRadius = width / 2;
+  const cx = x;
+  const cy = y;
+  
+  const startAngle = 0; 
+  const endAngle = Math.PI / 2;
+  const midAngle = (startAngle + endAngle) / 2;
+
+  const midRadius = (innerRadius + outerRadius) / 2;
+
+  let textX = cx + midRadius * Math.cos(midAngle) + width/4;
+  let textY = cy + midRadius * Math.sin(midAngle) + height/6;
+
+  const dx = textX - cx;
+  const dy = textY - cy;
+  const rotatedX = cx + dx * Math.cos(rotation) - dy * Math.sin(rotation);
+  const rotatedY = cy + dx * Math.sin(rotation) + dy * Math.cos(rotation);
+
+  return { x: rotatedX, y: rotatedY, cx, cy };
+} else if (sector.shape.type === "circle") {
+    return { x: x, y: y };
+  } else  if (sector.shape.type === "semicircle") {
+    const outerRadius = width / 2;
+    const cx = x;
+    const cy = y;
+
+    // radio medio
+    const midRadius = outerRadius / 2;
+    // ángulo medio (mitad del arco de 180°)
+    const midAngle = Math.PI / 2;
+
+    let textX = cx + midRadius * Math.cos(midAngle);
+    let textY = cy + midRadius * Math.sin(midAngle);
+
+    // aplicar rotación
+    const dx = textX - cx;
+    const dy = textY - cy;
+    const rotatedX = cx + dx * Math.cos(rotation) - dy * Math.sin(rotation);
+    const rotatedY = cy + dx * Math.sin(rotation) + dy * Math.cos(rotation);
+
+    return { x: rotatedX, y: rotatedY, cx, cy };
+  } else if (sector.shape.type === "arc") {
+    const innerRadius = width / 4;
+    const outerRadius = width / 2;
+    const cx = x; // centro geométrico del arco
+    const cy = y;
+    const midRadius = (innerRadius + outerRadius) / 2;
+    const midAngle = Math.PI / 4; // mitad del arco de 90°
+
+    // punto medio sin rotación
+    let textX = cx + midRadius * Math.cos(midAngle);
+    let textY = cy + midRadius * Math.sin(midAngle);
+
+    // aplicar rotación del sector al texto
+    const dx = textX - cx;
+    const dy = textY - cy;
+    const rotatedX = cx + dx * Math.cos(rotation) - dy * Math.sin(rotation);
+    const rotatedY = cy + dx * Math.sin(rotation) + dy * Math.cos(rotation);
+
+    return { x: rotatedX, y: rotatedY, cx, cy };
+  }
+
+  return { x: x + width / 2, y: y + height / 2 };
+};
+
+  const center = getCenter();
+
   return (
     <>
       {sector.shape.type === "rectangle" && <Rect {...props} width={sector.shape.width} height={sector.shape.height} />}
       {sector.shape.type === "circle" && <Circle {...props} radius={sector.shape.width / 2} />}
       {sector.shape.type === "semicircle" && <Arc {...props} innerRadius={0} outerRadius={sector.shape.width / 2} angle={180} />}
       {sector.shape.type === "arc" && <Arc {...props} innerRadius={sector.shape.width / 4} outerRadius={sector.shape.width / 2} angle={90} />}
-      {sector.seats && sector.seats.length > 0 && sector.isControlled && <SeatDots seats={sector.seats} shape={sector.shape} onHoverEnter={onSeatHoverEnter} onHoverLeave={onSeatHoverLeave} />}
+      {scale <= 1 && (
+        <Text
+          x={center.x}
+          y={center.y}
+          text={sector.name || "Sector"}
+          fontSize={Math.max(12, 16 / scale)} // Adjust font size based on scale
+          fill="white"
+          align="center"
+          verticalAlign="middle"
+          rotation={sector.shape.rotation ?? 0}
+          offsetX={(sector.name || "Sector").length * (Math.max(12, 16 / scale) / 4)} // Center horizontally
+          offsetY={Math.max(12, 16 / scale) / 2} // Center vertically
+        />
+      )}
+      {sector.seats && sector.seats.length > 0 && sector.isControlled && scale > 1.5 && <SeatDots seats={sector.seats} shape={sector.shape} onHoverEnter={onSeatHoverEnter} onHoverLeave={onSeatHoverLeave} />}
       {isSelected && <Transformer ref={trRef} />}
     </>
   );
