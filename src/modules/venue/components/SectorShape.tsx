@@ -118,7 +118,7 @@ const getCenter = () => {
 
   const midRadius = (innerRadius + outerRadius) / 2;
 
-  let textX = cx + midRadius * Math.cos(midAngle) + width/4;
+  let textX = cx + width / 2;
   let textY = cy + height / 2;
 
   const dx = textX - cx;
