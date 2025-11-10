@@ -6,6 +6,7 @@ import OrderPage from "../modules/order/pages/OrderPage";
 import AuthPage from "../modules/auth/pages/AuthPage";
 import VenueEditorPage from "../modules/venue/pages/VenueEditorPage";
 import VenueListPage from "../modules/venue/pages/VenueListPage";
+import VenueCreatePage from "../modules/venue/pages/VenueCreatePage";
 
 export default function AppRoutes() {
     return (
@@ -17,6 +18,7 @@ export default function AppRoutes() {
                 <Route path="/order" element={<OrderPage />} />
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/venue" element={<VenueListPage />} />
+                <Route path="/venue/create" element={<VenueCreatePage />} />
                 <Route path="/venue/editor/:venueId" element={<VenueEditorPage />} />
             </Routes>
         </BrowserRouter>
