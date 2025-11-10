@@ -42,13 +42,27 @@ export default function VenueListPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-950 text-white">
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-          Venues
-        </h1>
-        <p className="text-neutral-400 mt-2">Selecciona un venue para editar</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-950 text-white p-8">
+      <div className="mb-10 w-full max-w-4xl">
+        
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+          
+          <div className="text-center sm:text-left">
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+              Venues
+            </h1>
+            <p className="text-neutral-400 mt-2">Selecciona un venue para editar</p>
+          </div>
+          
+          <Link
+            to="/venue/create"
+            className="mt-4 sm:mt-0 px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition duration-300"
+          >
+            Crear Nuevo Venue
+          </Link>
+        </div>
       </div>
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-4xl px-4">
         {venues.map((venue) => (

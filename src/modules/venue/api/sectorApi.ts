@@ -173,3 +173,31 @@ export const getSectorById = async (sectorId: string) => {
     throw err;
   }
 };
+
+export const createVenue = async (payload: any) => {
+  const url = `/venues`;
+  logReq("POST create venue", url, payload);
+  const t0 = performance.now();
+  try {
+    const { data } = await api.post(url, payload);
+    logRes("POST create venue", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("POST create venue", url, performance.now() - t0, err);
+    throw err;
+  }
+};
+
+export const getVenueTypes = async () => {
+  const url = `/venuetype`; 
+  logReq("GET venue types", url);
+  const t0 = performance.now();
+  try {
+    const { data } = await api.get(url);
+    logRes("GET venue types", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("GET venue types", url, performance.now() - t0, err);
+    throw err;
+  }
+};
