@@ -1,0 +1,157 @@
+@import "./colors.css";
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--color-bg-dark);
+    padding: 15px;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(to right, var(--color-blue-start), var(--color-purple-end)) 1;
+
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: sticky;
+    z-index: 100;
+}
+
+.navbar-logo-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+}
+
+.navbar-logo h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wide);
+
+    background: linear-gradient(to right, var(--color-blue-start), var(--color-purple-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+
+.navbar-logo img {
+    width: 2em;
+}
+
+.navbar-links ul {
+    display: flex;
+    gap: 10px;
+    list-style: none;
+}
+
+.navbar-links a {
+    color: var(--color-purple-start);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    position: relative;
+    padding: 6px 0;
+    transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+    color: var(--color-purple-end);
+}
+
+/* Línea inferior animada */
+.navbar-links a::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(to right, var(--color-blue-start), var(--color-purple-end));
+    transition: width 0.3s ease, left 0.3s ease;
+    border-radius: 2px;
+}
+
+.navbar-links a:hover::after,
+.navbar-links a.active::after {
+    width: 100%;
+    left: 0;
+}
+
+.navbar-links a.active {
+    color: var(--color-purple-end);
+}
+
+.navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-search-btn,
+.user-avatar-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-purple-start);
+}
+
+
+/* Imagen del usuario */
+.user-avatar-btn img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--color-purple-end);
+    object-fit: cover;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-radius: 25px;
+    border: 2px solid var(--color-purple-end);
+    padding: 6px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    width: 36px;
+}
+
+.search-container.active {
+    width: 250px;
+}
+
+.search-icon {
+    color: var(--color-purple-end);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 0.3s ease;
+}
+
+.search-container.active .search-icon {
+    color: var(--color-purple-end);
+}
+
+.search-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    padding-left: 8px;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.search-container.active .search-input {
+    opacity: 1;
+}
