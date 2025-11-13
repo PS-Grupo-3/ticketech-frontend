@@ -1,0 +1,22 @@
+:root {
+    /* Base */
+    --color-bg-dark: #0A0A0A;
+    --color-bg-secondary: #1A1A1E;
+    --color-surface: #2E2E33;
+
+    /* Texto */
+    --color-text-light: #E5E7EB;
+    --color-text-muted: #9CA3AF;
+
+    /* Azules */
+    --color-blue-start: #2563EB;
+    --color-blue-end: #3B82F6;
+
+    /* Violetas */
+    --color-purple-start: #7C3AED;
+    --color-purple-end: #A855F7;
+
+    /* Extra (opcional, para detalles) */
+    --gradient-blue-purple: linear-gradient(135deg, var(--color-blue-start), var(--color-purple-end));
+    --gradient-purple-dark: linear-gradient(135deg, var(--color-purple-start), var(--color-bg-dark));
+}

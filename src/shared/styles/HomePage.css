@@ -1,0 +1,95 @@
+@import "./colors.css";
+
+.homepage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* fuerza que ocupe todo el alto de la ventana */
+  align-items: center;
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-light);
+}
+
+.homepage-header {
+  text-align: center;
+  margin: 2rem 0 2.5rem;
+}
+
+.homepage-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(to right, var(--color-blue-start), var(--color-purple-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.homepage-subtitle {
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+}
+
+.sections-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  width: 100%;
+  max-width: 900px;
+  flex: 1;
+  margin-bottom: 3rem; /* <-- separa las cartas del footer */
+}
+
+.section-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.section-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.15);
+}
+
+.section-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+  z-index: 0;
+}
+
+.section-content {
+  position: relative;
+  z-index: 1;
+}
+
+.section-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-desc {
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+}
+
+.homepage-footer {
+  margin-top: auto; /* se queda pegado abajo */
+  width: 100%;
+  text-align: center;
+  padding: 1rem;
+  background: linear-gradient(to right, var(--color-purple-start), var(--color-purple-end));
+  color: var(--color-text-light);
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Gradientes de cada servicio */
+.bg-blue { background: linear-gradient(to bottom right, var(--color-blue-start), var(--color-blue-end)); }
+.bg-green { background: linear-gradient(to bottom right, var(--color-green-start), var(--color-green-end)); }
+.bg-orange { background: linear-gradient(to bottom right, var(--color-orange-start), var(--color-orange-end)); }
+.bg-purple { background: linear-gradient(to bottom right, var(--color-purple-start), var(--color-purple-end)); }
+.bg-gray { background: linear-gradient(to bottom right, var(--color-gray-start), var(--color-gray-end)); }
