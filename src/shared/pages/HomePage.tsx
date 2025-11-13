@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import "../styles/HomePage.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import LoginSidebar from "../../modules/auth/pages/LoginSB";
+import { useState } from "react";
 
 export default function HomePage() {
   const sections = [
@@ -11,10 +13,15 @@ export default function HomePage() {
     { name: "OrderService", path: "/order", color: "bg-purple", desc: "Procesa órdenes y pagos", icon: "💳" },
     { name: "AuthService", path: "/auth", color: "bg-gray", desc: "Usuarios y autenticación", icon: "🔐" },
   ];
+  
+  const [sidebarOpen, setSidebarOpen]=useState(false);
+
+
 
   return (
     <div className="homepage">
-      <Navbar />
+      <Navbar onUserClick={()=>setSidebarOpen(true)}/>
+      <LoginSidebar open={sidebarOpen} onClose={()=>setSidebarOpen(false)}/>
 
       <div className="homepage-header">
         <h1 className="homepage-title">Ticketech Dashboard</h1>
