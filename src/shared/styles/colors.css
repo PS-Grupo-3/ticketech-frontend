@@ -8,13 +8,15 @@
     --color-text-light: #E5E7EB;
     --color-text-muted: #9CA3AF;
 
-    /* Azules */
-    --color-blue-start: #2563EB;
-    --color-blue-end: #3B82F6;
+    --color-dark-blue-start: #2563EB;
+    --color-dark-blue-end: #3B82F6;
+    --color-blue-start: #0096D6;
+    --color-blue-end: #00AEEF;
 
-    /* Violetas */
-    --color-purple-start: #7C3AED;
-    --color-purple-end: #A855F7;
+    --color-dark-semitransparent: #00000060;
+    --color-surface-semitransparent: #2E2E3360;
+
+    --color-error: #990000;
 
     /* Extra (opcional, para detalles) */
     --gradient-blue-purple: linear-gradient(135deg, var(--color-blue-start), var(--color-purple-end));
