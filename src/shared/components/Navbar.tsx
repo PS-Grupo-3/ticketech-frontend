@@ -37,7 +37,6 @@ export default function Navbar({onUserClick}:navbarProps) {
           <ul>
             <li><NavLink to="/" end>Inicio</NavLink></li>
             <li><NavLink to="/event">Eventos</NavLink></li>
-            <li><NavLink to="/venue">Venues</NavLink></li>
           </ul>
         </nav>
       </div>

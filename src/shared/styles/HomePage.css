@@ -17,7 +17,7 @@
 .homepage-title {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(to right, var(--color-blue-start), var(--color-purple-end));
+  background: linear-gradient(to right, var(--color-blue-start), var(--color-blue-end));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -81,7 +81,7 @@
   width: 100%;
   text-align: center;
   padding: 1rem;
-  background: linear-gradient(to right, var(--color-purple-start), var(--color-purple-end));
+  background: linear-gradient(to right, var(--color-blue-start), var(--color-blue-end));
   color: var(--color-text-light);
   font-size: 0.85rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);

@@ -1,81 +1,112 @@
-import { useState } from "react";
-import { login } from "../api/authApi"; 
 import "./styles/loginSB.css";
 
-type Props =
-{
-    open:boolean,
-    onClose:()=>void;
+import LoginView from "./views/LoginView";
+import RegisterView from "./views/RegisterView";
+import UserView from "./views/UserView";
+
+import { useLoginSidebar } from "./hooks/useLoginSidebar";
+
+type Props = {
+    open: boolean;
+    onClose: () => void;
 };
 
-const LoginSidebar = ({open, onClose}: Props)=>
-    {
-        
-    const [Email,setEmail]=useState("");
-    const [Password,setpsw]=useState("");
-    const [credsError,setMsg]=useState<string|null>(null);
-    const [credsAnimation,setStatus]=useState(false);
-    const [shakeAnimation,shakeStatus]=useState(false)
-    const handlelogin = async ()=> 
-        {
-            const result = await login({Email,Password});
-            if(result)
-                {
-                    onClose(); //Cierro el sidebar
-                    setEmail("");
-                    setpsw("");
-                }
-            else
-            {
-             setMsg("Email o contraseña invalida");
-             setStatus(true);
-             shakeStatus(true);
-             setTimeout(() => {
-             setStatus(false);
-             shakeStatus(false);
-             setTimeout(() => setMsg(""), 500); 
-            }, 1500);
-            }
+const LoginSidebar = ({ open, onClose }: Props) => {
 
-        };
-    
+    const {
+        Email, setEmail,
+        Password, setPassword,
+        credsError, credsAnimation,
+        shakeAnimation,
+        view, setView,
+        handlelogin,
+        closeSidebar,
+        resetModal
+    } = useLoginSidebar(onClose);
 
-return(
-<>
-    
-    <div className={`overlay ${open ? "active" : ""}`} onClick={onClose}></div>
-    <div className={`SideBar ${open ? "open" : ""}`}>
-    <div className="headerSB">
-        <h1> Bienvenido, iniciá sesión en ticketech</h1>
-        <button onClick={onClose}>X</button> 
-    </div>
-    <div className="bodySb">
-            <h1>Complete los datos correspondientes</h1>
-            <div className="creds">
-            <input className={`email ${shakeAnimation ? "active" : "inactive"}`} type="text" placeholder="Correo Electrónico" value={Email} onChange={(e)=>setEmail(e.target.value)} />
-            <div className="psw_">
-            <input className={`psw ${shakeAnimation ? "active" : "inactive"}`} type="text" placeholder="Contraseña" value={Password} onChange={(p)=>setpsw(p.target.value)} />  
-            <a href="#">Olvidé mi contraseña</a>
+    return (
+        <>
+            <div className={`overlay ${open ? "active" : ""}`} onClick={closeSidebar}></div>
+
+            <div className={`SideBar ${open ? "open" : ""}`}>
+                <div className="headerSB">
+                    <h2>
+                        {view === "login" && "Iniciar sesión en Ticketech"}
+                        {view === "register" && "Crear una cuenta"}
+                        {view === "user" && "Bienvenido a tu cuenta"}
+                    </h2>
+                    <button onClick={closeSidebar}>X</button>
+                </div>
+
+                <div className="bodySb">
+                    {view === "login" && (
+                        <LoginView
+                            Email={Email}
+                            Password={Password}
+                            setEmail={setEmail}
+                            setPassword={setPassword}
+                            credsError={credsError}
+                            credsAnimation={credsAnimation}
+                            shakeAnimation={shakeAnimation}
+                        />
+                    )}
+
+                    {view === "register" && <RegisterView />}
+
+
+
+                    {view === "user" && <UserView />}
+                </div>
+
+                <div className="btns">
+                    {view === "login" && (
+                        <>
+                            <button
+                                className="login"
+                                onClick={handlelogin}
+                                disabled={Email === "" || Password === ""}
+                            >
+                                Iniciar Sesión
+                            </button>
+
+                            <button
+                                className="register"
+                                onClick={() => {
+                                    resetModal();
+                                    setView("register");
+                                }}
+                            >
+                                Registrarse
+                            </button>
+                        </>
+                    )}
+
+                    {view === "register" && (
+                        <>
+                            <button
+                                className="register"
+                                onClick={() => (window as any).triggerRegister()}
+                            >
+                                Crear cuenta
+                            </button>
+
+                            <button className="login" onClick={() => setView("login")}>
+                                Volver al inicio de sesión
+                            </button>
+                        </>
+                    )}
+
+
+
+                    {view === "user" && (
+                        <button className="login" onClick={closeSidebar}>
+                            Cerrar
+                        </button>
+                    )}
+                </div>
             </div>
-            {credsError && <p className={`errormsg ${credsAnimation ? "active" : "inactive"}`}>{credsError}</p>}    
-
-
-            </div>
-    </div>
-    <div className="btns">
-        <button className="login" onClick={handlelogin} disabled={Email==""||Password=="" } value={Password}> Iniciar Sesión</button>
-        <button className="register">Registrarse</button>
-    </div>
-    
-    </div>
- 
-
-
-
-
-</>
-)
+        </>
+    );
 };
-
 
 export default LoginSidebar;
