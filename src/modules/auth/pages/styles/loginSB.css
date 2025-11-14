@@ -1,0 +1,209 @@
+:root
+{
+    --color-principal:#12100D;
+
+}
+*
+{
+    margin: 0;
+    padding: 0;
+  
+
+}
+
+
+.overlay
+{
+  position: fixed;
+  
+}
+.overlay.active {
+  background-color: rgba(0,0,0,0.4);
+  inset: 0  ;
+  z-index: 999;
+}
+.SideBar
+{
+    position: fixed;
+    z-index: 999;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    background-color:var(--color-principal);
+    width: 60vh;
+    height: 100vh;
+    right: 0;
+    top:0;
+    
+}
+.SideBar.open {
+    
+    transform: translateX(0);
+}
+
+.SideBar .headerSB
+{
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid rgb(255, 255, 255);
+height: 4.2rem;
+
+}
+.SideBar .headerSB h1
+{
+margin-left: 46px;
+font-size: large;
+}
+
+.SideBar .headerSB button
+{
+color: rgb(255, 255, 255);
+border-radius: 6px;
+background-color: rgb(81, 73, 73);
+padding: 10px;
+margin-right: 10px;
+transform: none;
+}
+
+.SideBar .headerSB button:hover
+{
+    background-color: red;
+    transition: 0.4s ease;
+}
+
+.SideBar .bodySb
+{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    justify-content: start;
+    height: 45vh;
+}
+.SideBar .bodySb h1
+{
+    width: 100%;
+    margin-top: 10px;
+    font-size: large;
+    text-align: center;
+}
+.SideBar .bodySb .creds 
+{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    justify-content: start;
+}
+.SideBar .bodySb .creds .psw_
+{
+    display: flex;
+    flex-direction: column;
+    text-align: end;
+}
+.SideBar .bodySb .creds .psw_ a 
+{
+    color:red
+}
+.SideBar .bodySb .creds .psw_ a:hover
+{
+    color:white;
+    transition: 0.4s ease ;
+}
+.SideBar .bodySb .creds input
+{
+    border-radius: 6px;
+    padding: 20px;
+    width: 55vh;
+    color:rgb(255, 255, 255);
+    background-color: rgba(29, 26, 26, 0.253);
+}
+
+.SideBar .btns
+{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 60vh;    
+    gap: 2rem;
+}
+
+
+.SideBar .btns button
+{
+
+    padding: 20px;
+    width: 55vh;
+    border-radius: 20px;
+    border: 1px solid rgb(0, 0, 0);
+    color:black;
+    font-size: larger;
+    transform: none;
+}
+.SideBar .btns button:disabled
+{
+    opacity: 0.2;
+    cursor: not-allowed;
+}
+
+.SideBar .btns .register
+{
+    background-color: red;
+}
+.SideBar .btns .register:hover
+{
+    background-color: rgba(255, 0, 0, 0.514);
+    transition: 0.3s ease;
+}
+.SideBar .btns .login
+{
+    background-color: rgb(255, 255, 255);
+}
+
+.SideBar .btns .login:hover
+{
+
+    background-color: rgba(255, 255, 255, 0.482);;
+}
+.errormsg.active
+{
+    color:rgba(255, 0, 0, 0.909);
+    text-align: left;
+    animation: fadeIn 0.5s ease;
+}
+
+.errormsg.inactive
+{
+    color:rgba(255, 0, 0, 0.909);
+    text-align: left;
+    animation: fadeOut 0.5s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0px); }
+  to { opacity: 0; transform: translateY(-4); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.SideBar .bodySb .creds .psw.active,.SideBar .bodySb .creds .email.active
+{
+    animation: shake 0.5s ease-in-out;
+    border: 1px solid red;
+    transition: border-color 0.6s ease;
+}
+.SideBar .bodySb .creds .psw.inactive,.SideBar .bodySb .creds .email.inactive
+{
+     
+    border: 1px solid transparent;
+    transition: border-color 0.6s ease;
+}
+
+

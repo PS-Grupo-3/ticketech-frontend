@@ -1,11 +1,18 @@
 import { useState, useRef } from "react";
 import { NavLink } from "react-router-dom";
-import { Search, User } from "lucide-react";
+import { Search, SidebarOpen, User } from "lucide-react";
 import "../styles/Navbar.css";
 
-export default function Navbar() {
+ type navbarProps=
+  {
+    onUserClick:()=>void;
+  }
+
+export default function Navbar({onUserClick}:navbarProps) {
   const [searchActive, setSearchActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+ 
 
   const handleSearchClick = () => {
     if (!searchActive) {
@@ -22,7 +29,7 @@ export default function Navbar() {
     <header className="navbar">
       <div className="navbar-logo-links">
         <div className="navbar-logo">
-          <img src="/vite.svg" alt="logo" />
+          <img src="/vite.svg" alt="logo"  />
           <h1>Ticketech</h1>
         </div>
 
@@ -46,8 +53,8 @@ export default function Navbar() {
           />
         </div>
 
-        <button className="user-avatar-btn" aria-label="Perfil">
-          <img src="/default.png" alt="Usuario" />
+        <button className="user-avatar-btn" aria-label="Perfil" onClick={onUserClick}>
+          <img src="/user.webp" alt="Usuario" />
         </button>
       </div>
     </header>
