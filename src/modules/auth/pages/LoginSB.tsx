@@ -52,9 +52,6 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                     )}
 
                     {view === "register" && <RegisterView />}
-
-
-
                     {view === "user" && <UserView />}
                 </div>
 
@@ -95,8 +92,6 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                             </button>
                         </>
                     )}
-
-
 
                     {view === "user" && (
                         <button className="login" onClick={closeSidebar}>
