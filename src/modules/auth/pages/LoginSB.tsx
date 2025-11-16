@@ -2,6 +2,7 @@ import { useState } from "react";
 import { login } from "../api/authApi"; 
 import "./styles/loginSB.css";
 
+
 type Props =
 {
     open:boolean,
@@ -54,7 +55,7 @@ return(
             <div className="creds">
             <input className={`email ${shakeAnimation ? "active" : "inactive"}`} type="text" placeholder="Correo Electrónico" value={Email} onChange={(e)=>setEmail(e.target.value)} />
             <div className="psw_">
-            <input className={`psw ${shakeAnimation ? "active" : "inactive"}`} type="text" placeholder="Contraseña" value={Password} onChange={(p)=>setpsw(p.target.value)} />  
+            <input className={`psw ${shakeAnimation ? "active" : "inactive"}`} type="password" placeholder="Contraseña" value={Password} onChange={(p)=>setpsw(p.target.value)} />  
             <a href="#">Olvidé mi contraseña</a>
             </div>
             {credsError && <p className={`errormsg ${credsAnimation ? "active" : "inactive"}`}>{credsError}</p>}    

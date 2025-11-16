@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const baseURLs = {
-    auth: "http://localhost:5029/api/v1",
+    auth: "http://localhost:5029/api",
     venue: "http://localhost:5136/api/v1",
     event: "http://localhost:5185/api/v1",
     ticket: "http://localhost:5113/api/v1",

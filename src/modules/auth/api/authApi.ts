@@ -1,4 +1,4 @@
-// placeholder temporal
+
 import { getApiClient } from "../../../core/apiClient";
 
 const api = getApiClient("auth");
@@ -12,6 +12,9 @@ type loginResponse=
 {
     token:string,
     userId:string;
+    name: string;
+    role: "Current" | "Admin" | "SuperAdmin";
+        
 }
 type serverResponse = 
 {
@@ -33,15 +36,13 @@ export const login = async (payload:loginPayload)=>
             localStorage.setItem("token",data.token);
             return data;
         }
-        else{alert("Info incorrecta");}
 
 
         }
-        catch(error:any)
-        {
-            console.error("Ocurrio un error inesperado");
-
-        }
+        catch (error: any) {
+            console.error("Error en login:", error.response?.data || error.message);
+             throw new Error(error.response?.data?.error || "Email o contraseña inválida");
+}
         
         
 
