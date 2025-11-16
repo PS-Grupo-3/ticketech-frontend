@@ -4,7 +4,7 @@
   padding: 20px 0;
   background: var(--color-bg-dark);
   border-top: 2px solid;
-  border-image: linear-gradient(to right, var(--color-blue-start), var(--color-purple-end)) 1;
+  border-image: linear-gradient(to right, var(--color-dark-blue-start), var(--color-blue-end)) 1;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   position: relative;
