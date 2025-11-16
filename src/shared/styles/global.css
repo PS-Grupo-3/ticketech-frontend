@@ -29,7 +29,7 @@ a {
 }
 
 a:hover {
-  color: var(--color-purple-start);
+  color: var(--color-blue-start);
 }
 
 /* Botones */
@@ -50,9 +50,9 @@ button:hover {
   width: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-purple-start);
+  background: var(--color-blue-start);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-purple-end);
+  background: var(--color-blue-end);
 }
