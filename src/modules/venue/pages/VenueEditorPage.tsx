@@ -2,16 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import VenueCanvas from "../components/VenueCanvas";
 import SectorSidebar from "../components/SectorSidebar";
-
-import {
-  getSectorsForVenue,
-  createSector,
-  updateSector,
-  getVenueById,
-  updateVenue,
-  getSeatsForSector,
-  getSectorById,
-} from "../api/sectorApi";
+import { getVenueById, updateVenue } from "../api/venueApi";
+import { getSectorsForVenue, createSector, updateSector, getSeatsForSector, getSectorById } from "../api/sectorApi";
 
 import type { Sector, Shape, Seat } from "../components/Types";
 

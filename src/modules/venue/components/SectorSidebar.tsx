@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { updateSector, generateSeats, getSeatsForSector, deleteSector } from "../api/sectorApi";
+import { updateSector, getSeatsForSector, deleteSector } from "../api/sectorApi";
+import { generateSeats } from "../api/seatApi";
 
 import type { Sector, Shape } from "../components/Types";
 

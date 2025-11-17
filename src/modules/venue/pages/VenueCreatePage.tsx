@@ -1,8 +1,6 @@
-// pages/VenueCreatePage.tsx
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createVenue, getVenueTypes } from "../api/sectorApi";
+import { createVenue, getVenueTypes } from "../api/venueApi";
 
 interface VenueType {
   venueTypeId: number;
