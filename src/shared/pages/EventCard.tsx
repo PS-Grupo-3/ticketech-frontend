@@ -1,10 +1,13 @@
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
+import { categoryTranslate, statusTranslate } from "../../modules/event/utils/eventTranslate";
 
 export default function EventCard({
   event
 }: {
   event: {
     eventId: string;
+    venueId: string;
     name: string;
     category: string;
     categoryType: string;
@@ -14,13 +17,22 @@ export default function EventCard({
     thumbnailUrl?: string | null;
   };
 }) {
+  const navigate = useNavigate();
   const date = new Date(event.time);
   const dateStr = format(date, "dd/MM/yyyy HH:mm");
 
-  const hasThumbnail = event.thumbnailUrl && event.thumbnailUrl.trim() !== "";
+  const hasThumbnail =
+    event.thumbnailUrl && event.thumbnailUrl.trim() !== "";
+
+  const goToVenue = () => {
+    navigate(`/venue/${event.venueId}`);
+  };
 
   return (
-    <div className="bg-neutral-800 rounded-lg overflow-hidden shadow-lg">
+    <div
+      onClick={goToVenue}
+      className="bg-neutral-800 rounded-lg overflow-hidden shadow-lg cursor-pointer hover:scale-[1.02] transition-transform"
+    >
       <div className="h-72 w-full bg-neutral-700 flex items-center justify-center overflow-hidden">
         {hasThumbnail ? (
           <img
@@ -38,11 +50,12 @@ export default function EventCard({
         <h3 className="text-xl font-bold mt-2 uppercase">{event.name}</h3>
 
         <p className="text-sm text-gray-400 mt-1">
-          {event.category} · {event.categoryType}
+          {categoryTranslate[event.category] ?? event.category} ·{" "}
+          {event.categoryType}
         </p>
 
         <p className="mt-3 text-sm bg-neutral-900 inline-block px-3 py-1 rounded">
-          {event.status}
+          {statusTranslate[event.status] ?? event.status}
         </p>
       </div>
     </div>

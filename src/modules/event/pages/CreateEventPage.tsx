@@ -1,311 +1,566 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { getVenues } from "../../venue/api/venueApi"; 
-import Navbar from "../../../shared/components/Navbar";
-import Footer from "../../../shared/components/Footer";
-import LoginSidebar from "../../auth/pages/LoginSB";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getEventCategories,
   getCategoryTypes,
   getEventStatuses,
   createEvent,
+  getEventById,
+  getEventSectors,
+  createEventSector,
+  updateEventSector,
 } from "../api/eventApi";
+import { getVenues } from "../../venue/api/venueApi";
+import { getSectorsForVenue } from "../../venue/api/sectorApi";
 
-// Interfaces
-interface Venue { venueId: string; name: string; } // <-- Interface para Venue
-interface EventCategory { categoryId: number; name: string; }
-interface CategoryTypeFromApi { typeId: number; name: string; eventCategory: string; }
-interface EventStatus { statusId: number; name: string; }
+type Step = "details" | "sectors";
 
-export default function CreateEventPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+interface EventCategory {
+  categoryId: number;
+  name: string;
+}
+
+interface EventStatus {
+  statusId: number;
+  name: string;
+}
+
+interface CategoryType {
+  typeId: number;
+  name: string;
+  eventCategory: string;
+}
+
+interface Venue {
+  venueId: string;
+  name: string;
+  address: string;
+  totalCapacity: number;
+}
+
+interface Sector {
+  sectorId: string;
+  name: string;
+  capacity: number;
+}
+
+interface EventSector {
+  eventSectorId: string;
+  eventId: string;
+  sectorId: string;
+  capacity: number;
+  price: number;
+  available: boolean;
+  sectorName?: string;
+}
+
+export default function AdminCreateEventPage() {
   const navigate = useNavigate();
-  
-  const [formData, setFormData] = useState({
+
+  const [step, setStep] = useState<Step>("details");
+
+  // cat / status / tipos / venues
+  const [categories, setCategories] = useState<EventCategory[]>([]);
+  const [statuses, setStatuses] = useState<EventStatus[]>([]);
+  const [types, setTypes] = useState<CategoryType[]>([]);
+  const [venues, setVenues] = useState<Venue[]>([]);
+
+  // formulario de evento
+  const [form, setForm] = useState<{
+    venueId: string;
+    categoryId: number | "";
+    typeId: number | "";
+    statusId: number | "";
+    name: string;
+    description: string;
+    time: string;
+    address: string;
+    bannerImageUrl: string;
+    thumbnailUrl: string;
+    themeColor: string;
+  }>({
     venueId: "",
-    categoryId: 0,
-    typeId: 0,
-    statusId: 0,
+    categoryId: "",
+    typeId: "",
+    statusId: "",
     name: "",
     description: "",
     time: "",
     address: "",
     bannerImageUrl: "",
     thumbnailUrl: "",
-    themeColor: "#FFFFFF",
+    themeColor: "",
   });
-  
-  // 2. Estado para Venues
-  const [venues, setVenues] = useState<Venue[]>([]); 
-  const [categories, setCategories] = useState<EventCategory[]>([]);
-  const [statuses, setStatuses] = useState<EventStatus[]>([]);
-  const [allTypes, setAllTypes] = useState<CategoryTypeFromApi[]>([]);
-  const [filteredTypes, setFilteredTypes] = useState<CategoryTypeFromApi[]>([]);
-  
-  const [error, setError] = useState<string | null>(null);
 
-  // Carga inicial
+  const [createdEventId, setCreatedEventId] = useState<string | null>(null);
+  const [createdVenueId, setCreatedVenueId] = useState<string | null>(null);
+
+  // configuración de sectores del evento
+  const [eventSectors, setEventSectors] = useState<EventSector[]>([]);
+  const [loadingSectors, setLoadingSectors] = useState(false);
+  const [savingSectorId, setSavingSectorId] = useState<string | null>(null);
+
+  // ---------- CARGA INICIAL ----------
+
   useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        // 3. Cargar Venues junto con lo demás
-        const [venuesData, categoriesData, statusesData, allTypesData] = await Promise.all([
-          getVenues(), // <-- Llamada al VenueService
-          getEventCategories(),
-          getEventStatuses(),
-          getCategoryTypes(),
-        ]);
-        
-        setVenues(venuesData); // Guardar venues
-        setCategories(categoriesData);
-        setStatuses(statusesData);
-        setAllTypes(allTypesData);
+    const load = async () => {
+      const [cats, sts, tys, vns] = await Promise.all([
+        getEventCategories(),
+        getEventStatuses(),
+        getCategoryTypes(),
+        getVenues(),
+      ]);
 
-        // Valores por defecto
-        if (venuesData.length > 0) {
-             setFormData(prev => ({ ...prev, venueId: venuesData[0].venueId }));
-        }
-        if (categoriesData.length > 0) {
-            setFormData(prev => ({ ...prev, categoryId: categoriesData[0].categoryId }));
-        }
-        if (statusesData.length > 0) {
-            setFormData(prev => ({ ...prev, statusId: statusesData[0].statusId }));
-        }
-        
-      } catch (err) {
-        console.error(err);
-        setError("No se pudieron cargar los datos iniciales.");
-      }
+      setCategories(cats);
+      setStatuses(sts);
+      setTypes(tys);
+      setVenues(vns);
     };
-    loadInitialData();
+
+    load();
   }, []);
 
-  // ... (El useEffect de Tipos sigue igual) ...
-  useEffect(() => {
-    if (formData.categoryId > 0) {
-        const selectedCategoryName = categories.find(
-            c => c.categoryId === formData.categoryId
-        )?.name;
+  // filtrar tipos por categoría
+  const filteredTypes = form.categoryId
+    ? types.filter((t) => t.eventCategory === categories.find(c => c.categoryId === form.categoryId)?.name)
+    : [];
 
-        if (selectedCategoryName) {
-            const typesForCategory = allTypes.filter(
-                t => t.eventCategory === selectedCategoryName
-            );
-            setFilteredTypes(typesForCategory); 
-            if (typesForCategory.length > 0) {
-                setFormData(prev => ({ ...prev, typeId: typesForCategory[0].typeId }));
-            } else {
-                setFormData(prev => ({ ...prev, typeId: 0 }));
-            }
-        }
-    }
-  }, [formData.categoryId, categories, allTypes]);
-
-  // ... (handleChange y handleSubmit siguen igual) ...
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: (name === "categoryId" || name === "typeId" || name === "statusId") ? Number(value) : value,
-    }));
+  const handleChange = (field: keyof typeof form, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    if (!formData.name || !formData.time || !formData.address || !formData.venueId) {
-        setError("VenueId, Nombre, Fecha/Hora y Dirección son obligatorios.");
-        return;
+  // ---------- PASO 1: CREAR EVENTO ----------
+
+  const handleCreateEvent = async () => {
+    if (!form.venueId || !form.name || !form.time || !form.statusId || !form.categoryId) {
+      alert("Completá al menos: venue, nombre, fecha/hora, estado y categoría.");
+      return;
     }
+
     try {
-      const dataToSubmit = {
-        ...formData,
-        typeId: formData.typeId || null,
-        bannerImageUrl: formData.bannerImageUrl || null,
-        thumbnailUrl: formData.thumbnailUrl || null,
+      const payload = {
+        venueId: form.venueId,
+        categoryId: Number(form.categoryId),
+        typeId: form.typeId ? Number(form.typeId) : null,
+        statusId: Number(form.statusId),
+        name: form.name,
+        description: form.description,
+        time: new Date(form.time).toISOString(),
+        address: form.address,
+        bannerImageUrl: form.bannerImageUrl || null,
+        thumbnailUrl: form.thumbnailUrl || null,
+        themeColor: form.themeColor || null,
       };
-      await createEvent(dataToSubmit);
-      navigate("/events"); 
+
+      const created = await createEvent(payload);
+      const full = await getEventById(created.eventId);
+
+      setCreatedEventId(full.eventId);
+      setCreatedVenueId(full.venueId);
+      setStep("sectors");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al crear el evento");
+      console.error(err);
+      alert("Error creando el evento.");
     }
   };
+
+  // ---------- PASO 2: CONFIGURAR EVENT SECTORS ----------
+
+  useEffect(() => {
+    if (step === "sectors" && createdEventId && createdVenueId) {
+      loadEventSectors(createdEventId, createdVenueId);
+    }
+  }, [step, createdEventId, createdVenueId]);
+
+  const loadEventSectors = async (eventId: string, venueId: string) => {
+    setLoadingSectors(true);
+    try {
+      const [venueSectorsRaw, eventSectorsRaw] = await Promise.all([
+        getSectorsForVenue(venueId),
+        getEventSectors(eventId),
+      ]);
+
+      const venueSectors: Sector[] = Array.isArray(venueSectorsRaw)
+        ? venueSectorsRaw.map((s: any) => ({
+            sectorId: s.sectorId,
+            name: s.name,
+            capacity: s.capacity,
+          }))
+        : [];
+
+      let finalEventSectors: EventSector[] = [];
+
+      if (Array.isArray(eventSectorsRaw) && eventSectorsRaw.length > 0) {
+        // Ya existen EventSectors, los usamos
+        finalEventSectors = eventSectorsRaw.map((es: any) => {
+          const base = venueSectors.find((vs) => vs.sectorId === es.sectorId);
+          return {
+            eventSectorId: es.eventSectorId,
+            eventId: es.eventId,
+            sectorId: es.sectorId,
+            capacity: es.capacity,
+            price: es.price,
+            available: es.available,
+            sectorName: base?.name ?? es.sectorId,
+          };
+        });
+      } else {
+        // No existen -> los creamos clonando los sectores del venue
+        const created: EventSector[] = [];
+        for (const vs of venueSectors) {
+          const payload = {
+            eventId,
+            sectorId: vs.sectorId,
+            capacity: vs.capacity,
+            price: 0,
+            available: true,
+          };
+          const es = await createEventSector(payload);
+          created.push({
+            eventSectorId: es.eventSectorId,
+            eventId: es.eventId,
+            sectorId: es.sectorId,
+            capacity: es.capacity,
+            price: es.price,
+            available: es.available,
+            sectorName: vs.name,
+          });
+        }
+        finalEventSectors = created;
+      }
+
+      setEventSectors(finalEventSectors);
+    } catch (err) {
+      console.error(err);
+      alert("Error cargando sectores del evento.");
+    } finally {
+      setLoadingSectors(false);
+    }
+  };
+
+  const updateLocalEventSector = (id: string, changes: Partial<EventSector>) => {
+    setEventSectors((prev) =>
+      prev.map((es) => (es.eventSectorId === id ? { ...es, ...changes } : es))
+    );
+  };
+
+  const handleSaveSector = async (sector: EventSector) => {
+    setSavingSectorId(sector.eventSectorId);
+    try {
+      await updateEventSector({
+        eventSectorId: sector.eventSectorId,
+        capacity: sector.capacity,
+        price: sector.price,
+        available: sector.available,
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Error guardando sector.");
+    } finally {
+      setSavingSectorId(null);
+    }
+  };
+
+  const handleFinish = () => {
+    if (!createdEventId) return;
+    // Redirigís donde quieras: a la lista de eventos, detalle, etc.
+    navigate(`/event/${createdEventId}`);
+  };
+
+  // ---------- RENDER ----------
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-950 text-white">
-      <Navbar onUserClick={() => setSidebarOpen(true)} />
-      <LoginSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      
-      <div className="flex flex-col items-center justify-center p-8 flex-grow w-full">
-        <h1 className="text-4xl font-extrabold mb-8">Crear Nuevo Evento</h1>
-        
-        <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-neutral-900 p-8 rounded-lg shadow-lg">
-          
-          <div className="mb-4">
-            <label htmlFor="venueId" className="block text-sm font-medium text-neutral-300">Venue ID (GUID)</label>
-            <input
-              type="text"
-              id="venueId"
-              name="venueId"
-              value={formData.venueId}
-              onChange={handleChange}
-              placeholder="Pegá el GUID del Venue aquí..."
-              className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
-            />
+    <div className="max-w-6xl mx-auto text-white p-6">
+      <h1 className="text-3xl font-bold mb-6">Crear evento</h1>
+
+      <div className="flex gap-4 mb-8">
+        <button
+          className={`px-4 py-2 rounded ${
+            step === "details" ? "bg-red-600" : "bg-neutral-800"
+          }`}
+          onClick={() => setStep("details")}
+          disabled={!createdEventId && step === "sectors"}
+        >
+          1. Detalles
+        </button>
+        <button
+          className={`px-4 py-2 rounded ${
+            step === "sectors" ? "bg-red-600" : "bg-neutral-800"
+          }`}
+          onClick={() => createdEventId && setStep("sectors")}
+          disabled={!createdEventId}
+        >
+          2. Sectores
+        </button>
+      </div>
+
+      {step === "details" && (
+        <div className="space-y-4 bg-neutral-900 p-4 rounded-lg">
+          <div>
+            <label className="block text-sm mb-1">Venue</label>
+            <select
+              className="bg-neutral-800 p-2 rounded w-full"
+              value={form.venueId}
+              onChange={(e) => handleChange("venueId", e.target.value)}
+            >
+              <option value="">Seleccioná un venue</option>
+              {venues.map((v) => (
+                <option key={v.venueId} value={v.venueId}>
+                  {v.name} — {v.address}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-neutral-300">Nombre del Evento</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="description" className="block text-sm font-medium text-neutral-300">Descripción</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={3}
-              className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="time" className="block text-sm font-medium text-neutral-300">Fecha y Hora</label>
-            <input
-              type="datetime-local"
-              id="time"
-              name="time"
-              value={formData.time}
-              onChange={handleChange}
-              className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="address" className="block text-sm font-medium text-neutral-300">Dirección</label>
-            <input
-              type="text"
-              id="address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
-            />
-          </div>
-
-          {/* Dropdowns de Categoría y Tipo (Ahora funcionan con filtrado local) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="categoryId" className="block text-sm font-medium text-neutral-300">Categoría</label>
-              <select
-                id="categoryId"
-                name="categoryId"
-                value={formData.categoryId}
-                onChange={handleChange}
-                className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
-              >
-                <option value={0} disabled>Cargando...</option>
-                {categories.map((cat) => (
-                  <option key={cat.categoryId} value={cat.categoryId}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="typeId" className="block text-sm font-medium text-neutral-300">Tipo</label>
-              <select
-                id="typeId"
-                name="typeId"
-                value={formData.typeId}
-                onChange={handleChange}
-                disabled={filteredTypes.length === 0}
-                className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
-              >
-                {filteredTypes.length > 0 ? (
-                  filteredTypes.map((type) => (
-                    <option key={type.typeId} value={type.typeId}>{type.name}</option>
-                  ))
-                ) : (
-                  <option value={0}>Seleccione una categoría</option>
-                )}
-              </select>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label htmlFor="statusId" className="block text-sm font-medium text-neutral-300">Estado</label>
-              <select
-                id="statusId"
-                name="statusId"
-                value={formData.statusId}
-                onChange={handleChange}
-                className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
-              >
-                <option value={0} disabled>Cargando...</option>
-                {statuses.map((status) => (
-                  <option key={status.statusId} value={status.statusId}>{status.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="themeColor" className="block text-sm font-medium text-neutral-300">Color (Hex)</label>
+              <label className="block text-sm mb-1">Nombre</label>
               <input
-                type="text"
-                id="themeColor"
-                name="themeColor"
-                value={formData.themeColor}
-                onChange={handleChange}
-                className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
+                className="bg-neutral-800 p-2 rounded w-full"
+                value={form.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm mb-1">Fecha y hora</label>
+              <input
+                type="datetime-local"
+                className="bg-neutral-800 p-2 rounded w-full"
+                value={form.time}
+                onChange={(e) => handleChange("time", e.target.value)}
               />
             </div>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="bannerImageUrl" className="block text-sm font-medium text-neutral-300">URL de Banner (Opcional)</label>
-            <input
-              type="text"
-              id="bannerImageUrl"
-              name="bannerImageUrl"
-              value={formData.bannerImageUrl}
-              onChange={handleChange}
-              className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="thumbnailUrl" className="block text-sm font-medium text-neutral-300">URL de Miniatura (Opcional)</label>
-            <input
-              type="text"
-              id="thumbnailUrl"
-              name="thumbnailUrl"
-              value={formData.thumbnailUrl}
-              onChange={handleChange}
-              className="mt-1 block w-full bg-neutral-800 border-neutral-700 rounded-md p-2"
+          <div>
+            <label className="block text-sm mb-1">Descripción</label>
+            <textarea
+              className="bg-neutral-800 p-2 rounded w-full"
+              rows={3}
+              value={form.description}
+              onChange={(e) => handleChange("description", e.target.value)}
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-          <div className="flex justify-end items-center mt-6">
-            <Link to="/" className="text-neutral-400 hover:text-white mr-4">Cancelar</Link>
+          <div>
+            <label className="block text-sm mb-1">Dirección</label>
+            <input
+              className="bg-neutral-800 p-2 rounded w-full"
+              value={form.address}
+              onChange={(e) => handleChange("address", e.target.value)}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm mb-1">Categoría</label>
+              <select
+                className="bg-neutral-800 p-2 rounded w-full"
+                value={form.categoryId}
+                onChange={(e) =>
+                  handleChange(
+                    "categoryId",
+                    e.target.value ? Number(e.target.value) : ""
+                  )
+                }
+              >
+                <option value="">Seleccioná</option>
+                {categories.map((c) => (
+                  <option key={c.categoryId} value={c.categoryId}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm mb-1">Tipo</label>
+              <select
+                className="bg-neutral-800 p-2 rounded w-full"
+                value={form.typeId}
+                onChange={(e) =>
+                  handleChange(
+                    "typeId",
+                    e.target.value ? Number(e.target.value) : ""
+                  )
+                }
+              >
+                <option value="">Opcional</option>
+                {filteredTypes.map((t) => (
+                  <option key={t.typeId} value={t.typeId}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm mb-1">Estado</label>
+              <select
+                className="bg-neutral-800 p-2 rounded w-full"
+                value={form.statusId}
+                onChange={(e) =>
+                  handleChange(
+                    "statusId",
+                    e.target.value ? Number(e.target.value) : ""
+                  )
+                }
+              >
+                <option value="">Seleccioná</option>
+                {statuses.map((s) => (
+                  <option key={s.statusId} value={s.statusId}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm mb-1">Banner URL</label>
+              <input
+                className="bg-neutral-800 p-2 rounded w-full"
+                value={form.bannerImageUrl}
+                onChange={(e) =>
+                  handleChange("bannerImageUrl", e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-1">Thumbnail URL</label>
+              <input
+                className="bg-neutral-800 p-2 rounded w-full"
+                value={form.thumbnailUrl}
+                onChange={(e) =>
+                  handleChange("thumbnailUrl", e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-1">Color tema</label>
+              <input
+                type="color"
+                className="bg-neutral-800 p-1 rounded w-full h-10"
+                value={form.themeColor || "#ff0000"}
+                onChange={(e) =>
+                  handleChange("themeColor", e.target.value)
+                }
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-6">
             <button
-              type="submit"
-              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md"
+              className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+              onClick={handleCreateEvent}
             >
-              Guardar Evento
+              Crear evento y configurar sectores
             </button>
           </div>
-        </form>
-      </div>
-      
-      <Footer />
+        </div>
+      )}
+
+      {step === "sectors" && createdEventId && createdVenueId && (
+        <div className="bg-neutral-900 p-4 rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">
+            Sectores del evento
+          </h2>
+
+          {loadingSectors ? (
+            <p>Cargando sectores…</p>
+          ) : (
+            <div className="space-y-3">
+              {eventSectors.map((es) => (
+                <div
+                  key={es.eventSectorId}
+                  className="flex items-center gap-4 bg-neutral-800 p-3 rounded"
+                >
+                  <div className="flex-1">
+                    <p className="font-semibold">
+                      {es.sectorName ?? es.sectorId}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Sector del venue
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-gray-400">
+                      Habilitado
+                    </label>
+                    <input
+                      type="checkbox"
+                      checked={es.available}
+                      onChange={(e) =>
+                        updateLocalEventSector(es.eventSectorId, {
+                          available: e.target.checked,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-gray-400">
+                      Capacidad a la venta
+                    </label>
+                    <input
+                      type="number"
+                      className="bg-neutral-900 p-1 rounded w-28"
+                      min={0}
+                      value={es.capacity}
+                      onChange={(e) =>
+                        updateLocalEventSector(es.eventSectorId, {
+                          capacity: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-gray-400">
+                      Precio
+                    </label>
+                    <input
+                      type="number"
+                      className="bg-neutral-900 p-1 rounded w-28"
+                      min={0}
+                      value={es.price}
+                      onChange={(e) =>
+                        updateLocalEventSector(es.eventSectorId, {
+                          price: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <button
+                      className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
+                      onClick={() => handleSaveSector(es)}
+                      disabled={savingSectorId === es.eventSectorId}
+                    >
+                      {savingSectorId === es.eventSectorId
+                        ? "Guardando..."
+                        : "Guardar"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex justify-end mt-6">
+            <button
+              className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+              onClick={handleFinish}
+            >
+              Finalizar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

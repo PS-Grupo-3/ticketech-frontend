@@ -36,7 +36,7 @@ export default function Navbar({onUserClick}:navbarProps) {
         <nav className="navbar-links">
           <ul>
             <li><NavLink to="/" end>Inicio</NavLink></li>
-            <li><NavLink to="/event">Eventos</NavLink></li>
+            <li><NavLink to="/event/create">Eventos</NavLink></li>
             <li><NavLink to="/homeOld">Inicio viejo</NavLink></li>
           </ul>
         </nav>

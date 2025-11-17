@@ -7,13 +7,16 @@ import Layout from "../components/Layout";
 
 interface EventItem {
   eventId: string;
+  venueId: string;
   name: string;
   category: string;
   categoryType: string;
   status: string;
   time: string;
   address: string;
+  thumbnailUrl?: string | null;
 }
+
 
 export default function HomePage() {
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -44,7 +47,7 @@ export default function HomePage() {
       <HeroCarousel />
 
       <div className="max-w-7xl mx-auto px-6 mt-10 pb-20">
-        <h2 className="text-4xl font-bold mb-6">Películas en cartelera</h2>
+        <h2 className="text-4xl font-bold mb-6">Eventos</h2>
 
         <EventFilters onChange={setFilters} />
 
