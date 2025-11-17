@@ -2,19 +2,30 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import VenueCanvas from "../components/VenueCanvas";
 import SectorSidebar from "../components/SectorSidebar";
-import { getSectorsForVenue, createSector, updateSector, getVenueById, updateVenue, getSeatsForSector, getSectorById } from "../api/sectorApi";
-import { generateRectangleSeats, generateCircleSeats, generateSemicircleSeats, generateArcSeats } from "../lib/seatGenerator";
+
+import {
+  getSectorsForVenue,
+  createSector,
+  updateSector,
+  getVenueById,
+  updateVenue,
+  getSeatsForSector,
+  getSectorById,
+} from "../api/sectorApi";
+
+import type { Sector, Shape, Seat } from "../components/Types";
 
 const CANVAS_WIDTH = 900;
 
 export default function VenueEditorPage() {
   const { venueId } = useParams<{ venueId: string }>();
+
   const [background, setBackground] = useState<string | null>(null);
-  const [sectors, setSectors] = useState<any[]>([]);
+  const [sectors, setSectors] = useState<Sector[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [venue, setVenue] = useState<any>(null);
   const [backgroundImageUrlInput, setBackgroundImageUrlInput] = useState<string>("");
-  const [hoveredSeat, setHoveredSeat] = useState<any>(null);
+  const [hoveredSeat, setHoveredSeat] = useState<Seat | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   useEffect(() => {
@@ -26,119 +37,93 @@ export default function VenueEditorPage() {
 
   const loadVenue = async () => {
     if (!venueId) return;
-    console.log("[LOAD] Loading venue", venueId);
     try {
       const data = await getVenueById(venueId);
       setVenue(data);
       setBackgroundImageUrlInput(data.backgroundImageUrl || "");
-      if (data.backgroundImageUrl) {
-        setBackground(data.backgroundImageUrl);
-      }
+      if (data.backgroundImageUrl) setBackground(data.backgroundImageUrl);
     } catch (err) {
-      console.error("[LOAD] Venue failed:", err);
+      console.error(err);
     }
   };
 
   const loadSectors = async () => {
     if (!venueId) return;
-    console.log("[LOAD] Loading sectors for venue", venueId);
     try {
-      const data = await getSectorsForVenue(venueId);
-      const sectorsData = Array.isArray(data) ? data : [];
+      const raw = await getSectorsForVenue(venueId);
+      const sectorsData = Array.isArray(raw) ? raw : [];
 
-      // Fetch full details for each sector to get rowNumber and columnNumber
-      const sectorsWithDetails = await Promise.all(
-        sectorsData.map(async (sector: any) => {
-          try {
-            const fullSector = await getSectorById(sector.sectorId);
-            return {
-              ...fullSector,
-              rows: fullSector.rowNumber || 1,
-              cols: fullSector.columnNumber || 1,
-            };
-          } catch (err) {
-            console.error(`[LOAD] Failed to load full details for sector ${sector.sectorId}:`, err);
-            return sector;
-          }
-        })
-      );
+      const enriched: Sector[] = await Promise.all(
+        sectorsData.map(async (s: any) => {
+          const full = await getSectorById(s.sectorId);
+          const rows = full.rowNumber ?? 1;
+          const columns = full.columnNumber ?? 1;
 
-      // Load seats for controlled sectors
-      const sectorsWithSeats = await Promise.all(
-        sectorsWithDetails.map(async (sector: any) => {
-          // Map backend fields to frontend fields
-          const mappedSector = {
-            ...sector,
-            rows: sector.rowNumber || 1,
-            cols: sector.columnNumber || 1,
+          const shape: Shape = {
+            type: full.shape.type,
+            width: full.shape.width,
+            height: full.shape.height,
+            x: full.shape.x,
+            y: full.shape.y,
+            rotation: full.shape.rotation,
+            padding: full.shape.padding,
+            opacity: full.shape.opacity,
+            colour: full.shape.colour,
+            rows,
+            columns,
           };
-          if (sector.isControlled) {
-            try {
-              const seats = await getSeatsForSector(sector.sectorId);
-              // If no seats from backend, generate locally based on shape
-              if (!seats || seats.length === 0) {
-                const width = mappedSector.shape?.width || mappedSector.width || 100;
-                const height = mappedSector.shape?.height || mappedSector.height || 100;
-                const rows = mappedSector.rows;
-                const cols = mappedSector.cols;
-                let generatedSeats = [];
-                switch (mappedSector.shape?.type) {
-                  case "rectangle":
-                    generatedSeats = generateRectangleSeats(width, height, rows, cols);
-                    break;
-                  case "circle":
-                    generatedSeats = generateCircleSeats(width, height, rows, cols);
-                    break;
-                  case "semicircle":
-                    generatedSeats = generateSemicircleSeats(width, height, rows, cols);
-                    break;
-                  case "arc":
-                    generatedSeats = generateArcSeats(width, height, rows, cols);
-                    break;
-                  default:
-                    generatedSeats = generateRectangleSeats(width, height, rows, cols);
-                }
-                // Convert to backend format with rowNumber and columnNumber
-                const seatsWithNumbers = generatedSeats.map((seat, index) => ({
-                  seatId: `temp-${index}`,
-                  posX: seat.x,
-                  posY: seat.y,
-                  rowNumber: Math.floor(index / cols) + 1,
-                  columnNumber: (index % cols) + 1,
-                }));
-                return { ...mappedSector, seats: seatsWithNumbers };
-              }
-              return { ...mappedSector, seats };
-            } catch (err) {
-              console.error(`[LOAD] Failed to load seats for sector ${sector.sectorId}:`, err);
-              return mappedSector;
-            }
+
+          let seats: Seat[] = [];
+
+          if (full.isControlled) {
+            const backendSeats = await getSeatsForSector(full.sectorId);
+            if (backendSeats && backendSeats.length > 0) seats = backendSeats;
           }
-          return mappedSector;
+
+          return {
+            sectorId: full.sectorId,
+            name: full.name,
+            isControlled: full.isControlled,
+            seatCount: full.seatCount,
+            capacity: full.capacity,
+            shape,
+            seats,
+          };
         })
       );
 
-      setSectors(sectorsWithSeats);
+      setSectors(enriched);
     } catch (err) {
-      console.error("[LOAD] Failed:", err);
+      console.error(err);
     }
   };
 
   const onBackgroundImageUrlChange = async () => {
-    if (!venue || !venueId) return;
+    if (!venueId || !venue) return;
     const backgroundImageUrl = backgroundImageUrlInput;
     setBackground(backgroundImageUrl);
     try {
-      await updateVenue(venueId, { name: venue.name, totalCapacity: venue.totalCapacity, venueTypeId: venue.venueType.venueTypeId, address: venue.address, mapUrl: venue.mapUrl, backgroundImageUrl });
+      await updateVenue(venueId, {
+        name: venue.name,
+        totalCapacity: venue.totalCapacity,
+        venueTypeId: venue.venueType.venueTypeId,
+        address: venue.address,
+        mapUrl: venue.mapUrl,
+        backgroundImageUrl,
+      });
       setVenue({ ...venue, backgroundImageUrl });
     } catch (err) {
-      console.error("[SAVE] Background Image URL failed:", err);
+      console.error(err);
     }
   };
 
-  const createWithShape = async (type: string) => {
+  const createWithShape = async (type: Shape["type"]) => {
     if (!venueId) return;
-    const posX = 80, posY = 80, width = 120, height = 120;
+    const posX = 80;
+    const posY = 80;
+    const width = 120;
+    const height = 120;
+
     const payload = {
       name: `Sector ${type}`,
       isControlled: true,
@@ -146,71 +131,78 @@ export default function VenueEditorPage() {
       capacity: 100,
       rowNumber: 10,
       columnNumber: 10,
-      posX,
-      posY,
-      width,
-      height,
-      shape: { type, width, height, x: posX, y: posY, rotation: 0, padding: 10, opacity: 100, colour: "#22c55e" },
+      shape: {
+        type,
+        width,
+        height,
+        x: posX,
+        y: posY,
+        rotation: 0,
+        padding: 10,
+        opacity: 100,
+        colour: "#22c55e",
+        rows: 10,
+        columns: 10,
+      },
     };
+
     try {
       const created = await createSector(venueId, payload);
-      setSectors(p => [...p, created]);
+      setSectors((p) => [...p, created]);
       setSelectedId(created.sectorId);
     } catch (err) {
-      console.error("[CREATE] Error:", err);
+      console.error(err);
     }
   };
 
-  const buildUpdatePayload = (s: any) => ({
+  const buildUpdatePayload = (s: Sector) => ({
     name: s.name,
-    isControlled: s.isControlled ?? false,
-    seatCount: s.seatCount ?? 0,
-    capacity: s.capacity ?? 0,
-    rowNumber: s.rows ?? 1,
-    columnNumber: s.cols ?? 1,
-    width: Math.max(1, s.width ?? s.shape?.width ?? 100),
-    height: Math.max(1, s.height ?? s.shape?.height ?? 100),
+    isControlled: s.isControlled,
+    seatCount: s.seatCount,
+    capacity: s.capacity,
+    rowNumber: Math.max(1, s.shape.rows ?? 1),
+    columnNumber: Math.max(1, s.shape.columns ?? 1),
     shape: {
-      type: s.shape?.type ?? "rectangle",
-      width: Math.max(1, s.shape?.width ?? s.width ?? 100),
-      height: Math.max(1, s.shape?.height ?? s.height ?? 100),
-      x: Math.max(0, s.shape?.x ?? s.posX ?? 0),
-      y: Math.max(0, s.shape?.y ?? s.posY ?? 0),
-      rotation: s.shape?.rotation ?? 0,
-      padding: Math.max(10, s.shape?.padding ?? 10),
-      opacity: s.shape?.opacity ?? 100,
-      colour: s.shape?.colour ?? "#22c55e",
+      type: s.shape.type,
+      width: s.shape.width,
+      height: s.shape.height,
+      x: s.shape.x,
+      y: s.shape.y,
+      rotation: s.shape.rotation,
+      padding: s.shape.padding,
+      opacity: s.shape.opacity,
+      colour: s.shape.colour,
+      rows: Math.max(1, s.shape.rows ?? 1),
+      columns: Math.max(1, s.shape.columns ?? 1),
     },
   });
 
-  const replaceLocal = (updated: any) => setSectors(prev => prev.map(s => s.sectorId === updated.sectorId ? updated : s));
 
-  const handleCommitToDb = async (sector: any) => {
+  const replaceLocal = (updated: Sector) =>
+    setSectors((prev) =>
+      prev.map((s) => (s.sectorId === updated.sectorId ? updated : s))
+    );
+
+  const handleCommitToDb = async (sector: Sector) => {
     const payload = buildUpdatePayload(sector);
-    console.group("[COMMIT]");
-    console.log("sectorId:", sector.sectorId);
-    console.log("payload:", JSON.stringify(payload, null, 2));
-    console.groupEnd();
     try {
       const res = await updateSector(sector.sectorId, payload);
-      setSectors(prev => prev.map(s => s.sectorId === sector.sectorId ? { ...sector, ...res } : s));
+      replaceLocal({ ...sector, ...res });
     } catch (err) {
-      console.error("[COMMIT] Error:", err);
+      console.error(err);
     }
   };
 
-  const handleSeatHoverEnter = (seat: any) => {
-    setHoveredSeat(seat);
-  };
-
-  const handleSeatHoverLeave = () => {
-    setHoveredSeat(null);
-  };
+  const handleSeatHoverEnter = (seat: Seat) => setHoveredSeat(seat);
+  const handleSeatHoverLeave = () => setHoveredSeat(null);
 
   return (
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
-      <div className="flex flex-1 overflow-hidden justify-centeres">
-        <div className="flex flex-col gap-3 p-4" style={{ width: CANVAS_WIDTH + 32 }}>
+      <div className="flex flex-row flex-nowrap flex-1 overflow-hidden">
+        <div
+          className="flex flex-col gap-3 p-4 flex-none"
+          style={{ width: CANVAS_WIDTH + 32 }}
+        >
           {venueId && (
             <div className="flex gap-2 text-black">
               <input
@@ -228,6 +220,7 @@ export default function VenueEditorPage() {
               </button>
             </div>
           )}
+
           {venueId && (
             <div className="relative">
               <VenueCanvas
@@ -244,12 +237,9 @@ export default function VenueEditorPage() {
                 onDragStart={() => setIsDragging(true)}
                 onDragEnd={() => setIsDragging(false)}
               />
+
               <button
-                onClick={() => {
-                  // Reset zoom logic here, but since resetZoom is inside VenueCanvas, we need to expose it
-                  // For now, we'll implement a simple reset by reloading or using a ref
-                  window.location.reload(); // Temporary solution
-                }}
+                onClick={() => window.location.reload()}
                 className="absolute top-2 right-2 bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600 transition-colors"
                 title="Reset Zoom"
               >
@@ -258,30 +248,33 @@ export default function VenueEditorPage() {
             </div>
           )}
         </div>
+
         {selectedId && venueId && (
           <SectorSidebar
-            sector={sectors.find(s => s.sectorId === selectedId)}
+            sector={sectors.find((s) => s.sectorId === selectedId)!}
             onUpdateLocal={replaceLocal}
             onRemoveLocal={(id: string) => {
-              setSectors(prev => prev.filter(s => s.sectorId !== id));
+              setSectors((prev) => prev.filter((s) => s.sectorId !== id));
               if (selectedId === id) setSelectedId(null);
             }}
-            isDragging={isDragging}
           />
+
         )}
+
         {hoveredSeat && (
           <div className="absolute top-24 left-8 bg-black text-white p-2 rounded shadow-lg">
             Row {hoveredSeat.rowNumber}, Col {hoveredSeat.columnNumber}
           </div>
         )}
       </div>
+
       {venueId && (
         <div className="h-20 border-t border-gray-700 bg-gray-800 flex items-center justify-center gap-4">
           {[
             { type: "rectangle", icon: "▭", label: "Rectángulo" },
             { type: "circle", icon: "○", label: "Círculo" },
             { type: "semicircle", icon: "◐", label: "Semicírculo" },
-            { type: "arc", icon: "⌒", label: "Arco" }
+            { type: "arc", icon: "⌒", label: "Arco" },
           ].map(({ type, icon, label }) => (
             <button
               key={type}
