@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createVenue, getVenueTypes } from "../api/sectorApi";
+
+import { createVenue, getVenueTypes } from "../api/venueApi";
+
 import Navbar from "../../../shared/components/Navbar";
 import Footer from "../../../shared/components/Footer";
 import LoginSidebar from "../../auth/pages/LoginSB";
+
 
 // DTO para el dropdown
 interface VenueType {

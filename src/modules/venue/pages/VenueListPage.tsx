@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getVenues } from "../api/sectorApi";
+import { getVenues } from "../api/venueApi";
 
 interface Venue {
   venueId: string;
