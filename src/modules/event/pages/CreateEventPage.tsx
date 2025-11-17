@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getVenues } from "../../venue/api/sectorApi"; 
+import { getVenues } from "../../venue/api/venueApi"; 
 import Navbar from "../../../shared/components/Navbar";
 import Footer from "../../../shared/components/Footer";
 import LoginSidebar from "../../auth/pages/LoginSB";
