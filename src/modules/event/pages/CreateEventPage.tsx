@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  getEventCategories,
-  getCategoryTypes,
-  getEventStatuses,
-  createEvent,
-  getEventById,
-  getEventSectors,
-  createEventSector,
-  updateEventSector,
-} from "../api/eventApi";
+import {getEventCategories, getCategoryTypes, getEventStatuses, createEvent, getEventById, getEventSectors, createEventSector, updateEventSector } from "../api/eventApi";
 import { getVenues } from "../../venue/api/venueApi";
 import { getSectorsForVenue } from "../../venue/api/sectorApi";
 
@@ -208,13 +199,19 @@ export default function AdminCreateEventPage() {
         // No existen -> los creamos clonando los sectores del venue
         const created: EventSector[] = [];
         for (const vs of venueSectors) {
+          const safeCapacity =
+            typeof vs.capacity === "number" && !isNaN(vs.capacity)
+              ? vs.capacity
+              : 0;
+
           const payload = {
             eventId,
             sectorId: vs.sectorId,
-            capacity: vs.capacity,
+            capacity: safeCapacity,
             price: 0,
             available: true,
           };
+
           const es = await createEventSector(payload);
           created.push({
             eventSectorId: es.eventSectorId,
@@ -269,7 +266,7 @@ export default function AdminCreateEventPage() {
 
   // ---------- RENDER ----------
 
-  return (
+  return  (    
     <div className="max-w-6xl mx-auto text-white p-6">
       <h1 className="text-3xl font-bold mb-6">Crear evento</h1>
 
@@ -561,6 +558,6 @@ export default function AdminCreateEventPage() {
           </div>
         </div>
       )}
-    </div>
+    </div>    
   );
 }
