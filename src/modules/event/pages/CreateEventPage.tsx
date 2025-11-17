@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../../../shared/components/Navbar";
+import Footer from "../../../shared/components/Footer";
+import LoginSidebar from "../../auth/pages/LoginSB";
 import {
   getEventCategories,
   getCategoryTypes, 
@@ -25,7 +28,8 @@ interface EventStatus {
 
 export default function CreateEventPage() {
   const navigate = useNavigate();
-  
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     venueId: "",
     categoryId: 0,
@@ -136,7 +140,10 @@ export default function CreateEventPage() {
 
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-950 text-white p-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-950 text-white">
+    <Navbar onUserClick={() => setSidebarOpen(true)} />
+    <LoginSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <div className="flex flex-col items-center justify-center p-8 flex-grow"></div>
       <h1 className="text-4xl font-extrabold mb-8">Crear Nuevo Evento</h1>
       
       <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-neutral-900 p-8 rounded-lg shadow-lg">
@@ -303,6 +310,7 @@ export default function CreateEventPage() {
           </button>
         </div>
       </form>
+      <Footer />
     </div>
   );
 }
