@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import "../styles/HomePage.css";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import LoginSidebar from "../../modules/auth/pages/LoginSB";
+import "../../styles/HomePage.css";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import LoginSidebar from "../../../modules/auth/pages/LoginSB";
 import { useState } from "react";
 
-export default function HomeOld() {
+export default function Dashboard() {
   const sections = [
     { name: "EventService", path: "/event", color: "bg-blue", desc: "Gestiona categorías y eventos", icon: "🎟️" },
     { name: "VenueService", path: "/venue", color: "bg-green", desc: "Administra lugares y sectores", icon: "🏟️" },

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { getEvents } from "../../modules/event/api/eventApi";
+import { getEvents } from "../../../modules/event/api/eventApi";
 import HeroCarousel from "./HeroCarousel";
 import EventFilters from "./EventFilters";
 import EventCard from "./EventCard";
-import Layout from "../components/Layout";
+import Layout from "../../components/Layout";
 
 interface EventItem {
   eventId: string;

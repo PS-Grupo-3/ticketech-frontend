@@ -1,10 +1,8 @@
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { categoryTranslate, statusTranslate } from "../../modules/event/utils/eventTranslate";
+import { categoryTranslate, statusTranslate } from "../../../modules/event/utils/eventTranslate";
 
-export default function EventCard({
-  event
-}: {
+export default function EventCard({ event }: {
   event: {
     eventId: string;
     venueId: string;
@@ -24,13 +22,13 @@ export default function EventCard({
   const hasThumbnail =
     event.thumbnailUrl && event.thumbnailUrl.trim() !== "";
 
-  const goToVenue = () => {
-    navigate(`/venue/${event.venueId}`);
+  const goToEventPreview = () => {
+    navigate(`/event/${event.eventId}`);
   };
 
   return (
     <div
-      onClick={goToVenue}
+      onClick={goToEventPreview}
       className="bg-neutral-800 rounded-lg overflow-hidden shadow-lg cursor-pointer hover:scale-[1.02] transition-transform"
     >
       <div className="h-72 w-full bg-neutral-700 flex items-center justify-center overflow-hidden">

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { categoryTranslate, statusTranslate } from "../../modules/event/utils/eventTranslate";
+import { categoryTranslate, statusTranslate } from "../../../modules/event/utils/eventTranslate";
 
 const CATEGORY_OPTIONS = [
   { id: 1, key: "Music" },
