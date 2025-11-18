@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import banner1 from "../../../../public/banners/banner1.webp";
-import banner2 from "../../../../public/banners/banner2.webp";
+import banner2 from "../../../../public/banners/banner1.webp";
 import banner3 from "../../../../public/banners/banner3.webp";
 
 
