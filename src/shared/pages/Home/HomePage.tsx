@@ -22,7 +22,7 @@ interface EventItem {
 export default function HomePage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(8); // ⭐ NEW
+  const [visibleCount, setVisibleCount] = useState(8); 
   const [filters, setFilters] = useState<{
     categoryId?: number;
     statusId?: number;
@@ -36,7 +36,7 @@ export default function HomePage() {
     try {
       const data = await getEvents(filters);
       setEvents(data);
-      setVisibleCount(8); // ⭐ reset cada vez que cambian los filtros
+      setVisibleCount(8); 
     } finally {
       setLoading(false);
     }
@@ -48,7 +48,7 @@ export default function HomePage() {
 
   const scheduledEvents = events.filter((e) => e.status === "Scheduled");
 
-  const visibleEvents = events.slice(0, visibleCount); // ⭐ los que mostramos
+  const visibleEvents = events.slice(0, visibleCount);
 
   return (
     <Layout>
