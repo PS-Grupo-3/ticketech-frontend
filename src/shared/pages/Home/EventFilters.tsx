@@ -14,11 +14,7 @@ const STATUS_OPTIONS = [
   { id: 4, key: "Finished" }
 ];
 
-export default function EventFilters({
-  onChange
-}: {
-  onChange: (f: any) => void;
-}) {
+export default function EventFilters({ onChange }: { onChange: (f: any) => void }) {
   const [local, setLocal] = useState<any>({});
 
   const update = (field: string, value: any) => {
@@ -28,7 +24,10 @@ export default function EventFilters({
   };
 
   return (
-    <div className="flex flex-wrap gap-4 w-full bg-neutral-800 p-4 rounded-lg">      
+    <div className="flex flex-wrap gap-4 w-full bg-neutral-800 p-4 rounded-lg">
+
+
+
       <select
         className="bg-neutral-900 p-2 rounded"
         onChange={(e) => update("categoryId", Number(e.target.value) || undefined)}
@@ -40,7 +39,7 @@ export default function EventFilters({
           </option>
         ))}
       </select>
-      
+
       <select
         className="bg-neutral-900 p-2 rounded"
         onChange={(e) => update("statusId", Number(e.target.value) || undefined)}
@@ -63,6 +62,13 @@ export default function EventFilters({
         type="datetime-local"
         className="bg-neutral-900 p-2 rounded"
         onChange={(e) => update("to", e.target.value)}
+      />
+
+      <input
+        type="text"
+        className="bg-neutral-900 p-2 rounded w-60"
+        placeholder="Buscar evento..."
+        onChange={(e) => update("search", e.target.value)}
       />
     </div>
   );
