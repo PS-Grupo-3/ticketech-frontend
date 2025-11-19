@@ -357,3 +357,38 @@ export const updateEventSectorAvailability = async (id: string, availability: bo
     throw err;
   }
 };
+
+
+
+
+
+// Del adapter
+export const getEventFull = async (id: string) => {
+  const url = `/Event/${id}/full`;
+  logReq("GET Event Full", url);
+  const t0 = performance.now();
+  try {
+    const { data } = await api.get(url);
+    logRes("GET Event Full", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("GET Event Full", url, performance.now() - t0, err);
+    throw err;
+  }
+};
+
+
+export const updateSeatStatus = async (eventId: string, seatId: string, payload: { available: boolean }) => {
+  const url = `/Event/${eventId}/seats/${seatId}`;
+  logReq("PATCH SeatStatus", url, payload);
+  const t0 = performance.now();
+
+  try {
+    const { data } = await api.patch(url, payload);
+    logRes("PATCH SeatStatus", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("PATCH SeatStatus", url, performance.now() - t0, err);
+    throw err;
+  }
+};

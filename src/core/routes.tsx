@@ -8,9 +8,10 @@ import VenueListPage from "../modules/venue/pages/VenueListPage";
 import VenueCreatePage from "../modules/venue/pages/VenueCreatePage";
 import CreateEventPage from "../modules/event/pages/CreateEventPage";
 import VenueSelectionPage from "../modules/event/pages/SelectVenuePage";
-import VenuePage from "../modules/venue/pages/VenuePage";
+import VenuePage from "../modules/event/pages/EventVenue";
 import Dashboard from "../shared/pages/dashboard/Dashboard";
 import EventPreviewPage from "../modules/event/pages/EventDetailsPage";
+import EventVenuePage from "../modules/event/pages/EventVenue";
 
 export default function AppRoutes() {
     return (
@@ -28,6 +29,7 @@ export default function AppRoutes() {
                 <Route path="/dashboard" element={<Dashboard />} />                
                 <Route path="/venue/:venueId" element={<VenuePage />} />
                 <Route path="/event/:eventId" element={<EventPreviewPage />} />
+                <Route path="/event/:eventId/venue" element={<EventVenuePage />} />
             </Routes>
         </BrowserRouter>
     );

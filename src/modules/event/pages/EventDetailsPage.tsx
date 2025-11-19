@@ -72,7 +72,7 @@ export default function EventPreviewPage() {
 
         <div style={{ marginTop: "30px", textAlign: "center" }}>
           <button
-            onClick={() => navigate(`/venue/${event.venueId}`)}
+            onClick={() => navigate(`/event/${event.eventId}/venue`)}
             style={{
               padding: "12px 24px",
               background: "#1e40af",
