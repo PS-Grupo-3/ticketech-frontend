@@ -43,7 +43,7 @@ export default function HomePage() {
   }, [filters]);
 
   return (
-    <Layout onUserClick={() => {}}>
+    <Layout>
       <HeroCarousel />
 
       <div className="max-w-7xl mx-auto px-6 mt-10 pb-20">

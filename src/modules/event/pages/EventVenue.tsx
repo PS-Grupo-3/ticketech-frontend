@@ -55,14 +55,14 @@ export default function EventVenuePage() {
 
   if (!eventData) {
     return (
-      <Layout onUserClick={() => {}}>
+      <Layout>
         Cargando...
       </Layout>
     );
   }
 
   return (
-    <Layout onUserClick={() => {}}>
+    <Layout>
       <div style={{ position: "relative", backgroundImage: `url(${backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center", minHeight: "100vh", padding: "40px 0", overflow: "visible" }}>
         
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85))", backdropFilter: "brightness(0.6)", zIndex: 1 }} />

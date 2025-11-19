@@ -7,7 +7,6 @@ import VenueEditorPage from "../modules/venue/pages/VenueEditorPage";
 import VenueListPage from "../modules/venue/pages/VenueListPage";
 import VenueCreatePage from "../modules/venue/pages/VenueCreatePage";
 import CreateEventPage from "../modules/event/pages/CreateEventPage";
-import VenueSelectionPage from "../modules/event/pages/SelectVenuePage";
 import VenuePage from "../modules/event/pages/EventVenue";
 import Dashboard from "../shared/pages/dashboard/Dashboard";
 import EventPreviewPage from "../modules/event/pages/EventDetailsPage";
@@ -24,8 +23,7 @@ export default function AppRoutes() {
                 <Route path="/venue" element={<VenueListPage />} />
                 <Route path="/venue/create" element={<VenueCreatePage />} />
                 <Route path="/venue/editor/:venueId" element={<VenueEditorPage />} />
-                <Route path="/event/create" element={<CreateEventPage />} />
-                <Route path="/event/select-venue" element={<VenueSelectionPage />} />                
+                <Route path="/event/create" element={<CreateEventPage />} />                
                 <Route path="/dashboard" element={<Dashboard />} />                
                 <Route path="/venue/:venueId" element={<VenuePage />} />
                 <Route path="/event/:eventId" element={<EventPreviewPage />} />
