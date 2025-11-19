@@ -16,8 +16,7 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
       };
 
       const created = await createEvent(payload);
-
-      // EN VEZ DE NAVEGAR → AVISAMOS AL WIZARD
+  
       onCreated(created.eventId);
     } catch (err: any) {
       console.error(err);

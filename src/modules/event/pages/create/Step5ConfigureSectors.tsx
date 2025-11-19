@@ -51,7 +51,6 @@ export default function Step5ConfigureSectors({ eventId, onBack }: any) {
         Ajustá la capacidad y el precio de cada sector asignado al evento.
       </p>
 
-      {/* LISTA */}
       <div className="space-y-5">
         {sectors.map((s) => (
           <div
@@ -62,7 +61,6 @@ export default function Step5ConfigureSectors({ eventId, onBack }: any) {
               Sector {s.eventSectorId.substring(0, 6)}
             </h3>
 
-            {/* CAMPOS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
               <div>
@@ -106,8 +104,7 @@ export default function Step5ConfigureSectors({ eventId, onBack }: any) {
           </div>
         ))}
       </div>
-
-      {/* BOTONES */}
+      
       <div className="flex justify-between pt-4">
         <button
           type="button"

@@ -15,8 +15,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
       </p>
 
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-6">
-
-        {/* NOMBRE */}
+      
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Nombre del evento
@@ -29,7 +28,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           />
         </div>
 
-        {/* DESCRIPCIÓN */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Descripción
@@ -44,9 +42,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           />
         </div>
 
-        {/* FECHA Y HORA + DIRECCIÓN */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* FECHA */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Fecha del evento
@@ -62,8 +58,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
               }}
             />
           </div>
-
-          {/* HORA */}
+          
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Hora del evento
@@ -80,7 +75,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           </div>
         </div>
 
-        {/* DIRECCIÓN */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Dirección
@@ -95,9 +89,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           />
         </div>
 
-        {/* BANNER + THUMBNAIL */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* BANNER */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">          
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Banner principal (URL)
@@ -111,8 +103,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
               }
             />
           </div>
-
-          {/* THUMBNAIL */}
+          
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Miniatura (URL)
@@ -127,8 +118,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
             />
           </div>
         </div>
-
-        {/* COLOR DEL TEMA */}
+        
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Color del tema
@@ -156,7 +146,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
         </div>
       </div>
 
-      {/* BOTONES */}
       <div className="flex justify-between pt-4">
         <button
           type="button"

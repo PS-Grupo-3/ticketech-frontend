@@ -48,7 +48,6 @@ export default function EventDetailPage() {
     <Layout>
       <div className="w-full bg-neutral-900 pb-24">
 
-        {/* BANNER */}
         <div className="relative w-full h-[380px]">
           {event.bannerImageUrl ? (
             <img
@@ -61,18 +60,13 @@ export default function EventDetailPage() {
             </div>
           )}
 
-          {/* MEJOR OVERLAY PARA LEGIBILIDAD */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-neutral-900" />
         </div>
-
-        {/* CONTENIDO */}
         <div className="max-w-5xl mx-auto px-6 -mt-28 relative z-10 space-y-10">
 
-          {/* CARD PRINCIPAL */}
           <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6 shadow-xl">
 
             <div className="flex flex-col md:flex-row gap-6">
-              {/* THUMBNAIL */}
               <div className="w-40 h-40 rounded-lg overflow-hidden bg-neutral-700 flex items-center justify-center">
                 {event.thumbnailUrl ? (
                   <img
@@ -84,7 +78,6 @@ export default function EventDetailPage() {
                 )}
               </div>
 
-              {/* INFO PRINCIPAL */}
               <div className="flex-1">
                 <h1 className="text-4xl font-bold text-white">{event.name}</h1>
 
@@ -115,7 +108,6 @@ export default function EventDetailPage() {
               </div>
             </div>
 
-            {/* INFORMACIÓN RÁPIDA */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 text-sm">
               <div>
                 <p className="text-gray-400">Fecha y hora</p>
@@ -128,8 +120,7 @@ export default function EventDetailPage() {
               </div>
             </div>
           </div>
-
-          {/* CARD DE COMPRA DESTACADA */}
+          
           <div
             className="rounded-xl p-6 shadow-xl border"
             style={{
@@ -157,7 +148,6 @@ export default function EventDetailPage() {
             </div>
           </div>
 
-          {/* INFO EXTRA */}
           <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6 shadow-xl space-y-4">
             <h3 className="text-xl font-semibold text-white">Información general</h3>
 

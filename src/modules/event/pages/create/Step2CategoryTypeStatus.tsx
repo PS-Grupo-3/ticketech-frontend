@@ -49,8 +49,7 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-        {/* CATEGORÍA */}
+        
         <div>
           <label className="block text-sm text-gray-300 mb-1">Categoría</label>
           <select
@@ -72,8 +71,7 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
             ))}
           </select>
         </div>
-
-        {/* TIPO */}
+        
         <div>
           <label className="block text-sm text-gray-300 mb-1">Tipo</label>
           <select
@@ -95,8 +93,7 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
             ))}
           </select>
         </div>
-
-        {/* ESTADO */}
+        
         <div>
           <label className="block text-sm text-gray-300 mb-1">Estado</label>
           <select

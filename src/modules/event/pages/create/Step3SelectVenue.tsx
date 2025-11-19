@@ -22,7 +22,6 @@ export default function Step3SelectVenue({ data, onNext, onBack }: any) {
         Elegí uno de los venues cargados. Esto define dónde se realizará el evento.
       </p>
 
-      {/* GRID DE VENUES */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {venues.map((v: any) => {
           const selected = v.venueId === local.venueId;
@@ -36,24 +35,20 @@ export default function Step3SelectVenue({ data, onNext, onBack }: any) {
                   ? "border-blue-500 shadow-lg shadow-blue-900/40"
                   : "border-neutral-700 hover:border-neutral-500"
               }`}
-            >
-              {/* IMAGEN DE BACKGROUND */}
+            >              
               <div className="relative h-40 w-full">
                 <img
                   src={v.backgroundImageUrl || v.venueBackgroundImageUrl || ""}
                   className="w-full h-full object-cover opacity-80"
                 />
-
-                {/* OVERLAY OSCURO */}
+                
                 <div className="absolute inset-0 bg-black/40" />
-
-                {/* NOMBRE DEL VENUE SOBRE LA IMAGEN */}
+                
                 <div className="absolute bottom-2 left-2 text-white font-semibold text-lg drop-shadow-md">
                   {v.name}
                 </div>
               </div>
 
-              {/* INFO */}
               <div className="p-4 space-y-1">
                 <p className="text-gray-400 text-sm">
                   Dirección: {v.address ?? "No especificada"}
@@ -79,8 +74,7 @@ export default function Step3SelectVenue({ data, onNext, onBack }: any) {
           );
         })}
       </div>
-
-      {/* BOTONES */}
+      
       <div className="flex justify-between pt-6">
         <button
           type="button"

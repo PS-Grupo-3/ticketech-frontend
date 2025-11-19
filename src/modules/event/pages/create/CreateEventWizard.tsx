@@ -78,8 +78,7 @@ export default function CreateEventWizard() {
           })}
         </div>
       </div>
-
-      {/* Step content */}
+    
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 shadow-lg">
         {step === 1 && (
           <Step1BasicInfo data={form} onNext={goNext} onBack={goBack} />
