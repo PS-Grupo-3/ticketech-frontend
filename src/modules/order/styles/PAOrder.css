@@ -1,0 +1,84 @@
+.PAOrderBody
+{
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+.PAOrderBody .Content
+{
+    flex: 4;
+    height: 80vh;
+    width: 100%;
+    background-color: var(--color-surface-semitransparent);
+    border-radius: 0.5rem;
+
+}
+.PAOrderBody .Summary
+{
+    flex: 1; 
+    background-color: var(--color-surface-semitransparent);
+    height: 30vh;
+    border-radius: 0.5rem;
+}
+.title /*Es compartida por summary y content. Por eso lo pongo debajo de estas.*/
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:var(--color-text-light);
+    height: 3rem;
+    border-bottom: solid 2px var(--color-blue-start) ;
+}
+.SummaryBody
+{   
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    gap: 2rem;
+    height: 14vh;
+    padding: 5px;
+    border-bottom: solid 2px var(--color-blue-start);
+}
+
+.Summary-Btns
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:1rem;
+    height: 10vh;
+
+}
+.Summary-Btns .OrderBtn
+{   
+    transition: none;
+    transform: none;
+    border-radius: 1.5rem;
+    padding:0.5rem;
+    background-color: var(--color-blue-start);
+}
+.Summary-Btns .OrderBtn:hover
+{
+    transition: 0.5s ease;
+    background-color: var(--color-dark-blue-start);
+
+}
+.Summary-Btns .CancelBtn
+{
+    transition: none;
+    transform: none;
+    border-radius: 1.5rem;
+    padding:0.5rem;
+    background-color: var(--color-surface-semitransparent);
+}
+.Summary-Btns .CancelBtn:hover
+{
+    transition: 0.5s ease;
+    color: var( --color-bg-dark);
+    background-color: var( --color-text-light);
+
+}
+
+
+

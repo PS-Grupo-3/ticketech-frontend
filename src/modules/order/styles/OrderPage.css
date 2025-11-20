@@ -1,0 +1,23 @@
+*
+{
+    margin:0;
+}
+.OrderPage
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    gap:2rem
+}
+.OrderPage button
+{
+    border-radius: 2vh;
+    padding: 1rem;
+    background-color: var(--color-blue-start);    
+}
+.OrderPage button:hover
+{   
+    transition: 0.5s ease;
+    background-color: var(--color-dark-blue-end);
+}
