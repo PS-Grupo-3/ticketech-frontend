@@ -1,0 +1,119 @@
+
+.tittle
+{
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: solid 1px var(--color-blue-start);
+    font-size: 1.2rem;
+
+}
+.backBtn
+{
+    position: absolute;
+    left: 2rem;
+    font-size: 1.5rem;  
+}
+.OrdersContainer
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 1.5rem;
+    gap:2rem;
+}
+.OrderCard
+{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    color: white;
+    width: 100vh;
+    height: 24vh;
+    border:solid 2px grey;
+    border-radius: 7px;
+    overflow: hidden;
+
+}
+
+.OrderCard img
+{
+
+    object-fit: cover;    
+    width: 100%;
+    height: 100%;
+
+}
+.OrderCard:hover
+{
+    border-color: var(--color-blue-start);
+    transition: 0.4s ease-out;
+    cursor: pointer;
+
+}
+
+.barCode
+{
+    display: flex;
+    height: 35vh;
+    width: 10%;
+}
+.barCode img
+{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0 6px 6px 0;
+    border-left: 1px solid black; 
+}
+
+.modalOverlay
+{
+    position: fixed;
+    inset: 0;
+    top: 0;
+    left: 0;
+    background-color: var(--color-dark-semitransparent);
+    pointer-events: all;
+    z-index: 1000; 
+    animation: fadeIn 0.3s ease;  
+
+    
+}
+.modalContent
+{
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 3.5rem auto;
+    width: 50%;
+    max-height: 85vh; 
+
+    border: solid 2px var(--color-bg-dark);
+    border-radius: 1vh; 
+    color:var(--color-blue-end);
+    animation: slideDown 1.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Animación del modal saliendo desde arriba */
+@keyframes slideDown {
+    0% {
+        transform: translateY(-40px);
+        opacity: 0;
+    }
+  
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

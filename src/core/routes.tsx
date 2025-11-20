@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "../shared/pages/Home/HomePage";
 import TicketPage from "../modules/ticket/pages/TicketPage";
 import OrderPage from "../modules/order/pages/OrderPage";
+import MyOrders from "../modules/order/pages/MyOrders";
 import AuthPage from "../modules/auth/pages/AuthPage";
 import VenueEditorPage from "../modules/venue/pages/VenueEditorPage";
 import VenueListPage from "../modules/venue/pages/VenueListPage";
@@ -19,6 +20,7 @@ export default function AppRoutes() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/ticket" element={<TicketPage />} />
                 <Route path="/order" element={<OrderPage />} />
+                <Route path="/myOrders" element={<MyOrders />} />
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/venue" element={<VenueListPage />} />
                 <Route path="/venue/create" element={<VenueCreatePage />} />
