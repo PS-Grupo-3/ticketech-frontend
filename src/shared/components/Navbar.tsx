@@ -34,7 +34,7 @@ export default function Navbar({ onUserClick, onSearch }: NavbarProps) {
         {/* Logo + Links */}
         <div className="flex items-center gap-10">
           <NavLink to="/" className="flex items-center gap-3">
-            <img src="/vite.svg" className="w-8 h-8" />
+           {/* <img src="/vite.svg" className="w-8 h-8" /> */}
             <span className="text-xl font-semibold">Ticketech</span>
           </NavLink>
 

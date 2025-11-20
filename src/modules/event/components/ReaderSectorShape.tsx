@@ -1,7 +1,87 @@
 import { Rect, Circle, Arc, Text } from "react-konva";
 import ReaderSeatDots from "./ReaderSeatDots";
 
-export default function ReaderSectorShape({ sector, scale, onSeatClick }: any) {
+function getCenter(shape: any) {
+  const x = shape.x;
+  const y = shape.y;
+  const width = shape.width;
+  const height = shape.height;
+  const rotation = (shape.rotation ?? 0) * (Math.PI / 180);
+
+  if (shape.type === "rectangle") {
+    const cx = x;
+    const cy = y;
+    const textX = cx + width / 2;
+    const textY = cy + height / 2;
+
+    const dx = textX - cx;
+    const dy = textY - cy;
+
+    return {
+      x: cx + dx * Math.cos(rotation) - dy * Math.sin(rotation),
+      y: cy + dx * Math.sin(rotation) + dy * Math.cos(rotation)
+    };
+  }
+
+  if (shape.type === "circle") {
+    return {
+      x: x,
+      y: y,
+    };
+  }
+
+  if (shape.type === "semicircle") {
+    const outerRadius = width / 2;
+    const cx = x;
+    const cy = y;
+    const midRadius = outerRadius / 2;
+    const midAngle = Math.PI / 2;
+
+    const textX = cx + midRadius * Math.cos(midAngle);
+    const textY = cy + midRadius * Math.sin(midAngle);
+
+    const dx = textX - cx;
+    const dy = textY - cy;
+
+    return {
+      x: cx + dx * Math.cos(rotation) - dy * Math.sin(rotation),
+      y: cy + dx * Math.sin(rotation) + dy * Math.cos(rotation)
+    };
+  }
+
+  if (shape.type === "arc") {
+    const innerRadius = width / 4;
+    const outerRadius = width / 2;
+    const cx = x;
+    const cy = y;
+
+    const midRadius = (innerRadius + outerRadius) / 2;
+    const midAngle = Math.PI / 4;
+
+    const textX = cx + midRadius * Math.cos(midAngle);
+    const textY = cy + midRadius * Math.sin(midAngle);
+
+    const dx = textX - cx;
+    const dy = textY - cy;
+
+    return {
+      x: cx + dx * Math.cos(rotation) - dy * Math.sin(rotation),
+      y: cy + dx * Math.sin(rotation) + dy * Math.cos(rotation)
+    };
+  }
+
+  return {
+    x: x + width / 2,
+    y: y + height / 2
+  };
+}
+
+export default function ReaderSectorShape({
+  sector,
+  scale,
+  selectedSeatId,
+  onSeatClick
+}: any) {
   const shape = sector.shape;
 
   const props = {
@@ -12,11 +92,10 @@ export default function ReaderSectorShape({ sector, scale, onSeatClick }: any) {
     opacity: (shape.opacity ?? 100) / 100,
     stroke: "white",
     strokeWidth: 1,
-    listening: false
+    listening: true
   };
 
-  const centerX = shape.x + shape.width / 2;
-  const centerY = shape.y + shape.height / 2;
+  const center = getCenter(shape);
   const showSeats = scale >= 1.4;
 
   return (
@@ -24,20 +103,51 @@ export default function ReaderSectorShape({ sector, scale, onSeatClick }: any) {
       {shape.type === "rectangle" && (
         <Rect {...props} width={shape.width} height={shape.height} />
       )}
-      {shape.type === "circle" && <Circle {...props} radius={shape.width / 2} />}
-      {shape.type === "semicircle" && (
-        <Arc {...props} innerRadius={0} outerRadius={shape.width / 2} angle={180} />
+
+      {shape.type === "circle" && (
+        <Circle {...props} radius={shape.width / 2} />
       )}
+
+      {shape.type === "semicircle" && (
+        <Arc
+          {...props}
+          innerRadius={0}
+          outerRadius={shape.width / 2}
+          angle={180}
+        />
+      )}
+
       {shape.type === "arc" && (
-        <Arc {...props} innerRadius={shape.width / 4} outerRadius={shape.width / 2} angle={90} />
+        <Arc
+          {...props}
+          innerRadius={shape.width / 4}
+          outerRadius={shape.width / 2}
+          angle={90}
+        />
       )}
 
       {!showSeats && (
-        <Text x={centerX} y={centerY} text={sector.name} fontSize={14 / scale} fill="white" align="center" offsetX={(sector.name.length * (14 / scale)) / 2} offsetY={7 / scale} />
+        <Text
+          x={center.x}
+          y={center.y}
+          text={sector.name}
+          fontSize={14 / scale}
+          fill="white"
+          align="center"
+          offsetX={sector.name.length * (14 / scale) * 0.22}
+          offsetY={(14 / scale) / 2}
+          rotation={shape.rotation}
+        />
       )}
 
       {showSeats && (
-        <ReaderSeatDots seats={sector.seats} shape={shape} sector={sector} onSeatClick={onSeatClick} />
+        <ReaderSeatDots
+          seats={sector.seats}
+          shape={shape}
+          sector={sector}
+          onSeatClick={onSeatClick}
+          selectedSeatId={selectedSeatId}
+        />
       )}
     </>
   );

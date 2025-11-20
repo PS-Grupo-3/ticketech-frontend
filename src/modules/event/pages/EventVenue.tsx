@@ -76,7 +76,7 @@ export default function EventVenuePage() {
           <div style={{ display: "flex", gap: "40px", alignItems: "flex-start", justifyContent: "center" }}>
 
             <div style={{ flex: 1, maxWidth: "fit-content", padding: "5px", background: "rgba(20,20,20,0.55)", backdropFilter: "blur(6px)", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.4)" }}>
-              <EventVenueCanvas background={eventData.venueBackgroundImageUrl} sectors={eventData.sectors}
+              <EventVenueCanvas background={eventData.venueBackgroundImageUrl} sectors={eventData.sectors} selectedSeatId={selectedSeat?.eventSeatId || null} 
                 onSeatClick={(seat: any, sector: any) => {
                   setSelectedSeat(seat);
                   setSelectedSector(sector);
@@ -97,6 +97,35 @@ export default function EventVenuePage() {
               <div style={{ marginBottom: "20px", fontSize: "14px", opacity: 0.9 }}>
                 {selectedSeat ? `Asiento seleccionado: fila ${selectedSeat.row}, columna ${selectedSeat.column}` : "Asiento seleccionado: Ninguno"}
               </div>
+
+               <div style={{
+                    marginBottom: "30px",
+                    textAlign: "center",
+                    padding: "20px",
+                    background: "rgba(0,0,0,0.4)",
+                    borderRadius: "12px",
+                    border: "1px solid #444",
+                  }}>
+                    {selectedSeat ? (
+                      <div style={{
+                        fontSize: "48px",
+                        fontWeight: "900",
+                        color: "#4ade80",
+                        textShadow: "0 0 10px rgba(0,0,0,0.7)"
+                      }}>
+                        ${selectedSeat.price}
+                      </div>
+                    ) : (
+                      <div style={{
+                        fontSize: "22px",
+                        opacity: 0.5
+                      }}>
+                        Precio
+                      </div>
+                    )}
+                  </div>
+
+
 
               <div onClick={handleBuy} style={{ padding: "14px", background: selectedSeat ? "#1e40af" : "#444", borderRadius: "8px", textAlign: "center", cursor: selectedSeat ? "pointer" : "not-allowed", fontWeight: "bold", letterSpacing: "0.5px" }} >
                 Comprar

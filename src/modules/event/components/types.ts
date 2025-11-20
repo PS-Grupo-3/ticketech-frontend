@@ -25,8 +25,10 @@ export interface EventSectorFull {
   name: string;
   isControlled: boolean;
   capacity: number;
+  price: number;
   shape: EventSectorShape;
   seats: EventSeat[];
+  available: boolean;
 }
 
 export interface EventFull {
@@ -36,5 +38,18 @@ export interface EventFull {
   bannerImageUrl: string;
   thumbnailUrl: string;
   themeColor: string;
+  sectors: EventSectorFull[];
+}
+
+
+
+export interface EventFullSnapshot {
+  eventId: string;
+  venueId: string;
+  name: string;
+  bannerImageUrl: string;
+  thumbnailUrl: string;
+  themeColor: string;
+  venueBackgroundImageUrl?: string;
   sectors: EventSectorFull[];
 }
