@@ -42,8 +42,8 @@ export default class EventCamera {
     onScaleChange(newScale);
 
     const mousePointTo = {
-      x: (pointer.x - stage.x()) / oldScale,
-      y: (pointer.y - stage.y()) / oldScale
+      x: (pointer.x),
+      y: (pointer.y) 
     };
 
     stage.scale({ x: newScale, y: newScale });
