@@ -84,7 +84,7 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  z-index: 20; /* sobre todo */
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -133,24 +133,27 @@
   padding: 0.5rem 1rem;
 }
 
-/* Mantener la posición relativa de la envoltura */
+.menu-dropdown button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: none;
+}
+
 .status-dropdown-wrapper {
   position: absolute;
 }
 
-/* Reutiliza el estilo de menu-dropdown */
 .status-dropdown {
-  position: absolute;
-  top: 0;
-  left: 100%; /* desplaza a la izquierda del botón padre */
-  min-width: 150px;
-  z-index: 50;
-  flex-direction: column;
-  border-radius: 0.8rem;
-  background-color: var(--color-card);
+    position: absolute;
+    top: 0;
+    left: 102%;
+    min-width: 150px;
+    z-index: 50;
+    flex-direction: column;
+    border-radius: 0.8rem;
+    background-color: var(--color-card);
 }
 
-/* Los botones heredan de .menu-dropdown button */
 .status-dropdown button {
   padding: 0.5rem 1rem;
   background: none;
@@ -167,4 +170,6 @@
 .status-dropdown button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background: none;
 }
+

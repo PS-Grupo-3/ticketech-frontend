@@ -58,7 +58,18 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
             <div className="menu-dropdown">
               <button onClick={(e) => { e.stopPropagation();}}>Editar</button>
               <button
-                onClick={(e) => { e.stopPropagation(); setStatusOpen(!statusOpen); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (currentStatus !== "Finished") {
+                    setStatusOpen(!statusOpen);
+                  }
+                }}
+                disabled={currentStatus === "Finished"}
+                title={
+                  currentStatus === "Finished"
+                    ? "Este evento ya está finalizado y no puede cambiar de estado."
+                    : ""
+                }
               >
                 Actualizar estado
               </button>
@@ -68,12 +79,14 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                 <StatusChange
                   eventId={event.eventId}
                   currentStatus={currentStatus}
+                  eventDate={event.time}   // <<--- agregar esto
                   onChange={(newStatus) => {
                     setCurrentStatus(newStatus);
                     setStatusOpen(false);
                     setMenuOpen(false);
                   }}
                 />
+
               )}
             </div>
           )}
@@ -101,8 +114,9 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
               {categoryTranslate[event.category] ?? event.category} · {event.categoryType}
             </p>
             <p className="event-card-status">
-              {statusTranslate[event.status] ?? event.status}
+              {statusTranslate[currentStatus] ?? currentStatus}
             </p>
+
           </div>
         </div>
       </div>

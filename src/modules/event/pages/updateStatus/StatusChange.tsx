@@ -13,10 +13,12 @@ const STATUS_OPTIONS = [
 export default function StatusChange({
   eventId,
   currentStatus,
+  eventDate,
   onChange
 }: {
   eventId: string;
   currentStatus: string;
+  eventDate: string;
   onChange: (newStatusKey: string) => void;
 }) {
   const [loading, setLoading] = useState(false);
@@ -26,9 +28,7 @@ export default function StatusChange({
 
     try {
       setLoading(true);
-
       await updateEventStatus(eventId, newStatusId);
-
       onChange(newStatusKey);
     } catch (err) {
       console.error("Error actualizando estado:", err);
@@ -39,18 +39,55 @@ export default function StatusChange({
 
   return (
     <div className="status-dropdown">
-      {STATUS_OPTIONS.map((s) => (
-        <button
-          key={s.id}
-          disabled={s.key === currentStatus || loading}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleStatusChange(s.key, s.id);
-          }}
-        >
-          {statusTranslate[s.key] ?? s.key}
-        </button>
-      ))}
+      {STATUS_OPTIONS.map((s) => {
+        const isCurrent = s.key === currentStatus;
+
+        // convertir fecha del evento
+        const eventDateObj = new Date(eventDate);
+        const now = new Date();
+        const hasPassed = eventDateObj < now;
+
+        // reglas extra
+        const isDisabled =
+          isCurrent ||
+          loading ||
+          (currentStatus === "Active" && s.key === "Scheduled") ||
+          (currentStatus === "Finished" &&
+            (s.key === "Scheduled" || s.key === "Active" || s.key === "Postponed")) ||
+          (s.key === "Finished" && !hasPassed);
+
+        // mensaje explicativo
+        let reason: string | null = null;
+
+        if (isCurrent) {
+          reason = "Este es el estado actual.";
+        } else if (loading) {
+          reason = "Actualizando estado...";
+        } else if (currentStatus === "Active" && s.key === "Scheduled") {
+          reason = "No puedes volver un evento activo a programado.";
+        } else if (
+          currentStatus === "Finished" &&
+          (s.key === "Scheduled" || s.key === "Active" || s.key === "Postponed")
+        ) {
+          reason = "Un evento finalizado no puede cambiar a otro estado.";
+        } else if (s.key === "Finished" && !hasPassed) {
+          reason = "Solo puedes finalizar un evento después de su fecha programada.";
+        }
+
+        return (
+          <button
+            key={s.id}
+            disabled={isDisabled}
+            title={isDisabled && reason ? reason : ""}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleStatusChange(s.key, s.id);
+            }}
+          >
+            {statusTranslate[s.key] ?? s.key}
+          </button>
+        );
+      })}
     </div>
   );
 }
