@@ -21,14 +21,21 @@ const LoginSidebar = ({ open, onClose }: Props) => {
         view, setView,
         handlelogin,
         closeSidebar,
-        resetModal
+        resetModal,
+        user,        // <-- usuario actual
+        logout       // <-- logout
     } = useLoginSidebar(onClose);
 
     return (
         <>
-            <div className={`overlay ${open ? "active" : ""}`} onClick={closeSidebar}></div>
+            <div
+                className={`overlay ${open ? "active" : ""}`}
+                onClick={closeSidebar}
+            ></div>
 
             <div className={`SideBar ${open ? "open" : ""}`}>
+                
+                {/* HEADER */}
                 <div className="headerSB">
                     <h2>
                         {view === "login" && "Iniciar sesión en Ticketech"}
@@ -38,6 +45,7 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                     <button onClick={closeSidebar}>X</button>
                 </div>
 
+                {/* BODY */}
                 <div className="bodySb">
                     {view === "login" && (
                         <LoginView
@@ -52,10 +60,16 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                     )}
 
                     {view === "register" && <RegisterView />}
-                    {view === "user" && <UserView />}
+
+                    {/* UserView NO recibe props, saca user y logout desde el hook */}
+                    {view === "user" && <UserView user={user} logout={logout} />}
+
                 </div>
 
+                {/* FOOTER BUTTONS */}
                 <div className="btns">
+                    
+                    {/* LOGIN BUTTONS */}
                     {view === "login" && (
                         <>
                             <button
@@ -78,6 +92,7 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                         </>
                     )}
 
+                    {/* REGISTER BUTTONS */}
                     {view === "register" && (
                         <>
                             <button
@@ -87,15 +102,22 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                                 Crear cuenta
                             </button>
 
-                            <button className="login" onClick={() => setView("login")}>
+                            <button
+                                className="login"
+                                onClick={() => setView("login")}
+                            >
                                 Volver al inicio de sesión
                             </button>
                         </>
                     )}
 
+                    {/* USER BUTTONS */}
                     {view === "user" && (
-                        <button className="login" onClick={closeSidebar}>
-                            Cerrar
+                        <button
+                            className="login"
+                            onClick={logout}
+                        >
+                            Cerrar sesión
                         </button>
                     )}
                 </div>

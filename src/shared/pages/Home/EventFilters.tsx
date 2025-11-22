@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { categoryTranslate, statusTranslate } from "../../../modules/event/utils/eventTranslate";
+import "./css/EventFilters.css";
 
 const CATEGORY_OPTIONS = [
   { id: 1, key: "Music" },
@@ -24,14 +25,8 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
   };
 
   return (
-    <div className="flex flex-wrap gap-4 w-full bg-neutral-800 p-4 rounded-lg">
-
-
-
-      <select
-        className="bg-neutral-900 p-2 rounded"
-        onChange={(e) => update("categoryId", Number(e.target.value) || undefined)}
-      >
+    <div className="event-filters">
+      <select onChange={(e) => update("categoryId", Number(e.target.value) || undefined)}>
         <option value="">Categoría</option>
         {CATEGORY_OPTIONS.map((c) => (
           <option key={c.id} value={c.id}>
@@ -40,10 +35,7 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
         ))}
       </select>
 
-      <select
-        className="bg-neutral-900 p-2 rounded"
-        onChange={(e) => update("statusId", Number(e.target.value) || undefined)}
-      >
+      <select onChange={(e) => update("statusId", Number(e.target.value) || undefined)}>
         <option value="">Estado</option>
         {STATUS_OPTIONS.map((s) => (
           <option key={s.id} value={s.id}>
@@ -54,19 +46,16 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
 
       <input
         type="datetime-local"
-        className="bg-neutral-900 p-2 rounded"
         onChange={(e) => update("from", e.target.value)}
       />
 
       <input
         type="datetime-local"
-        className="bg-neutral-900 p-2 rounded"
         onChange={(e) => update("to", e.target.value)}
       />
 
       <input
         type="text"
-        className="bg-neutral-900 p-2 rounded w-60"
         placeholder="Buscar evento..."
         onChange={(e) => update("search", e.target.value)}
       />

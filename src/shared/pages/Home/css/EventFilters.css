@@ -1,0 +1,40 @@
+@import "../../../styles/colors.css";
+@import "../../../styles/typography.css";
+
+.event-filters {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+
+    background-color: var(--color-card);
+    padding: 1rem;
+    border-radius: 0.8rem;
+
+    font-size: var(--font-size-sm);
+}
+
+.event-filters select,
+.event-filters input {
+    background-color: var(--color-options);
+    color: var(--color-text-light);
+
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.8rem;
+    border: 0.01rem solid var(--color-options);
+
+    font-size: var(--font-size-semibase);
+
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.event-filters select:focus,
+.event-filters input:focus {
+    border-color: var(--color-dark-blue-end);
+}
+
+.event-filters input[type="text"] {
+    width: 15rem;
+}

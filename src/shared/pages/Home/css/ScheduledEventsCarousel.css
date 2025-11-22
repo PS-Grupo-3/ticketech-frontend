@@ -1,0 +1,62 @@
+@import "../../../styles/colors.css";
+@import "../../../styles/typography.css";
+
+.scheduled-carousel {
+    margin-top: 3rem;
+}
+
+.scheduled-carousel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+}
+
+.scheduled-carousel-header .home-title {
+    margin: 0;
+}
+
+.scheduled-carousel-buttons {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.scheduled-btn {
+    background-color: var(--color-options);
+    color: var(--color-text-white);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-size: var(--font-size-base);
+    border-radius: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.scheduled-btn:hover {
+    background-color: var(--color-card);
+    transform: scale(1.05);
+}
+
+.scheduled-carousel-viewport {
+    overflow: hidden;
+}
+
+.scheduled-carousel-track {
+    display: flex;
+    gap: 1.6rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+}
+
+.scheduled-carousel-card-wrapper {
+    width: 18rem;
+    flex-shrink: 0;
+}
+
+.scheduled-carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.scheduled-carousel-track {
+    scrollbar-width: none;
+}

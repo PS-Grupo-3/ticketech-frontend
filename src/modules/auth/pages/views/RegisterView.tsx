@@ -34,7 +34,7 @@ export default function RegisterView() {
         }
 
         try { //HAY QUE ARREGLAR EL FETCH
-            const res = await fetch("http://localhost:5029/api/v1/User/register", {
+            const res = await fetch("http://localhost:5029/api/User/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

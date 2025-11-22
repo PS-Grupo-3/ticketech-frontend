@@ -4,9 +4,18 @@
     --color-bg-secondary: #1A1A1E;
     --color-surface: #2E2E33;
 
+    --color-options: #0F0F10;
+    --color-status: #171717;
+
     /* Texto */
+    --color-text-white: #FFFFFF;
     --color-text-light: #E5E7EB;
     --color-text-muted: #9CA3AF;
+
+    --color-card: #262626;
+    --color-card-image: #3f3f3f;
+    --color-dots: #555555;
+
 
     --color-dark-blue-start: #2563EB;
     --color-dark-blue-end: #3B82F6;

@@ -6,6 +6,7 @@ import ScheduledEventsCarousel from "./ScheduledEventsCarousel";
 import EventCard from "./EventCard";
 import Layout from "../../components/Layout";
 import PromotionsCarousel from "./PromotionsCarousel";
+import "./css/HomePage.css"
 
 interface EventItem {
   eventId: string;
@@ -54,8 +55,8 @@ export default function HomePage() {
     <Layout>
       <HeroCarousel />
 
-      <div className="max-w-7xl mx-auto px-6 mt-10 pb-20">
-        <h2 className="text-4xl font-bold mb-6">Eventos</h2>
+      <div className="home-container">
+        <h2 className="home-title">Eventos</h2>
 
         <EventFilters onChange={setFilters} />
 
@@ -63,7 +64,7 @@ export default function HomePage() {
           <p className="mt-10 text-lg">Cargando eventos...</p>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8">
+            <div className="home-grid">
               {visibleEvents.map((event) => (
                 <EventCard key={event.eventId} event={event} />
               ))}
@@ -73,7 +74,7 @@ export default function HomePage() {
               <div className="flex justify-center mt-10">
                 <button
                   onClick={() => setVisibleCount(visibleCount + 8)}
-                  className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-3 rounded-lg text-lg"
+                  className="load-more-btn"
                 >
                   Mostrar más
                 </button>

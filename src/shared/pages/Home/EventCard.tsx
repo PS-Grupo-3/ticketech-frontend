@@ -1,61 +1,60 @@
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { categoryTranslate, statusTranslate } from "../../../modules/event/utils/eventTranslate";
+import "./css/EventCard.css";
+import defaultImage from "../../../assets/default-image.webp";
 
-export default function EventCard({ event }: {
-  event: {
-    eventId: string;
-    venueId: string;
-    name: string;
-    category: string;
-    categoryType: string;
-    status: string;
-    time: string;
-    address: string;
-    thumbnailUrl?: string | null;
-  };
-}) {
+
+type Event = {
+  eventId: string;
+  venueId: string;
+  name: string;
+  category: string;
+  categoryType: string;
+  status: string;
+  time: string;
+  address: string;
+  thumbnailUrl?: string | null;
+};
+
+export default function EventCard({ event }: { event: Event }) {
   const navigate = useNavigate();
   const date = new Date(event.time);
   const dateStr = format(date, "dd/MM/yyyy HH:mm");
 
-  const hasThumbnail =
-    event.thumbnailUrl && event.thumbnailUrl.trim() !== "";
+  const hasThumbnail = Boolean(event.thumbnailUrl && event.thumbnailUrl.trim());
 
-  const goToEventPreview = () => {
-    navigate(`/event/${event.eventId}`);
-  };
+  const goToEventPreview = () => navigate(`/event/${event.eventId}`);
 
   return (
-    <div
-      onClick={goToEventPreview}
-      className="bg-neutral-800 rounded-lg overflow-hidden shadow-lg cursor-pointer hover:scale-[1.02] transition-transform"
-    >
-      <div className="h-72 w-full bg-neutral-700 flex items-center justify-center overflow-hidden">
-        {hasThumbnail ? (
-          <img
-            src={event.thumbnailUrl!}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <p className="text-gray-300">Imagen no disponible</p>
-        )}
+    <article className="event-card" onClick={goToEventPreview} role="button" tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") goToEventPreview(); }}>
+      <div className="event-card-image-wrapper">
+        <img
+          src={hasThumbnail ? event.thumbnailUrl! : defaultImage}
+          alt={event.name}
+          className="event-card-image"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
 
-      <div className="p-4">
-        <p className="text-sm text-gray-400">{dateStr}</p>
+      <div className="event-card-content">
+        <div className="event-card-date-tittle">
+          <p className="event-card-date">{dateStr}</p>
+          <h3 className="event-card-title">{event.name}</h3>
+        </div>
+        
+        <div className="event-card-category-status">
+          <p className="event-card-category">
+            {categoryTranslate[event.category] ?? event.category} · {event.categoryType}
+          </p>
 
-        <h3 className="text-xl font-bold mt-2 uppercase">{event.name}</h3>
-
-        <p className="text-sm text-gray-400 mt-1">
-          {categoryTranslate[event.category] ?? event.category} ·{" "}
-          {event.categoryType}
-        </p>
-
-        <p className="mt-3 text-sm bg-neutral-900 inline-block px-3 py-1 rounded">
-          {statusTranslate[event.status] ?? event.status}
-        </p>
+          <p className="event-card-status">
+            {statusTranslate[event.status] ?? event.status}
+          </p>
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
