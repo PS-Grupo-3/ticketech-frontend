@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
+
 import "../../styles/HomePage.css";
+import "./Dashboard.css"
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import LoginSidebar from "../../../modules/auth/pages/LoginSB";
@@ -40,8 +42,10 @@ export default function Dashboard() {
           </Link>
         ))}
       </div>
+      
 
       <Footer />
     </div>
+    
   );
 }

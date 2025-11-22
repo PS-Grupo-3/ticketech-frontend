@@ -1,0 +1,158 @@
+.homepage {
+  background-color: rgb(38 38 38 / var(--tw-bg-opacity, 1)) !important;
+  min-height: 100vh !important;
+  color: white !important;
+}
+
+/* Header mantiene su estilo */
+.homepage-header {
+  background-color: rgb(38 38 38 / var(--tw-bg-opacity, 1)) !important;
+  color: white !important;
+  padding: 1rem !important;
+  text-align: center !important;
+  margin-bottom: 2rem !important;
+}
+
+.homepage-title {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.5rem !important;
+  color: white !important;
+}
+
+.homepage-subtitle {
+  font-size: 1rem !important;
+  opacity: 0.8 !important;
+  color: #d1d5db !important;
+}
+
+/* Grid de secciones */
+.sections-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+  gap: 2rem !important;
+  padding: 0 2rem 3rem !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+}
+
+/* Tarjetas mejoradas */
+.section-card {
+  background: #1f2937 !important;
+  border-radius: 1rem !important;
+  padding: 0 !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: 1px solid #374151 !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+  color: white !important;
+  display: block !important;
+}
+
+.section-card:hover {
+  transform: translateY(-5px) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Fondos de imágenes */
+.section-bg {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  opacity: 0.3 !important;
+  background-size: cover !important;
+  background-position: center !important;
+  transition: all 0.5s ease !important;
+}
+
+.section-card:hover .section-bg {
+  opacity: 0.25 !important;
+  transform: scale(1.05) !important;
+}
+
+/* Imágenes específicas para cada servicio */
+.section-card.bg-blue .section-bg {
+  background-image: url("/public/dashboard/estadio.jpg") !important;
+}
+
+.section-card.bg-green .section-bg {
+  background-image: url("/public/dashboard/sectores.jpg") !important;
+}
+
+.section-card.bg-orange .section-bg {
+  background-image: url("/public/dashboard/entradas.jpg") !important;
+}
+
+.section-card.bg-purple .section-bg {
+  background-image: url("/public/dashboard/pagos.jpg") !important;
+}
+
+.section-card.bg-gray .section-bg {
+  background-image: url("/public/dashboard/autenticacion.jpg") !important;
+}
+
+@keyframes rotateTheater {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+/* Contenido de las tarjetas */
+.section-content {
+  position: relative !important;
+  z-index: 10 !important;
+  padding: 2rem !important;
+  text-align: center !important;
+}
+
+.section-icon {
+  font-size: 3rem !important;
+  margin-bottom: 1rem !important;
+  display: block !important;
+}
+
+.section-card h2 {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.75rem !important;
+  color: white !important;
+}
+
+.section-desc {
+  color: #cbd5e1 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+}
+/* Quitar icono pero mantener dimensiones */
+.section-icon {
+  display: none !important;
+}
+
+/* Compensar la altura quitando el margin del icono */
+.section-content {
+  padding: 2.5rem 2rem !important; /* Un poco más de padding vertical */
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  min-height: 200px !important; /* Altura mínima para mantener dimensiones */
+}
+
+/* Ajustar espaciado de los textos */
+.section-card h2 {
+  margin-bottom: 1rem !important; /* Más espacio entre título y descripción */
+}
+
+.section-desc {
+  margin-bottom: 0 !important;
+  line-height: 1.6 !important;
+}
