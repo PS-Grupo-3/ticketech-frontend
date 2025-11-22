@@ -9,7 +9,7 @@ import { useState } from "react";
 
 export default function Dashboard() {
   const sections = [
-    { name: "EventService", path: "/event/create", color: "bg-blue", desc: "Gestiona categorías y eventos", icon: "🎟️" },
+    { name: "EventService", path: "/event", color: "bg-blue", desc: "Gestiona categorías y eventos", icon: "🎟️" },
     { name: "VenueService", path: "/venue", color: "bg-green", desc: "Administra lugares y sectores", icon: "🏟️" },
     { name: "TicketService", path: "/ticket", color: "bg-orange", desc: "Estados y control de tickets", icon: "🎫" },
     { name: "OrderService", path: "/order", color: "bg-purple", desc: "Procesa órdenes y pagos", icon: "💳" },

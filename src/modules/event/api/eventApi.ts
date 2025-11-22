@@ -1,4 +1,5 @@
 import { getApiClient } from "../../../core/apiClient";
+
 const api = getApiClient("event");
 
 interface EventCategory {
@@ -271,7 +272,6 @@ export const updateEventStatus = async (id: string, statusId: number) => {
     throw err;
   }
 };
-
 //Endpoints de EventSector
 
 export const getEventSectors = async (id: string) => {
