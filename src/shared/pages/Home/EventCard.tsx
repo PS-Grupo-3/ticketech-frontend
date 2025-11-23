@@ -5,6 +5,7 @@ import "./css/EventCard.css";
 import defaultImage from "../../../assets/default-image.webp";
 import { useState, useRef, useEffect } from "react";
 import StatusChange from "../../../modules/event/pages/updateStatus/StatusChange";
+import DeleteEvent from "../../../modules/event/pages/delete/DeleteEvent";
 
 type Event = {
   eventId: string;
@@ -27,7 +28,10 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const [currentStatus, setCurrentStatus] = useState(event.status);
+  
   const menuRef = useRef<HTMLDivElement>(null);
 
   const goToEventPreview = () => navigate(`/event/${event.eventId}`);
@@ -74,6 +78,23 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                 Actualizar estado
               </button>
               <button onClick={(e) => { e.stopPropagation();}}>Estadísticas</button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (currentStatus === "Scheduled") {
+                    setDeleteOpen(true);
+                  }
+                }}
+                disabled={currentStatus !== "Scheduled"}
+                title={
+                  currentStatus !== "Scheduled"
+                    ? "Solo se pueden eliminar eventos programados."
+                    : ""
+                }
+              >
+                Eliminar
+              </button>
+
             
               {statusOpen && (
                 <StatusChange
@@ -86,7 +107,20 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                     setMenuOpen(false);
                   }}
                 />
+              )}
 
+              {deleteOpen && (
+                <DeleteEvent
+                  eventId={event.eventId}
+                  eventName={event.name}
+                  thumbnailUrl={event.thumbnailUrl}
+                  onCancel={() => setDeleteOpen(false)}
+                  onDeleted={() => {
+                    setDeleteOpen(false);
+                    setMenuOpen(false);
+                    window.location.reload();
+                  }}
+                />
               )}
             </div>
           )}
