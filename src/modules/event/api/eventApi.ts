@@ -81,7 +81,6 @@ function logErr(label: string, url: string, ms: number, err: any) {
   console.groupEnd();
 }
 
-//Endpoints de EventCategory
 
 export const getEventCategories = async () => {
   const url = "/EventCategory"; 
@@ -111,7 +110,6 @@ export const getEventCategoryById = async (id: number) => {
   }
 };
 
-//Endpoints de CategoryType
 
 export const getCategoryTypes = async () => {
   const url = "/CategoryType";
@@ -156,7 +154,6 @@ export const getEventTypesForCategory = async (categoryId: number) => {
   }
 };
 
-//Endpoints de EventStatus
 
 export const getEventStatuses = async () => {
   const url = "/EventStatus";
@@ -186,9 +183,7 @@ export const getEventStatusById = async (id: number) => {
   }
 };
 
-//Endpoints de Event
-
-export const getEvents = async (params?: { categoryId?: number; statusId?: number; from?: string; to?: string }) => {
+export const getEvents = async (params?: { categoryId?: number; statusId?: number; from?: string; to?: string, name?: string }) => {
   const url = "/Event";
   logReq("GET Events", url, params);
   const t0 = performance.now();
@@ -272,7 +267,6 @@ export const updateEventStatus = async (id: string, statusId: number) => {
   }
 };
 
-//Endpoints de EventSector
 
 export const getEventSectors = async (id: string) => {
   const url = `/Event/${id}/sectors`;
@@ -391,4 +385,10 @@ export const updateSeatStatus = async (eventId: string, seatId: string, payload:
     logErr("PATCH SeatStatus", url, performance.now() - t0, err);
     throw err;
   }
+};
+
+
+export const getEventSeat = async (seatId: string) => {
+  const res = await api.get(`/event-seats/${seatId}`);
+  return res.data;
 };

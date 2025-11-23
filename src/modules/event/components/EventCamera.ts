@@ -43,7 +43,7 @@ export default class EventCamera {
 
     const mousePointTo = {
       x: (pointer.x),
-      y: (pointer.y) 
+      y: (pointer.y)
     };
 
     stage.scale({ x: newScale, y: newScale });

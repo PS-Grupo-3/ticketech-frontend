@@ -1,223 +1,178 @@
- import {getOrdersDetails} from "../api/getOrderDetails";
- import { useState,useEffect } from "react";
- import { decodeToken } from "../components/DecodeToken";
- import {getEventById} from "../../event/api/eventApi";
-
+import { getOrdersDetails } from "../api/getOrderDetails";
+import { useState, useEffect } from "react";
+import { decodeToken } from "../components/DecodeToken";
+import { getEventById } from "../../event/api/eventApi";
 
 interface Props {
   orderId: string;
 }
 
-interface Ticket
-{
-    detailId:string,
-    ticketId:string,
-    unitPrice:number,
-    quantity:number,
-}
-interface PaymentType
-{
-    id:number,
-    name:string,
-}
-interface OrderDetail
-{
-   orderId:string,
-   eventId:string,
-   details:Ticket[],
-   totalAmount:number,
-   discountAmount:number,
-   taxAmount:number,
-   paymentType:PaymentType,
-   transaction:string,
-}
-interface eventDetail
-{
-name:string,
-category:string,
-categoryType:string,
-time:Date,
-address:string,
-bannerImageUrl:string,
+interface TicketDetail {
+  detailId: string;
+  eventSeatId?: string | null;
+  unitPrice: number;
+  quantity: number;
+  eventSectorId: string;
 }
 
-interface UserInfo
-{
-    userName:string,
-    userLastName:string,
-    userPhone:string,
+interface OrderDetail {
+  orderId: string;
+  eventId: string;
+  details: TicketDetail[];
+  totalAmount: number;
+  paymentType: { id: number; name: string };
+  transaction: string;
 }
 
- 
- export default function OrderDetailsRender({orderId}:Props)
- {
-    const[orderDetail,setOrderDetail]=useState<OrderDetail | null>(null)
-    const[eventSelected,setEvent]=useState<eventDetail|null>(null)
-    const[loading,setloading]=useState(true);
-    const[userData,setUserData]=useState<UserInfo| null>(null)
+interface EventDetail {
+  name: string;
+  category: string;
+  categoryType: string;
+  time: Date;
+  address: string;
+  bannerImageUrl: string;
+}
 
-     useEffect(()=>{
-            const loadUserInfo = ()=>
-            {
-                try
-                {
-                    const token = localStorage.getItem("token");
-                    if(token==null)
-                        {return null;}
+interface UserInfo {
+  userName: string;
+  userLastName: string;
+  userPhone: string;
+}
 
-                    const Userdata = decodeToken(token); 
-                    setUserData(Userdata);
-                }
-                catch(err)
-                {
-                    console.error("Fallo al cargar los detalles del usuario:",err);
-                }
-            }
-            loadUserInfo();
-        
-        },[])
+export default function OrderDetailsRender({ orderId }: Props) {
+  const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null);
+  const [eventSelected, setEventSelected] = useState<EventDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<UserInfo | null>(null);
+  const [snapshot, setSnapshot] = useState<any[]>([]);
 
-    useEffect(()=>
-        {
-        const loadDetails = async()=>
-            {
-                try
-                {
-                    const data = await getOrdersDetails(orderId);
-                    setOrderDetail(data);
-                }
-                catch(err)
-                {
-                    console.error("Fallo al cargar los detalles de la orden:",err);
-                }
-                finally
-                {setloading(false);}
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const info = decodeToken(token);
+        setUserData(info);
+      }
+    } catch {}
+  }, []);
 
-            }
-            loadDetails();
+  useEffect(() => {
+    const raw = localStorage.getItem(`order_snapshot_${orderId}`);
+    if (raw) {
+      try {
+        setSnapshot(JSON.parse(raw));
+      } catch {
+        setSnapshot([]);
+      }
+    }
+  }, [orderId]);
 
-        },[orderId]);
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await getOrdersDetails(orderId);
+        setOrderDetail(data);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        useEffect(()=>
-            {
-                const loadEvent = async ()=>
-                    {
-                        try
-                        {
-                            if(orderDetail?.eventId==null)
-                                {
-                                    return null;
-                                }
-                            const event = await getEventById(orderDetail?.eventId);
-                            setEvent(event);
-                        }
-                        catch(err)
-                        {
-                        console.error("Fallo al cargar los detalles del evento:",err);
-                        }
-                    }
-                    loadEvent();
-            },[orderDetail]);
+    load();
+  }, [orderId]);
 
+  useEffect(() => {
+    if (!orderDetail?.eventId) return;
 
+    const loadEvent = async () => {
+      const ev = await getEventById(orderDetail.eventId);
+      setEventSelected(ev);
+    };
 
-        if (loading) {
-        return <div className="OrderDetails">Cargando...</div>;
-        }     
+    loadEvent();
+  }, [orderDetail]);
 
-        if (!orderDetail) {
-            return <div className="OrderDetails" style=
-            {
-                {display:"flex",
-                 justifyContent:"center",
-                 alignItems:"center",
-                }
-            }>No se encontraron detalles.</div>;
-        }
+  if (loading) return <div style={{ padding: 20 }}>Cargando...</div>;
+  if (!orderDetail) return <div style={{ padding: 20 }}>Orden no encontrada</div>;
 
-    return(
-         <div className="OrderDetails">
-
-        <div className="OrderInfoContainer">
+  return (
+    <div className="OrderDetails">
+      <div className="OrderInfoContainer">
 
         <div className="EventImg">
-           {eventSelected?.bannerImageUrl?
-           (
-            <img  src={eventSelected.bannerImageUrl} alt={eventSelected.name} />
-
-           ):
-           (
+          {eventSelected?.bannerImageUrl ? (
+            <img src={eventSelected.bannerImageUrl} alt={eventSelected.name} />
+          ) : (
             "Imagen no disponible"
-           )}
-           <div className="ImgText">
-           <span> <p> #{orderDetail.orderId.toLocaleUpperCase()}</p></span>
-           <span> <h1>{eventSelected?.name}</h1></span>
-           <span>  {eventSelected?.address}</span>
-           <span> Fecha: {new Date(eventSelected?.time!).toLocaleDateString("es-AR")}</span>
-           <span> Horario: {new Date(eventSelected?.time!).toLocaleTimeString("es-AR")}</span>
-           </div>
-           
-        
-        </div>
-        
+          )}
 
+          <div className="ImgText">
+            <span>
+              <p>#{orderDetail.orderId.toUpperCase()}</p>
+            </span>
+            <span>
+              <h1>{eventSelected?.name}</h1>
+            </span>
+            <span>{eventSelected?.address}</span>
+            <span>Fecha: {new Date(eventSelected?.time!).toLocaleDateString("es-AR")}</span>
+            <span>Horario: {new Date(eventSelected?.time!).toLocaleTimeString("es-AR")}</span>
+          </div>
+        </div>
 
         <div className="InfoOrder">
-        {
-                orderDetail?.details?.map((ticket,index) =>(
-                <div className="infotickets" key={ticket.ticketId || index}>
-                    
-                    <span>Nombre del sector</span>
-                    <span >{ticket.quantity} x ${ticket.unitPrice}</span>
-                
-                    
-                </div>  
-             ))
+          {orderDetail.details.map((ticket, idx) => {
+            const snapMatch = snapshot.find((s) => s.eventSeatId === ticket.eventSeatId);
 
+            return (
+              <div className="infotickets" key={idx}>
+                <span>
+                  {snapMatch
+                    ? snapMatch.sectorName
+                    : `Sector ID: ${ticket.eventSectorId}`}
+                </span>
 
-        }
-        <div className="PriceInfo">
-        
-        <div className="PriceInfoLine">
-            <span>Total:</span>
-            <span>${orderDetail.totalAmount}</span>
-        </div>
-        
-        <div className="PriceInfoLine">
-            <span>Método de pago:</span>
-            <span> {orderDetail.paymentType.name}</span>
-        </div>
-        
-        <div className="PriceInfoLine">
-            <span>Transacción:</span>
-            <span> {orderDetail.transaction}</span>
-        </div>
-        
-        </div>
-        
-        <div className="UserInfo">
-        
-        <div className="UserInfoLine">
-            <span>Nombre:</span>
-            <span> {userData?.userName} {userData?.userLastName}</span>
-        </div>
+                <span>
+                  {snapMatch
+                    ? `Fila ${snapMatch.row} · Asiento ${snapMatch.column}`
+                    : ticket.eventSeatId
+                      ? `Asiento ID ${ticket.eventSeatId}`
+                      : ""}
+                </span>
 
-        <div className="UserInfoLine">
-            <span>Telefono:</span>
-            <span> {userData?.userPhone}</span>
+                <span>{ticket.quantity} x ${ticket.unitPrice}</span>
+              </div>
+            );
+          })}
+
+          <div className="PriceInfo">
+            <div className="PriceInfoLine">
+              <span>Total:</span>
+              <span>${orderDetail.totalAmount}</span>
+            </div>
+
+            <div className="PriceInfoLine">
+              <span>Método de pago:</span>
+              <span>{orderDetail.paymentType.name}</span>
+            </div>
+
+            <div className="PriceInfoLine">
+              <span>Transacción:</span>
+              <span>{orderDetail.transaction}</span>
+            </div>
+          </div>
+
+          <div className="UserInfo">
+            <div className="UserInfoLine">
+              <span>Nombre:</span>
+              <span>{userData?.userName} {userData?.userLastName}</span>
+            </div>
+            <div className="UserInfoLine">
+              <span>Teléfono:</span>
+              <span>{userData?.userPhone}</span>
+            </div>
+          </div>
+
         </div>
-
-        </div>     
-        </div> 
-
-        </div>
-
-        
-
-        
-        
-        </div>
-
-        
-    );
- }
+      </div>
+    </div>
+  );
+}

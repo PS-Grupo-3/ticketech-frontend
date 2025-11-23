@@ -2,8 +2,7 @@ import "../styles/userPanel.css";
 
 type Props = {
     user: {
-        name: string;
-        email?: string;
+        name: string;                
         role: string;
         userId: string;
         token: string;
@@ -23,18 +22,20 @@ const UserView = ({ user, logout }: Props) => {
                         alt="user avatar"
                     />
                 </div>
-
-                <h3 className="userPanel-name">Hola, {user.name}</h3>
-                <p className="userPanel-email">{user.email || "Sin correo"}</p>
+                
+                <h3 className="userPanel-name">Hola, {user.name}</h3>                
 
                 <div className="userPanel-roleBox">
-                    <span className="userPanel-role">{user.role}</span>
+                    <span className="userPanel-role">
+                        Rol: {user.role === "Current" ? "Usuario normal" : user.role}
+                    </span>
                 </div>
             </div>
 
             <div className="userPanel-section">
                 <button className="userPanel-btn">Mis compras</button>
                 <button className="userPanel-btn">Mi perfil</button>
+
                 {(user.role === "Admin" || user.role === "SuperAdmin") && (
                     <div className="userPanel-section">
                         <button className="userPanel-btn">Panel de eventos</button>

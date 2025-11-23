@@ -26,7 +26,7 @@ export default function VenueCanvas({
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [scale, setScale] = useState(1);
 
-  // background loader
+
   useEffect(() => {
     if (!background) {
       setImage(null);
@@ -37,7 +37,7 @@ export default function VenueCanvas({
     img.src = background;
   }, [background]);
 
-  // camera init
+
   useEffect(() => {
     if (stageRef.current && !cameraRef.current) {
       const cam = new CanvasCamera(stageRef.current);

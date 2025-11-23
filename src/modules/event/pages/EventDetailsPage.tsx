@@ -170,29 +170,6 @@ export default function EventDetailPage() {
             </button>
           </div>
 
-          <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-8 shadow-xl space-y-6">
-            <h3 className="text-xl font-semibold text-white">Sectores disponibles</h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {event.sectors?.map((s: any) => (
-                <div
-                  key={s.eventSectorId}
-                  className="bg-neutral-900 border border-neutral-700 rounded-xl p-4"
-                >
-                  <p className="text-white font-semibold text-lg">
-                    Sector {s.eventSectorId.substring(0, 6)}
-                  </p>
-                  <p className="text-gray-400 text-sm mt-1">
-                    Capacidad: {s.capacity}
-                  </p>
-                  <p className="text-gray-400 text-sm">
-                    Precio: ${s.price}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
       </div>
     </Layout>
