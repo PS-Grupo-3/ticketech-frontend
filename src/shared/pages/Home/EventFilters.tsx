@@ -18,15 +18,23 @@ const STATUS_OPTIONS = [
 export default function EventFilters({ onChange }: { onChange: (f: any) => void }) {
   const [local, setLocal] = useState<any>({});
 
-  const update = (field: string, value: any) => {
-    const updated = { ...local, [field]: value || undefined };
+  const update = (field: string, rawValue: any) => {
+    const value = rawValue === "" ? undefined : rawValue;
+
+    const updated = {
+      ...local,
+      [field]: value
+    };
+
     setLocal(updated);
+
     onChange(updated);
   };
 
   return (
     <div className="event-filters">
-      <select onChange={(e) => update("categoryId", Number(e.target.value) || undefined)}>
+
+      <select onChange={(e) => update("categoryId", e.target.value ? Number(e.target.value) : undefined)}>
         <option value="">Categoría</option>
         {CATEGORY_OPTIONS.map((c) => (
           <option key={c.id} value={c.id}>
@@ -35,7 +43,7 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
         ))}
       </select>
 
-      <select onChange={(e) => update("statusId", Number(e.target.value) || undefined)}>
+      <select onChange={(e) => update("statusId", e.target.value ? Number(e.target.value) : undefined)}>
         <option value="">Estado</option>
         {STATUS_OPTIONS.map((s) => (
           <option key={s.id} value={s.id}>
@@ -57,7 +65,7 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
       <input
         type="text"
         placeholder="Buscar evento..."
-        onChange={(e) => update("search", e.target.value)}
+        onChange={(e) => update("name", e.target.value)}
       />
     </div>
   );
