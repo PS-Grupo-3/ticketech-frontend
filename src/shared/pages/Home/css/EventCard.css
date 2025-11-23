@@ -1,7 +1,13 @@
 @import "../../../styles/colors.css";
 @import "../../../styles/typography.css";
 
+.event-card-general {
+    position: relative;
+    overflow: visible;
+}
+
 .event-card {
+    position: relative;
     background-color: var(--color-card);
     border-radius: 0.8rem;
     overflow: hidden;
@@ -21,6 +27,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
 }
 
 .event-card-image {
@@ -72,3 +79,97 @@
     display: inline-block;
     width: fit-content;
 }
+
+.event-card-menu {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-button {
+  background: var(--color-card);
+  border: none;
+  font-size: var(--font-size-2xl);
+  padding: 0.1rem 0.7rem;
+  border-radius: 50%;
+  color: var(--color-text-light);
+  cursor: pointer;
+}
+
+.menu-button:focus {
+  background: var(--color-card-image);
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 2rem;
+  right: 0;
+  background-color: var(--color-card);
+  border-radius: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+}
+
+.menu-dropdown button {
+  width: 10rem;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: var(--color-text-light);
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.8rem;
+  transition: background 0.2s ease;
+  font-size: var(--font-size-semibase);
+}
+
+.menu-dropdown button:hover {
+  background-color: var(--color-dark-blue-end);
+  padding: 0.5rem 1rem;
+}
+
+.menu-dropdown button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: none;
+}
+
+.status-dropdown-wrapper {
+  position: absolute;
+}
+
+.status-dropdown {
+    position: absolute;
+    top: 0;
+    left: 102%;
+    min-width: 150px;
+    z-index: 20;
+    flex-direction: column;
+    border-radius: 0.8rem;
+    background-color: var(--color-card);
+}
+
+.status-dropdown button {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: var(--color-text-light);
+  text-align: left;
+  cursor: pointer;
+}
+
+.status-dropdown button:hover {
+  background-color: var(--color-dark-blue-end);
+}
+
+.status-dropdown button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: none;
+}
+

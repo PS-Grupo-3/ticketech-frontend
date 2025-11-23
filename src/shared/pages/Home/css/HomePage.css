@@ -47,5 +47,20 @@
 }
 
 .load-more-btn:hover {
-  background-color: var(--color-card); /* neutral-700 */
+  background-color: var(--color-card);
+}
+
+.create-event-btn {
+  padding: 0.4rem 1rem;
+  background-color: var(--color-dark-blue-end);
+  color: var(--color-text-white);
+  font-weight: var(--font-weight-bold);
+  border-radius: 0.8rem;
+  transition: background-color 0.3s;
+  text-decoration: none;
+}
+
+.create-event-btn:hover {
+  background-color: var(--color-dark-blue-start);
+  color: var(--color-text-white);
 }

@@ -1,0 +1,73 @@
+@import "../../../../shared/styles/colors.css";
+@import "../../../../shared/styles/typography.css";
+
+.delete-popup-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(3px);
+    background: var(--color-dark-semitransparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+    pointer-events: all;
+    isolation: isolate;
+}
+
+.delete-popup {
+  background: var(--color-options);
+  color: var(--color-text-white);
+  width: 100%;
+  max-width: 30rem;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  border: 2px solid var(--color-card);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.delete-popup-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.delete-popup-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.delete-btn {
+  flex: 1;
+  padding: 0.8rem 0;
+  border-radius: 0.8rem;
+  border: none;
+  font-size: var(--font-size-xl);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.delete-btn.confirm {
+  background: var(--color-red-start);
+}
+
+.delete-btn.confirm:hover:not(:disabled) {
+  background: var(--color-red-end);
+}
+
+.delete-btn.cancel {
+  background: var(--color-card);
+}
+
+.delete-btn.cancel:hover:not(:disabled) {
+  background: var(--color-card-image);
+}
+
+.delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
