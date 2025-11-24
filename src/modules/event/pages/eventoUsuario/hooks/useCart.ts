@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
-import { updateSeatStatus } from "../../../api/eventApi";
+import {
+  updateSeatStatus,
+  reserveFreeSector,
+  releaseFreeSector,
+} from "../../../api/eventApi";
 
 type CartItem = {
   eventId: string;
-  eventSeatId: string;
+  eventSeatId: string | null;   // controlado → GUID real, libre → null
   eventSectorId: string;
   price: number;
-  row: number;
-  column: number;
+  row: number | null;
+  column: number | null;
   sectorName: string;
+  isFree: boolean;              // TRUE = sector sin asientos
 };
 
 export function useCart(eventId: string | undefined) {
@@ -18,89 +23,98 @@ export function useCart(eventId: string | undefined) {
 
   const sanitize = (raw: any): CartItem[] => {
     if (!Array.isArray(raw)) return [];
-
-    return raw
-      .filter((x) =>
-        x &&
-        typeof x.eventSeatId === "string" &&
-        typeof x.eventSectorId === "string" &&
-        typeof x.sectorName === "string" &&
-        typeof x.price === "number" &&
-        typeof x.row === "number" &&
-        typeof x.column === "number"
-      )
-      .slice(0, 5);
+    return raw.slice(0, 5);
   };
-
 
   useEffect(() => {
     if (!eventId || !CART_KEY) return;
 
-    const raw = localStorage.getItem(CART_KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw);
-        const clean = sanitize(parsed);
-        setCart(clean);
-      } catch {
-        setCart([]);
-      }
+    try {
+      const raw = localStorage.getItem(CART_KEY);
+      if (raw) setCart(sanitize(JSON.parse(raw)));
+    } catch {
+      setCart([]);
     }
     setLoaded(true);
   }, [eventId]);
-
 
   useEffect(() => {
     if (!loaded || !CART_KEY) return;
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }, [cart, loaded, CART_KEY]);
 
+  
+  const addSeat = async (_eventData: any, seat: any, sector: any) => {
+    if (!eventId || !sector) return { ok: false, reason: "invalid" };
+    if (cart.length >= 5) return { ok: false, reason: "limit" };
 
-  const addSeat = async (eventData: any, seat: any, sector: any) => {
-    if (!eventId || !seat || !sector) return { ok: false, reason: "invalid" };
 
-    if (cart.length >= 5) {
-      return { ok: false, reason: "limit" };
+    if (!sector.isControlled) {
+      if (sector.capacity <= 0) return { ok: false, reason: "no-capacity" };
+
+      await reserveFreeSector(sector.eventSectorId);
+
+      const item: CartItem = {
+        eventId,
+        eventSeatId: null,            
+        eventSectorId: sector.eventSectorId,
+        price: sector.price,
+        row: null,
+        column: null,
+        sectorName: sector.name,
+        isFree: true,
+      };
+
+      setCart((prev) => [...prev, item]);
+      return { ok: true };
     }
 
-    if (!seat.eventSeatId) {
-      console.error("Seat inválido, missing eventSeatId", seat);
-      return { ok: false, reason: "invalid-seat" };
-    }
-    
+    // CONTROLADO
+    if (!seat?.eventSeatId) return { ok: false, reason: "invalid-seat" };
+
     await updateSeatStatus(eventId, seat.eventSeatId, { available: false });
 
     const item: CartItem = {
       eventId,
-      eventSeatId: seat.eventSeatId,
+      eventSeatId: seat.eventSeatId,   // GUID real
       eventSectorId: sector.eventSectorId,
       price: seat.price,
       row: seat.row,
       column: seat.column,
       sectorName: sector.name,
+      isFree: false,
     };
 
     setCart((prev) => [...prev, item]);
     return { ok: true };
   };
 
-
+  
   const removeSeat = async (item: CartItem) => {
     if (!eventId) return;
 
     try {
-      await updateSeatStatus(eventId, item.eventSeatId, { available: true });
+      if (item.isFree) {
+        await releaseFreeSector(item.eventSectorId);
+      } else {
+        await updateSeatStatus(eventId, item.eventSeatId!, { available: true });
+      }
     } catch {}
 
-    setCart((prev) => prev.filter((x) => x.eventSeatId !== item.eventSeatId));
+    setCart((prev) => prev.filter((x) => x !== item));
   };
 
+  
   const clearAndRelease = async () => {
     if (!eventId) return;
 
     for (const item of cart) {
       try {
-        await updateSeatStatus(eventId, item.eventSeatId, { available: true });
+        if (item.isFree) {
+          await releaseFreeSector(item.eventSectorId); // una por ítem
+        } else {
+          await updateSeatStatus(eventId, item.eventSeatId!, { available: true });
+        }
       } catch {}
     }
 
@@ -108,5 +122,15 @@ export function useCart(eventId: string | undefined) {
     if (CART_KEY) localStorage.removeItem(CART_KEY);
   };
 
-  return { cart, addSeat, removeSeat, clearAndRelease };
+  
+    const clearCartOnly = () => {
+    if (!CART_KEY) return;
+    setCart([]);
+    localStorage.removeItem(CART_KEY);
+  };
+
+  return { cart, addSeat, removeSeat, clearAndRelease, clearCartOnly };
 }
+
+
+

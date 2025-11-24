@@ -19,16 +19,17 @@ interface EventStatus {
 }
 
 interface CreateEventRequest {
-  venueId: string;
-  categoryId: number;
-  typeId?: number | null;
-  statusId: number;
   name: string;
   description: string;
-  time: string; 
+  time: string | null;
+  categoryId: number;
+  typeId: number | null;
+  statusId: number;
+  venueId: string;
+
   address: string;
-  bannerImageUrl?: string | null;
-  thumbnailUrl?: string | null;
+  bannerImageUrl: string | null;
+  thumbnailUrl: string | null;
   themeColor?: string | null;
 }
 
@@ -407,4 +408,37 @@ export const updateSeatStatus = async (eventId: string, seatId: string, payload:
 export const getEventSeat = async (seatId: string) => {
   const res = await api.get(`/event-seats/${seatId}`);
   return res.data;
+};
+
+
+
+
+export const reserveFreeSector = async (eventSectorId: string) => {
+  const url = `/Event/${eventSectorId}/reserve`;
+  logReq("PATCH ReserveFreeSector", url);
+  const t0 = performance.now();
+
+  try {
+    const { data } = await api.patch(url);
+    logRes("PATCH ReserveFreeSector", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("PATCH ReserveFreeSector", url, performance.now() - t0, err);
+    throw err;
+  }
+};
+
+export const releaseFreeSector = async (eventSectorId: string) => {
+  const url = `/Event/${eventSectorId}/release`;
+  logReq("PATCH ReleaseFreeSector", url);
+  const t0 = performance.now();
+
+  try {
+    const { data } = await api.patch(url);
+    logRes("PATCH ReleaseFreeSector", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("PATCH ReleaseFreeSector", url, performance.now() - t0, err);
+    throw err;
+  }
 };

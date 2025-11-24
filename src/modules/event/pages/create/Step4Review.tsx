@@ -11,9 +11,20 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
 
     try {
       const payload = {
-        ...data,
+        name: data.name,
+        description: data.description,
         time: data.time ? new Date(data.time).toISOString() : null,
+        categoryId: data.categoryId,
+        typeId: data.typeId,
+        statusId: data.statusId,
+        venueId: data.venueId,
+        
+        address: data.address,
+        thumbnailUrl: data.thumbnailUrl,
+        bannerImageUrl: data.bannerImageUrl
       };
+
+
 
       const created = await createEvent(payload);
   
