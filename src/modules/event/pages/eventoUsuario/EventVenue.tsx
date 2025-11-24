@@ -23,7 +23,7 @@ export default function EventVenuePage() {
   const navigate = useNavigate();
 
 
-  const { cart, addSeat, removeSeat, clearAndRelease } = useCart(eventId);
+  const { cart, addSeat, removeSeat, clearAndRelease, clearCartOnly } = useCart(eventId);
 
   const { timeLeft, resetTimer, stopTimer } = useCartTimer(
     eventId,
@@ -63,14 +63,18 @@ export default function EventVenuePage() {
   
   const handleAdd = async () => {
     const result = await addSeat(eventData, selectedSeat, selectedSector);
+
     if (!result.ok) {
-      if (result.reason === "limit") alert("Máximo 5 asientos.");
+      if (result.reason === "limit") alert("Máximo 5 items.");
+      if (result.reason === "no-capacity") alert("No quedan lugares.");
       return;
     }
+
     resetTimer();
     setSelectedSeat(null);
     setSelectedSector(null);
   };
+
   
   const handleRemoveItem = async (item: any) => {
     const isLast = cart.length === 1;
@@ -80,43 +84,58 @@ export default function EventVenuePage() {
     }
   };
 
-   const handleCheckout = async () => {
-    if (!cart.length || !eventId || !eventData) return;
+const handleCheckout = async () => {
+  if (!cart.length || !eventId || !eventData) return;
 
-    const token = localStorage.getItem("token");
-    if (!token) return;
+  const token = localStorage.getItem("token");
+  if (!token) return;
 
-    const payload = decodeToken(token);
-    if (!payload) return;
+  const payload = decodeToken(token);
+  if (!payload) return;
 
-    const orderPayload = {
-      userId: payload.userId,
-      event: eventId,
-      venue: eventData.venueId,
-      seats: cart.map((item) => ({
-        eventSeatId: item.eventSeatId,
-        eventSectorId: item.eventSectorId,
-        eventId,
-        price: item.price,
-      })),
-      sectors: null,
-    };
+  const seats = cart
+    .filter((i) => !i.isFree)
+    .map((item) => ({
+      eventSeatId: item.eventSeatId,
+      eventSectorId: item.eventSectorId,
+      eventId,
+      price: item.price,
+    }));
 
-    try {
-      const order = await createOrder(orderPayload);
-      
-      localStorage.setItem(
-        `order_snapshot_${order.orderId}`,
-        JSON.stringify(cart)
-      );
-      
-      stopTimer();
 
-      navigate(`/order/${order.orderId}/pay`);
-    } catch (err) {
-      console.error("Error creando orden", err);
-    }
+  const sectors = cart
+    .filter((i) => i.isFree)
+    .map((item) => ({
+      eventSectorId: item.eventSectorId,
+      eventId,
+      quantity: 1,
+      unitPrice: item.price,
+    }));
+
+  const orderPayload = {
+    userId: payload.userId,
+    event: eventId,
+    venue: eventData.venueId,
+    seats: seats.length ? seats : null,
+    sectors: sectors.length ? sectors : null,
   };
+
+  try {
+    const order = await createOrder(orderPayload);
+
+    localStorage.setItem(
+      `order_snapshot_${order.orderId}`,
+      JSON.stringify(cart)
+    );
+
+    clearCartOnly();
+    stopTimer();
+    navigate(`/order/${order.orderId}/pay`);
+  } catch (err) {
+    console.error("Error creando orden", err);
+  }
+};
+
 
 
   if (!eventData) {
@@ -143,9 +162,14 @@ export default function EventVenuePage() {
               sectors={eventData.sectors}
               selectedSeatId={selectedSeat?.eventSeatId || null}
               onSeatClick={(seat: any, sector: any) => {
-                setSelectedSeat(seat);
+                console.log("CLICK SECTOR:", sector);
+                console.log("CONTROLADO:", sector.isControlled);
+                console.log("CAPACITY:", sector.capacity);
+
                 setSelectedSector(sector);
+                setSelectedSeat(sector.isControlled ? seat : null);
               }}
+
             />
           </div>
           
@@ -170,3 +194,7 @@ export default function EventVenuePage() {
     </Layout>
   );
 }
+function clearCartOnly() {
+  throw new Error("Function not implemented.");
+}
+

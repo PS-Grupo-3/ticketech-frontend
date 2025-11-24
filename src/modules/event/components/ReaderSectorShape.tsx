@@ -13,21 +13,17 @@ function getCenter(shape: any) {
     const cy = y;
     const textX = cx + width / 2;
     const textY = cy + height / 2;
-
     const dx = textX - cx;
     const dy = textY - cy;
 
     return {
       x: cx + dx * Math.cos(rotation) - dy * Math.sin(rotation),
-      y: cy + dx * Math.sin(rotation) + dy * Math.cos(rotation)
+      y: cy + dx * Math.sin(rotation) + dy * Math.cos(rotation),
     };
   }
 
   if (shape.type === "circle") {
-    return {
-      x: x,
-      y: y,
-    };
+    return { x, y };
   }
 
   if (shape.type === "semicircle") {
@@ -39,13 +35,12 @@ function getCenter(shape: any) {
 
     const textX = cx + midRadius * Math.cos(midAngle);
     const textY = cy + midRadius * Math.sin(midAngle);
-
     const dx = textX - cx;
     const dy = textY - cy;
 
     return {
       x: cx + dx * Math.cos(rotation) - dy * Math.sin(rotation),
-      y: cy + dx * Math.sin(rotation) + dy * Math.cos(rotation)
+      y: cy + dx * Math.sin(rotation) + dy * Math.cos(rotation),
     };
   }
 
@@ -54,25 +49,22 @@ function getCenter(shape: any) {
     const outerRadius = width / 2;
     const cx = x;
     const cy = y;
-
     const midRadius = (innerRadius + outerRadius) / 2;
     const midAngle = Math.PI / 4;
-
     const textX = cx + midRadius * Math.cos(midAngle);
     const textY = cy + midRadius * Math.sin(midAngle);
-
     const dx = textX - cx;
     const dy = textY - cy;
 
     return {
       x: cx + dx * Math.cos(rotation) - dy * Math.sin(rotation),
-      y: cy + dx * Math.sin(rotation) + dy * Math.cos(rotation)
+      y: cy + dx * Math.sin(rotation) + dy * Math.cos(rotation),
     };
   }
 
   return {
     x: x + width / 2,
-    y: y + height / 2
+    y: y + height / 2,
   };
 }
 
@@ -80,7 +72,7 @@ export default function ReaderSectorShape({
   sector,
   scale,
   selectedSeatId,
-  onSeatClick
+  onSeatClick,
 }: any) {
   const shape = sector.shape;
 
@@ -92,11 +84,21 @@ export default function ReaderSectorShape({
     opacity: (shape.opacity ?? 100) / 100,
     stroke: "white",
     strokeWidth: 1,
-    listening: true
+    listening: true,
+    onClick: () => onSeatClick(null, sector),   // <-- CLICK UNIVERSAL
   };
 
   const center = getCenter(shape);
   const showSeats = scale >= 1.4;
+
+  const fontSize = 14 / scale;
+  const textLines = sector.isControlled
+    ? [sector.name]
+    : [sector.name, `${sector.capacity} disponibles`];
+
+  const maxLineLength = Math.max(...textLines.map((l) => l.length));
+  const offsetX = (maxLineLength * fontSize * 0.22) / 1.0;
+  const offsetY = (textLines.length * fontSize) / 2;
 
   return (
     <>
@@ -130,12 +132,13 @@ export default function ReaderSectorShape({
         <Text
           x={center.x}
           y={center.y}
-          text={sector.name}
-          fontSize={14 / scale}
+          text={textLines.join("\n")}
+          fontSize={fontSize}
           fill="white"
           align="center"
-          offsetX={sector.name.length * (14 / scale) * 0.22}
-          offsetY={(14 / scale) / 2}
+          verticalAlign="middle"
+          offsetX={offsetX}
+          offsetY={offsetY}
           rotation={shape.rotation}
         />
       )}

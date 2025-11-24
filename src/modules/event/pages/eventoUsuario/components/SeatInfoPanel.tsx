@@ -9,33 +9,45 @@ export default function SeatInfoPanel({
   selectedSector,
   onAdd,
 }: SeatInfoPanelProps) {
-  const disabled = !selectedSeat || !selectedSector;
+  if (!selectedSector) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm text-xs text-black">
+        Seleccioná un sector.
+      </div>
+    );
+  }
+
+  const isFree = !selectedSector.isControlled;
+  const disabled = isFree && selectedSector.capacity <= 0;
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm space-y-3">
-      <h2 className="text-sm text-black font-semibold text-slate-900">
-        Detalle del ticket
-      </h2>
+      <h2 className="text-sm font-semibold text-slate-900">Detalle</h2>
 
-      <div className="space-y-1 text-xs text-slate-600">
+      <div className="space-y-1 text-xs text-black">
         <p className="text-black">
-          <span className="font-semibold text-black">Sector:</span>{" "}
-          {selectedSector ? selectedSector.name : "Ninguno"}
+          <span className="font-semibold text-black">Sector:</span> {selectedSector.name}
         </p>
-        <p className="text-black">
-          <span className="font-semibold text-black">Lugar:</span>{" "}
-          {selectedSeat
-            ? `Fila ${selectedSeat.row} · Asiento ${selectedSeat.column}`
-            : "Ninguno"}
-        </p>
+
+        {isFree ? (
+          <p className="text-black">
+            <span className="font-semibold text-black">Disponibles:</span>{" "}
+            {selectedSector.capacity}
+          </p>
+        ) : (
+          <p className="text-black">
+            <span className="font-semibold text-black">Lugar:</span>{" "}
+            {selectedSeat
+              ? `Fila ${selectedSeat.row} – Asiento ${selectedSeat.column}`
+              : "Ninguno"}
+          </p>
+        )}
       </div>
 
       <div className="flex items-baseline justify-between">
-        <span className="text-xs uppercase tracking-wide text-black">
-          Precio
-        </span>
+        <span className="text-xs uppercase tracking-wide text-black">Precio</span>
         <span className="text-2xl font-bold text-emerald-600">
-          {selectedSeat ? `$${selectedSeat.price}` : "—"}
+          ${isFree ? selectedSector.price : selectedSeat?.price ?? "—"}
         </span>
       </div>
 
@@ -55,3 +67,5 @@ export default function SeatInfoPanel({
     </div>
   );
 }
+
+

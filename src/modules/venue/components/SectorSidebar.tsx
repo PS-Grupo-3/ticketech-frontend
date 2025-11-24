@@ -21,8 +21,9 @@ interface SidebarProps {
 export default function SectorSidebar({
   sector,
   onUpdateLocal,
-  onRemoveLocal,
+  onRemoveLocal
 }: SidebarProps) {
+  // ensure shape is always valid for Konva
   const [local, setLocal] = useState<Sector>({
     ...sector,
     shape: {
@@ -43,15 +44,40 @@ export default function SectorSidebar({
     });
   }, [sector]);
 
-  const buildPayload = (s: Sector) => ({
-    name: s.name,
-    isControlled: s.isControlled,
-    seatCount: s.seatCount,
-    capacity: s.capacity,
-    shape: {
-      ...s.shape
+  // BUILD PAYLOAD FOR BACKEND
+  const buildPayload = (s: Sector) => {
+    if (s.isControlled) {
+      const rows = s.shape.rows ?? 1;
+      const cols = s.shape.columns ?? 1;
+
+      return {
+        name: s.name,
+        isControlled: true,
+        seatCount: rows * cols,
+        capacity: null,
+        shape: {
+          ...s.shape,
+          type: s.shape.type, // valid type
+          rows,
+          columns: cols
+        }
+      };
     }
-  });
+
+    // NON CONTROLLED → must still send valid shape
+    return {
+      name: s.name,
+      isControlled: false,
+      seatCount: null,
+      capacity: Number(s.capacity ?? 0),
+      shape: {
+        ...s.shape,
+        type: "rectangle", // backend required
+        rows: 1,
+        columns: 1
+      }
+    };
+  };
 
   const saveSector = async (updated: Sector) => {
     try {
@@ -80,13 +106,16 @@ export default function SectorSidebar({
     applyUpdate({ ...local, shape: { ...local.shape, [key]: value } });
   };
 
-  const handleRowsColsChange = (
-    key: "rows" | "columns",
-    value: number
-  ) => {
+  // update grid size for controlled
+  const handleRowsColsChange = (key: "rows" | "columns", value: number) => {
+    const rows = key === "rows" ? value : local.shape.rows;
+    const cols = key === "columns" ? value : local.shape.columns;
+    const seatCount = rows * cols;
+
     applyUpdate({
       ...local,
-      shape: { ...local.shape, [key]: value }
+      seatCount,
+      shape: { ...local.shape, rows, columns: cols }
     });
   };
 
@@ -135,11 +164,47 @@ export default function SectorSidebar({
         <input
           type="checkbox"
           checked={local.isControlled}
-          onChange={(e) => handleChange("isControlled", e.target.checked)}
+          onChange={(e) => {
+            const isCtrl = e.target.checked;
+
+            if (isCtrl) {
+              // CONTROLLED
+              const rows = local.shape.rows ?? 1;
+              const cols = local.shape.columns ?? 1;
+
+              applyUpdate({
+                ...local,
+                isControlled: true,
+                seatCount: rows * cols,
+                capacity: null,
+                shape: {
+                  ...local.shape,
+                  type: "rectangle", // keep valid
+                  rows,
+                  columns: cols
+                }
+              });
+            } else {
+              // NON CONTROLLED
+              applyUpdate({
+                ...local,
+                isControlled: false,
+                seatCount: null,
+                capacity: local.capacity ?? 100,
+                shape: {
+                  ...local.shape,
+                  type: "rectangle",
+                  rows: 1,
+                  columns: 1
+                }
+              });
+            }
+          }}
         />
         <label className="text-sm">Sector controlado</label>
       </div>
 
+      {/* CONTROLLED */}
       {local.isControlled && (
         <div className="grid grid-cols-3 gap-3">
           <div>
@@ -172,19 +237,32 @@ export default function SectorSidebar({
             <label className="text-sm">Asientos</label>
             <input
               type="number"
+              readOnly
               value={local.seatCount ?? 0}
-              onChange={(e) =>
-                handleChange("seatCount", Number(e.target.value))
-              }
-              className="w-full bg-gray-800 border border-gray-600 rounded p-2"
+              className="w-full bg-gray-700 text-gray-400 border border-gray-600 rounded p-2"
             />
           </div>
         </div>
       )}
 
+      {/* NON CONTROLLED */}
+      {!local.isControlled && (
+        <div>
+          <label className="text-sm">Capacidad</label>
+          <input
+            type="number"
+            value={local.capacity ?? 0}
+            onChange={(e) => handleChange("capacity", Number(e.target.value))}
+            className="w-full bg-gray-800 border border-gray-600 rounded p-2"
+          />
+        </div>
+      )}
+
+      {/* SHAPE EDITOR */}
       <div className="border-t border-gray-700 pt-4">
         <h3 className="text-sm font-semibold">Forma</h3>
 
+        {/* width / height for both modes */}
         <div className="grid grid-cols-2 gap-3 mt-3">
           <div>
             <label className="text-sm">Ancho</label>
@@ -251,21 +329,29 @@ export default function SectorSidebar({
           />
         </div>
 
-        <div className="mt-3">
-          <label className="text-sm">Tipo</label>
-          <select
-            value={local.shape.type}
-            onChange={(e) =>
-              handleShapeChange("type", e.target.value)
-            }
-            className="w-full bg-gray-800 border border-gray-600 rounded p-2"
-          >
-            <option value="rectangle">Rectángulo</option>
-            <option value="circle">Círculo</option>
-            <option value="semicircle">Semicírculo</option>
-            <option value="arc">Arco</option>
-          </select>
-        </div>
+        {local.isControlled && (
+          <div className="mt-3">
+            <label className="text-sm">Tipo</label>
+            <select
+              value={local.shape.type}
+              onChange={(e) =>
+                handleShapeChange("type", e.target.value)
+              }
+              className="w-full bg-gray-800 border border-gray-600 rounded p-2"
+            >
+              <option value="rectangle">Rectángulo</option>
+              <option value="circle">Círculo</option>
+              <option value="semicircle">Semicírculo</option>
+              <option value="arc">Arco</option>
+            </select>
+          </div>
+        )}
+
+        {!local.isControlled && (
+          <p className="text-xs text-gray-500 mt-3">
+            Forma fija: Área libre (no controlada)
+          </p>
+        )}
       </div>
 
       <div className="mt-6 flex flex-col gap-3">

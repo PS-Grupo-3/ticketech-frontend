@@ -14,23 +14,19 @@ export default function SectorEditorModal({ sector, onClose, onUpdateLocal, relo
   };
 
   const toggleAvailable = (value: boolean) => {
-    if (!value) {
-      onUpdateLocal({
-        ...sector,
-        available: false,
-        capacity: 100,
-        price: 100
-      });
-    } else {
-      onUpdateLocal({ ...sector, available: true });
-    }
+    onUpdateLocal({ ...sector, available: value });
   };
 
   const save = async () => {
     await updateEventSector({
       eventSectorId: sector.eventSectorId,
-      capacity: sector.available ? Number(sector.capacity) : 100,
-      price: sector.available ? Number(sector.price) : 100,
+
+      // CAPACITY:
+      // - Controlado → backend la recalcula solo
+      // - Libre → enviamos la capacidad real (readonly)
+      capacity: sector.isControlled ? null : Number(sector.capacity),
+
+      price: Number(sector.price),
       available: sector.available
     });
 
@@ -60,15 +56,17 @@ export default function SectorEditorModal({ sector, onClose, onUpdateLocal, relo
 
           {sector.available && (
             <>
-              <div>
-                <label className="text-sm text-gray-300 block mb-1">Capacidad</label>
-                <input
-                  type="number"
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-md p-2 text-sm"
-                  value={sector.capacity}
-                  onChange={(e) => updateField("capacity", e.target.value)}
-                />
-              </div>
+              {/* CONTROLADO → capacidad automática */}
+              {sector.isControlled ? (
+                <p className="text-sm text-gray-400">
+                  Capacidad automática: {sector.capacity} asientos
+                </p>
+              ) : (
+                /* LIBRE → capacidad fija del venue, readonly */
+                <p className="text-sm text-gray-400">
+                  Capacidad del sector: {sector.capacity} personas
+                </p>
+              )}
 
               <div>
                 <label className="text-sm text-gray-300 block mb-1">Precio</label>
