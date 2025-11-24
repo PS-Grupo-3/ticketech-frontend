@@ -34,8 +34,6 @@ interface CreateEventRequest {
 }
 
 interface UpdateEventRequest {
-  eventId: string;
-  statusId?: number | null;
   name?: string | null;
   description?: string | null;
   time?: string | null;
@@ -227,8 +225,8 @@ export const createEvent = async (payload: CreateEventRequest) => {
   }
 };
 
-export const updateEvent = async (payload: UpdateEventRequest) => {
-  const url = "/Event"; 
+export const updateEvent = async (id: string, payload: UpdateEventRequest) => {
+  const url = `/Event/${id}`; 
   logReq("PUT Event", url, payload);
   const t0 = performance.now();
   try {
