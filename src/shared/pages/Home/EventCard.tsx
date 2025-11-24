@@ -34,7 +34,17 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
   
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const goToEventPreview = () => navigate(`/event/${event.eventId}`);
+  const goToEventPreview = () => {
+    if (showMenu) {
+      console.log("ID DEL EVENTO:", event);
+      console.log("event.eventId:", event.eventId);
+
+      navigate(`/event/${event.eventId}/metrics`); // si está en panel admin → métricas
+    } else {
+      navigate(`/event/${event.eventId}`); // si está en home → detalle
+    }
+  };
+
 
   // cerrar menú al hacer click afuera
   useEffect(() => {
@@ -60,7 +70,23 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
           </button>
           {menuOpen && (
             <div className="menu-dropdown">
-              <button onClick={(e) => { e.stopPropagation();}}>Editar</button>
+              <button
+                onClick={() => navigate(`/event/${event.eventId}/update`)}
+                disabled={currentStatus === "Finished"}   // opción A funcionando
+                title={
+                  currentStatus === "Finished"
+                    ? "No se puede editar un evento finalizado."
+                    : "Editar evento"
+                }
+                className={`px-3 py-1 rounded text-white ${
+                  currentStatus === "Finished"
+                    ? "bg-gray-600 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-500"
+                }`}
+              >
+                Editar
+              </button>
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -77,7 +103,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
               >
                 Actualizar estado
               </button>
-              <button onClick={(e) => { e.stopPropagation();}}>Estadísticas</button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
