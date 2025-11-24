@@ -10,7 +10,9 @@ export const useLoginSidebar = (onClose: () => void) => {
     const [credsAnimation, setStatus] = useState(false);
     const [shakeAnimation, shakeStatus] = useState(false);
 
-    const [view, setView] = useState<"login" | "register" | "user">("login");
+    const [view, setView] =
+        useState<"login" | "register" | "user" | "profile">("login");
+
 
     const [user, setUser] = useState<any>(null);
 
