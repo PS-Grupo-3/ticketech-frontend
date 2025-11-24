@@ -267,6 +267,21 @@ export const updateEventStatus = async (id: string, statusId: number) => {
     throw err;
   }
 };
+
+export const getEventMetrics = async (id: string) => {
+  const url = `/Event/${id}/metrics`;
+  logReq("GET Event Metrics", url);
+  const t0 = performance.now();
+  try {
+    const { data } = await api.get(url);
+    logRes("GET Event Metrics", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("GET Event Metrics", url, performance.now() - t0, err);
+    throw err;
+  }
+}
+
 //Endpoints de EventSector
 
 export const getEventSectors = async (id: string) => {

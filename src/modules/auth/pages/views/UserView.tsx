@@ -1,4 +1,5 @@
 import "../styles/userPanel.css";
+import { Link } from "react-router-dom";
 
 type Props = {
     user: {
@@ -33,23 +34,27 @@ const UserView = ({ user, logout }: Props) => {
             </div>
 
             <div className="userPanel-section">
-                <button className="userPanel-btn">Mis compras</button>
                 <button className="userPanel-btn">Mi perfil</button>
-
-                {(user.role === "Admin" || user.role === "SuperAdmin") && (
-                    <div className="userPanel-section">
-                        <button className="userPanel-btn">Panel de eventos</button>
-                        <button className="userPanel-btn">Usuarios</button>
-                    </div>
-                )}
-
-                {user.role === "SuperAdmin" && (
-                    <div className="userPanel-section">
-                        <h4>Super Administrador</h4>
-                        <button className="userPanel-btn danger">Configuraciones avanzadas</button>
-                    </div>
-                )}
+                <Link to="/order" className="userPanel-btn">
+                    Mis compras
+                </Link>
             </div>
+            {(user.role === "Admin" || user.role === "SuperAdmin") && (
+                <div className="userPanel-section">
+                    <h4>Administrador</h4>
+                    <Link to="/event" className="userPanel-btn">
+                        Panel de eventos
+                    </Link>
+                </div>
+            )}
+            {user.role === "SuperAdmin" && (
+                <div className="userPanel-section">
+                    <h4>Super Administrador</h4>
+                    <Link to="/venue" className="userPanel-btn">
+                        Panel de venues
+                    </Link>
+                </div>
+            )}
         </div>
     );
 };

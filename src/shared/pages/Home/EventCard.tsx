@@ -34,7 +34,17 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
   
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const goToEventPreview = () => navigate(`/event/${event.eventId}`);
+  const goToEventPreview = () => {
+    if (showMenu) {
+      console.log("ID DEL EVENTO:", event);
+      console.log("event.eventId:", event.eventId);
+
+      navigate(`/event/${event.eventId}/metrics`); // si está en panel admin → métricas
+    } else {
+      navigate(`/event/${event.eventId}`); // si está en home → detalle
+    }
+  };
+
 
   // cerrar menú al hacer click afuera
   useEffect(() => {
@@ -77,7 +87,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
               >
                 Actualizar estado
               </button>
-              <button onClick={(e) => { e.stopPropagation();}}>Estadísticas</button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
