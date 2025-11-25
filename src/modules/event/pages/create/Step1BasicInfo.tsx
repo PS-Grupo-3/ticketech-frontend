@@ -2,8 +2,24 @@ import { useState } from "react";
 
 export default function Step1BasicInfo({ data, onNext, onBack }: any) {
   const [local, setLocal] = useState(data);
+  const [error, setError] = useState<string | null>(null);
+
+  const today = new Date().toISOString().split("T")[0];
 
   const handleNext = () => {
+    setError(null);
+    const eventDate = local.time?.split("T")[0];
+
+    if (!local.name || !local.description || !eventDate || !local.address) {
+      setError("Por favor completa todos los campos obligatorios.");
+      return;
+    }
+
+    if (eventDate < today) {
+      setError("La fecha del evento no puede ser anterior a hoy.");
+      return;
+    }
+
     onNext(local);
   };
 
@@ -15,7 +31,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
       </p>
 
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-6">
-      
+
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Nombre del evento
@@ -49,6 +65,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
             </label>
             <input
               type="date"
+              min={today}
               className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               value={local.time?.split("T")[0] ?? ""}
               onChange={(e) => {
@@ -58,7 +75,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
               }}
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Hora del evento
@@ -89,7 +106,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">          
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Banner principal (URL)
@@ -103,7 +120,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
               }
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Miniatura (URL)
@@ -118,7 +135,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Color del tema
@@ -145,6 +162,12 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="p-3 bg-red-900/20 border border-red-800 rounded-md text-red-400 text-sm">
+          {error}
+        </div>
+      )}
 
       <div className="flex justify-between pt-4">
         <button
