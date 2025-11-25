@@ -4,6 +4,7 @@ import Step2CategoryTypeStatus from "./Step2CategoryTypeStatus";
 import Step3SelectVenue from "./Step3SelectVenue";
 import Step4Review from "./Step4Review";
 import Step5ConfigureSectors from "./Step5ConfigureSectors";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   "Información básica",
@@ -14,6 +15,7 @@ const steps = [
 ];
 
 export default function CreateEventWizard() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
   const [form, setForm] = useState<any>({
@@ -38,6 +40,8 @@ export default function CreateEventWizard() {
   };
 
   const goBack = () => setStep((prev) => prev - 1);
+
+  const goToEventList = () => navigate("/event");
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -81,7 +85,7 @@ export default function CreateEventWizard() {
     
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 shadow-lg">
         {step === 1 && (
-          <Step1BasicInfo data={form} onNext={goNext} onBack={goBack} />
+          <Step1BasicInfo data={form} onNext={goNext} onBack={goToEventList} />
         )}
         {step === 2 && (
           <Step2CategoryTypeStatus data={form} onNext={goNext} onBack={goBack} />

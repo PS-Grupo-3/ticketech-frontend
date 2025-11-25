@@ -2,6 +2,7 @@ import { useState } from "react";
 import Step1BasicInfo from "./Step1BasicInfo";
 import Step2CategoryType from "./Step2CategoryType";
 import Step3Review from "./Step3Review";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   "Información básica",
@@ -10,6 +11,7 @@ const steps = [
 ];
 
 export default function UpdateEventWizard({ initialData, eventId }: any) {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
   const [form, setForm] = useState<any>({
@@ -30,23 +32,24 @@ export default function UpdateEventWizard({ initialData, eventId }: any) {
 
   const goBack = () => setStep((prev) => prev - 1);
 
+  const goToEventList = () => navigate("/event");
+
   return (
     <div className="max-w-4xl mx-auto">
 
-      {/* Stepper */}
       <div className="mb-6">
         <p className="text-sm text-gray-400 mb-2">
           Paso {step} de {steps.length}
         </p>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           {steps.map((label, index) => {
             const current = index + 1;
             const isActive = current === step;
             const isDone = current < step;
 
             return (
-              <div key={label} className="flex-1 flex items-center gap-2">
+              <div key={label} className="flex items-center gap-2">
                 <div
                   className={[
                     "w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold",
@@ -65,7 +68,7 @@ export default function UpdateEventWizard({ initialData, eventId }: any) {
                 </span>
 
                 {index < steps.length - 1 && (
-                  <div className="flex-1 h-[1px] bg-neutral-700" />
+                  <div className="w-12 h-[1px] bg-neutral-700" />
                 )}
               </div>
             );
@@ -73,10 +76,9 @@ export default function UpdateEventWizard({ initialData, eventId }: any) {
         </div>
       </div>
 
-      {/* Contenido */}
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 shadow-lg">
         {step === 1 && (
-          <Step1BasicInfo data={form} onNext={goNext} onBack={goBack} />
+          <Step1BasicInfo data={form} onNext={goNext} onBack={goToEventList} />
         )}
 
         {step === 2 && (
@@ -86,7 +88,7 @@ export default function UpdateEventWizard({ initialData, eventId }: any) {
         {step === 3 && (
             <Step3Review
                 data={form}
-                eventId={eventId}   // ← ahora sí tiene valor
+                eventId={eventId}
                 onBack={goBack}
                 onUpdated={() => {}}
             />
