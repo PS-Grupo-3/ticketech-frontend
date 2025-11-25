@@ -2,10 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { createVenue, getVenueTypes } from "../api/venueApi";
-
-import Navbar from "../../../shared/components/Navbar";
-import Footer from "../../../shared/components/Footer";
-import LoginSidebar from "../../auth/pages/LoginSB";
+import Layout from "../../../shared/components/Layout";
 
 interface VenueType {
   venueTypeId: number;
@@ -95,120 +92,119 @@ export default function VenueCreatePage() {
 
   const handleGoToList = () => navigate("/venues");
 
-  return (
-    <div className="min-h-screen flex flex-col bg-neutral-950 text-white">
-      <Navbar onUserClick={() => setSidebarOpen(true)} />
-      <LoginSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    return (
+    <Layout>
+      <div className="bg-neutral-950 text-white">
+        <div className="max-w-lg mx-auto pt-12 pb-16 px-8">
+          <h1 className="text-4xl font-extrabold mb-8">Crear Nuevo Venue</h1>
 
-      <div className="flex-grow flex flex-col items-center justify-center p-8">
-        <h1 className="text-4xl font-extrabold mb-8">Crear Nuevo Venue</h1>
+          <form
+            onSubmit={handleSubmit}
+            className="w-full bg-neutral-900 p-8 rounded-lg shadow-lg"
+          >
+            <div className="mb-4">
+              <label className="block text-sm text-neutral-300">Nombre</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full mt-1 bg-neutral-800 border border-neutral-700 rounded p-2"
+              />
+            </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-lg bg-neutral-900 p-8 rounded-lg shadow-lg"
-        >
-          <div className="mb-4">
-            <label className="block text-sm text-neutral-300">Nombre</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full mt-1 bg-neutral-800 border-neutral-700 rounded p-2"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm text-neutral-300">Tipo</label>
-            <select
-              name="venueTypeId"
-              value={formData.venueTypeId}
-              onChange={handleChange}
-              className="w-full mt-1 bg-neutral-800 border-neutral-700 rounded p-2"
-            >
-              {venueTypes.map((t) => (
-                <option key={t.venueTypeId} value={t.venueTypeId}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm text-neutral-300">Dirección</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="w-full mt-1 bg-neutral-800 border-neutral-700 rounded p-2"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm text-neutral-300">URL del Mapa</label>
-            <input
-              type="text"
-              name="mapUrl"
-              value={formData.mapUrl}
-              onChange={handleChange}
-              className="w-full mt-1 bg-neutral-800 border-neutral-700 rounded p-2"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm text-neutral-300">Imagen de Fondo</label>
-            <input
-              type="text"
-              name="backgroundImageUrl"
-              value={formData.backgroundImageUrl}
-              onChange={handleChange}
-              className="w-full mt-1 bg-neutral-800 border-neutral-700 rounded p-2"
-            />
-          </div>
-
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-          <div className="flex justify-between mt-6">
-            <Link to="/venues" className="text-neutral-400">Cancelar</Link>
-
-            <button
-              type="submit"
-              className="px-6 py-2 bg-green-600 rounded-md text-white"
-            >
-              Guardar Venue
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {showModelModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
-          <div className="bg-neutral-800 p-8 rounded-xl border border-neutral-700 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">¡Venue Creado!</h2>
-            <p className="text-neutral-300 mb-6">
-              ¿Querés empezar a modelar sectores?
-            </p>
-
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={handleGoToEditor}
-                className="w-full py-3 bg-blue-600 rounded-md text-white"
+            <div className="mb-4">
+              <label className="block text-sm text-neutral-300">Tipo</label>
+              <select
+                name="venueTypeId"
+                value={formData.venueTypeId}
+                onChange={handleChange}
+                className="w-full mt-1 bg-neutral-800 border border-neutral-700 rounded p-2"
               >
-                Ir al modelador
-              </button>
+                {venueTypes.map((t) => (
+                  <option key={t.venueTypeId} value={t.venueTypeId}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm text-neutral-300">Dirección</label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                className="w-full mt-1 bg-neutral-800 border border-neutral-700 rounded p-2"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm text-neutral-300">URL del Mapa</label>
+              <input
+                type="text"
+                name="mapUrl"
+                value={formData.mapUrl}
+                onChange={handleChange}
+                className="w-full mt-1 bg-neutral-800 border border-neutral-700 rounded p-2"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm text-neutral-300">Imagen de Fondo</label>
+              <input
+                type="text"
+                name="backgroundImageUrl"
+                value={formData.backgroundImageUrl}
+                onChange={handleChange}
+                className="w-full mt-1 bg-neutral-800 border border-neutral-700 rounded p-2"
+              />
+            </div>
+
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+            <div className="flex justify-between mt-6">
+              <Link to="/venues" className="text-neutral-400">
+                Cancelar
+              </Link>
+
               <button
-                onClick={handleGoToList}
-                className="w-full py-3 bg-neutral-700 rounded-md text-white"
+                type="submit"
+                className="px-6 py-2 bg-green-600 rounded-md text-white"
               >
-                Volver a la lista
+                Guardar Venue
               </button>
             </div>
-          </div>
+          </form>
         </div>
-      )}
 
-      <Footer />
-    </div>
+        {showModelModal && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
+            <div className="bg-neutral-800 p-8 rounded-xl border border-neutral-700 w-full max-w-md">
+              <h2 className="text-xl font-bold mb-4">¡Venue Creado!</h2>
+              <p className="text-neutral-300 mb-6">
+                ¿Querés empezar a modelar sectores?
+              </p>
+
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={handleGoToEditor}
+                  className="w-full py-3 bg-blue-600 rounded-md text-white"
+                >
+                  Ir al modelador
+                </button>
+                <button
+                  onClick={handleGoToList}
+                  className="w-full py-3 bg-neutral-700 rounded-md text-white"
+                >
+                  Volver a la lista
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </Layout>
   );
 }

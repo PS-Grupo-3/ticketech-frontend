@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getVenues } from "../api/venueApi";
+import Layout from "../../../shared/components/Layout";
 
 interface Venue {
   venueId: string;
@@ -42,7 +43,8 @@ export default function VenueListPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-950 text-white p-8">
+    <Layout>
+    <div className="flex flex-col items-center justify-center bg-neutral-950 text-white p-8">
       <div className="mb-10 w-full max-w-4xl">
         
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
@@ -93,5 +95,6 @@ export default function VenueListPage() {
         <Link to="/" className="text-blue-400 hover:underline">Volver al inicio</Link>
       </footer>
     </div>
+  </Layout>
   );
 }

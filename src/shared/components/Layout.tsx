@@ -37,7 +37,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <LoginSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="flex-1">
+      <main className="flex-1 bg-neutral-950">
         {children}
       </main>
 

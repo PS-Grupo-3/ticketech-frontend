@@ -6,6 +6,7 @@ import { getVenueById, updateVenue } from "../api/venueApi";
 import { getSectorsForVenue, createSector, updateSector, getSeatsForSector, getSectorById } from "../api/sectorApi";
 
 import type { Sector, Shape, Seat } from "../components/Types";
+import Layout from "../../../shared/components/Layout";
 
 const CANVAS_WIDTH = 900;
 
@@ -189,97 +190,99 @@ export default function VenueEditorPage() {
   const handleSeatHoverLeave = () => setHoveredSeat(null);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
-      <div className="flex flex-row flex-nowrap flex-1 overflow-hidden">
-        <div
-          className="flex flex-col gap-3 p-4 flex-none"
-          style={{ width: CANVAS_WIDTH + 32 }}
-        >
+    <Layout>
+  <div className="flex flex-col bg-neutral-950 text-white h-full">
+
+    {/* WORKSPACE */}
+    <div className="flex flex-1 overflow-hidden">
+
+      {/* CANVAS SECTION */}
+      <div className="flex-1 flex justify-center items-center p-6">
+
+        <div className="relative border border-neutral-800 rounded-xl shadow-lg bg-neutral-900">
           {venueId && (
-            <div className="flex gap-2 text-black">
-              <input
-                type="text"
-                placeholder="Enter background image URL"
-                value={backgroundImageUrlInput}
-                onChange={(e) => setBackgroundImageUrlInput(e.target.value)}
-                className="border p-2 rounded flex-1"
-              />
-              <button
-                onClick={onBackgroundImageUrlChange}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              >
-                Update Image
-              </button>
-            </div>
+            <VenueCanvas
+              background={background}
+              sectors={sectors}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              onTransformLive={replaceLocal}
+              onTransformCommit={handleCommitToDb}
+              onMoveLive={replaceLocal}
+              onMoveCommit={handleCommitToDb}
+              onSeatHoverEnter={handleSeatHoverEnter}
+              onSeatHoverLeave={handleSeatHoverLeave}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={() => setIsDragging(false)}
+            />
           )}
 
-          {venueId && (
-            <div className="relative">
-              <VenueCanvas
-                background={background}
-                sectors={sectors}
-                selectedId={selectedId}
-                onSelect={setSelectedId}
-                onTransformLive={replaceLocal}
-                onTransformCommit={handleCommitToDb}
-                onMoveLive={replaceLocal}
-                onMoveCommit={handleCommitToDb}
-                onSeatHoverEnter={handleSeatHoverEnter}
-                onSeatHoverLeave={handleSeatHoverLeave}
-                onDragStart={() => setIsDragging(true)}
-                onDragEnd={() => setIsDragging(false)}
-              />
-
-              <button
-                onClick={() => window.location.reload()}
-                className="absolute top-2 right-2 bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600 transition-colors"
-                title="Reset Zoom"
-              >
-                Reset Zoom
-              </button>
-            </div>
-          )}
+          <button
+            onClick={() => window.location.reload()}
+            className="absolute top-3 right-3 bg-neutral-800/80 px-3 py-1 rounded-md border border-neutral-700 hover:bg-neutral-700 transition"
+          >
+            Reset Zoom
+          </button>
         </div>
 
-        {selectedId && venueId && (
-          <SectorSidebar
-            sector={sectors.find((s) => s.sectorId === selectedId)!}
-            onUpdateLocal={replaceLocal}
-            onRemoveLocal={(id: string) => {
-              setSectors((prev) => prev.filter((s) => s.sectorId !== id));
-              if (selectedId === id) setSelectedId(null);
-            }}
-          />
-
-        )}
-
         {hoveredSeat && (
-          <div className="absolute top-24 left-8 bg-black text-white p-2 rounded shadow-lg">
-            Row {hoveredSeat.rowNumber}, Col {hoveredSeat.columnNumber}
+          <div className="absolute top-24 left-8 bg-neutral-900/90 text-white px-3 py-1 rounded shadow-lg border border-neutral-700">
+            Fila {hoveredSeat.rowNumber}, Col {hoveredSeat.columnNumber}
           </div>
         )}
       </div>
 
-      {venueId && (
-        <div className="h-20 border-t border-gray-700 bg-gray-800 flex items-center justify-center gap-4">
-          {[
-            { type: "rectangle", icon: "▭", label: "Rectángulo" },
-            { type: "circle", icon: "○", label: "Círculo" },
-            { type: "semicircle", icon: "◐", label: "Semicírculo" },
-            { type: "arc", icon: "⌒", label: "Arco" },
-          ].map(({ type, icon, label }) => (
-            <button
-              key={type}
-              onClick={() => createWithShape(type)}
-              className="bg-gray-700 px-4 py-2 rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
-              title={label}
-            >
-              <span className="text-lg">{icon}</span>
-              <span className="hidden sm:inline">{label}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      {/* SIDEBAR SIEMPRE VISIBLE */}
+      <div className="w-[480px] border-l border-neutral-800 bg-neutral-900 shadow-inner overflow-y-auto">
+
+        {selectedId && venueId ? (
+          <SectorSidebar
+            sector={sectors.find((s) => s.sectorId === selectedId)!}
+            onUpdateLocal={replaceLocal}
+            onRemoveLocal={(id) => {
+              setSectors((p) => p.filter((s) => s.sectorId !== id));
+              setSelectedId(null);
+            }}
+          />
+        ) : (
+          <div className="h-full flex flex-col justify-center items-center text-neutral-400 px-10 text-center">
+            <p className="text-lg opacity-60">Seleccioná un sector para editarlo</p>
+            <p className="text-sm mt-2 opacity-40">O creá uno nuevo desde la barra inferior</p>
+          </div>
+        )}
+
+      </div>
+
     </div>
+
+    {/* TOOLBAR DE FORMAS (RE DISEÑADA) */}
+    {venueId && (
+      <div className="h-20 bg-neutral-900 border-t border-neutral-800 flex items-center justify-center gap-6">
+
+        {[
+          { type: "rectangle", icon: "▭", label: "Rectángulo" },
+          { type: "circle", icon: "○", label: "Círculo" },
+          { type: "semicircle", icon: "◐", label: "Semicírculo" },
+          { type: "arc", icon: "⌒", label: "Arco" },
+        ].map(({ type, icon, label }) => (
+          <button
+            key={type}
+            onClick={() => createWithShape(type)}
+            className="flex flex-col items-center justify-center w-16 h-16 
+                       rounded-xl border border-neutral-700 bg-neutral-800 
+                       hover:bg-blue-600 hover:border-blue-500 transition-all shadow-sm"
+            title={label}
+          >
+            <span className="text-xl">{icon}</span>
+            <span className="text-[11px] mt-1">{label}</span>
+          </button>
+        ))}
+
+      </div>
+    )}
+
+  </div>
+</Layout>
+
   );
 }
