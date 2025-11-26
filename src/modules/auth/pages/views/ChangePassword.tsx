@@ -27,7 +27,6 @@ export default function ChangePasswordView({ onCancel }: Props) {
   }, []);
 
   const handleSubmit = async () => {
-    // Validaciones
     if (!currentPassword || !newPassword || !repeatPassword) {
       setError("Todos los campos son obligatorios");
       setSuccess(null);
@@ -53,58 +52,77 @@ export default function ChangePasswordView({ onCancel }: Props) {
         currentPassword,
         newPassword,
       };
-
       const response: ServerResponse = await changePassword(payload);
 
-      if (response.status === 200) {
-        setSuccess("Contraseña cambiada correctamente");
-        setCurrentPassword("");
-        setNewPassword("");
-        setRepeatPassword("");
-      } else {
-        setError(response.message || "Error al cambiar la contraseña");
+      if (response.message) {
+          setSuccess(response.message);
+          setError(null);
+          setLoading(false);
+
+          setTimeout(() => {
+            onCancel();
+          }, 1000);
+
+          return;
       }
+
+      setError(response.message || "Error al cambiar la contraseña");
+      setLoading(false);
+
     } catch (err: any) {
       setError(err.message || "Error al cambiar la contraseña");
-    } finally {
       setLoading(false);
     }
+
   };
 
   return (
     <div className="SideBar open">
-      {/* HEADER */}
       <div className="headerSB">
         <h2>Cambiar contraseña</h2>
         <button onClick={onCancel}>X</button>
       </div>
 
-      {/* BODY */}
       <div className="bodySb creds">
+
         <input
+          className={`psw ${error ? "active" : "inactive"}`}
           type="password"
           placeholder="Contraseña actual"
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
         />
+
         <input
+          className={`psw ${error ? "active" : "inactive"}`}
           type="password"
           placeholder="Nueva contraseña"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />
+
         <input
+          className={`psw ${error ? "active" : "inactive"}`}
           type="password"
           placeholder="Repetir nueva contraseña"
           value={repeatPassword}
           onChange={(e) => setRepeatPassword(e.target.value)}
         />
 
-        {error && <p className="errormsg active">{error}</p>}
-        {success && <p className="successmsg active">{success}</p>}
+        {error && (
+          <p className={`errormsg ${error ? "active" : "inactive"}`}>
+            {error}
+          </p>
+        )}
+
+        {success && (
+          <p className="successmsg active">
+            {success}
+          </p>
+        )}
+
       </div>
 
-      {/* FOOTER */}
       <div className="btns">
         <button className="register" onClick={handleSubmit} disabled={loading}>
           {loading ? "Cambiando..." : "Cambiar"}
