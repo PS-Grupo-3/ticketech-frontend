@@ -19,12 +19,11 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
       <h2 className="text-2xl font-bold">Información básica</h2>
 
       <p className="text-sm text-gray-400">
-        Datos fundamentales del evento antes de clasificarlo o elegir el venue.
+        Datos fundamentales del evento antes de modificarlo.
       </p>
 
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-6">
 
-        {/* Nombre */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Nombre del evento
@@ -36,7 +35,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           />
         </div>
 
-        {/* Descripción */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Descripción
@@ -50,7 +48,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           />
         </div>
 
-        {/* Fecha + Hora */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           <div>
@@ -87,7 +84,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
 
         </div>
 
-        {/* Banner URL */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Banner principal (URL)
@@ -101,7 +97,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           />
         </div>
 
-        {/* Thumbnail URL */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Miniatura (URL)
@@ -115,7 +110,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
           />
         </div>
 
-        {/* Theme color */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Color del tema
@@ -143,7 +137,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
 
       </div>
 
-      {/* Botones */}
       <div className="flex justify-between pt-4">
         <button
           type="button"
