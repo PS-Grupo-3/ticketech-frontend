@@ -17,10 +17,14 @@ const LoginSidebar = ({ open, onClose }: Props) => {
     const {
         Email, setEmail,
         Password, setPassword,
+        Name, setName,
+        LastName, setLastName,
+        Phone, setPhone,
         credsError, credsAnimation,
         shakeAnimation,
         view, setView,
         handlelogin,
+        handleRegister,
         closeSidebar,
         resetModal,
         user,
@@ -32,11 +36,10 @@ const LoginSidebar = ({ open, onClose }: Props) => {
             <div
                 className={`overlay ${open ? "active" : ""}`}
                 onClick={closeSidebar}
-            ></div>
+            >
+            </div>
 
             <div className={`SideBar ${open ? "open" : ""}`}>
-
-                {/* HEADER */}
                 <div className="headerSB">
                     <h2>
                         {view === "login" && "Iniciar sesión en Ticketech"}
@@ -47,7 +50,6 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                     <button onClick={closeSidebar}>X</button>
                 </div>
 
-                {/* BODY */}
                 <div className="bodySb">
 
                     {view === "login" && (
@@ -62,7 +64,24 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                         />
                     )}
 
-                    {view === "register" && <RegisterView />}
+                    {view === "register" && (
+                        <RegisterView
+                            Name={Name}
+                            setName={setName}
+                            LastName={LastName}
+                            setLastName={setLastName}
+                            Phone={Phone}
+                            setPhone={setPhone}
+                            Email={Email}
+                            setEmail={setEmail}
+                            Password={Password}
+                            setPassword={setPassword}
+                            credsError={credsError}
+                            credsAnimation={credsAnimation}
+                            shakeAnimation={shakeAnimation}
+                            handleRegister={handleRegister}
+                        />
+                    )}
 
                     {view === "user" && (
                         <UserView
@@ -78,7 +97,6 @@ const LoginSidebar = ({ open, onClose }: Props) => {
 
                 </div>
 
-                {/* FOOTER BUTTONS */}
                 <div className="btns">
 
                     {view === "login" && (

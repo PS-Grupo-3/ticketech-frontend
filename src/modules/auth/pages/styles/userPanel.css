@@ -92,3 +92,11 @@
     color: var(--color-text-light);
     font-weight: var(--font-weight-bold);
 }
+
+.successmsg {
+    color: var(--color-success-light);
+    font-size: var(--font-size-semibase);
+    text-align: left;
+    width: 100%;
+    animation: fadeIn 0.4s ease;
+}

@@ -14,7 +14,6 @@ export type loginResponse=
     userId:string;
     name: string;
     role: string;
-        
 };
 
 export type serverResponse = 
@@ -66,9 +65,10 @@ export const changePassword = async (payload: ChangePasswordPayload): Promise<Se
         console.log("Respuesta del servidor:", data);
         return data;
     } catch (err: any) {
-        console.error("Error al cambiar contraseña:", err.response?.data || err);
+
         throw new Error(err.response?.data?.message || "Error al cambiar la contraseña");
     }
+
 };
 
 export const login = async (payload:LoginCredentials): Promise<loginResponse> =>
@@ -98,5 +98,45 @@ export const login = async (payload:LoginCredentials): Promise<loginResponse> =>
         throw new Error(error.response?.data?.error || "Error al iniciar sesión");
     }
 };
+
+export type RegisterPayload = {
+    name: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    password: string;
+};
+
+export type RegisterResponse = {
+    token: string;
+    userId: string;
+    name: string;
+    role: string;
+};
+
+export const register = async (payload: RegisterPayload): Promise<RegisterResponse> => {
+    try {
+        const { data } = await api.post<string>("/User/register", payload);
+        const token = data;
+
+        if (!token || typeof token !== "string") {
+            throw new Error("Formato de token inválido recibido del servidor.");
+        }
+
+        localStorage.setItem("token", token);
+
+        const decoded = parseJwt(token);
+
+        return {
+            token,
+            userId: decoded.userId || "0",
+            role: decoded.userRole || "User",
+            name: payload.name,
+        };
+    } catch (err: any) {
+        throw new Error(err.response?.data?.message || "Error al registrar usuario");
+    }
+};
+
 
 export { parseJwt };
