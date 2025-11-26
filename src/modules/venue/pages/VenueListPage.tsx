@@ -2,9 +2,6 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getVenues } from "../api/venueApi";
 import Layout from "../../../shared/components/Layout";
-import "../../../shared/pages/Home/css/HomePage.css";
-import "../../../shared/pages/Home/css/EventCard.css";
-import defaultImage from "../../../assets/default-image.webp";
 
 interface Venue {
   venueId: string;
@@ -37,57 +34,67 @@ export default function VenueListPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950 text-white">
+        <p>Loading venues...</p>
+      </div>
+    );
+  }
+
   return (
     <Layout>
-      <div className="home-container">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="home-title">Venues</h2>
+    <div className="flex flex-col items-center justify-center bg-neutral-950 text-white p-8">
+      <div className="mb-10 w-full max-w-4xl">
+        
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+          
+          <div className="text-center sm:text-left">
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+              Venues
+            </h1>
+            <p className="text-neutral-400 mt-2">Selecciona un venue para editar</p>
+          </div>
+          
           <Link
             to="/venue/create"
-            className="create-event-btn"
+            className="mt-4 sm:mt-0 px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition duration-300"
           >
             Crear Nuevo Venue
           </Link>
         </div>
-
-        {loading ? (
-          <div className="min-h-[50vh] flex items-center justify-center">
-            <p className="text-lg">Cargando venues...</p>
-          </div>
-        ) : (
-          <div className="home-grid">
-            {venues.map((venue) => (
-              <article className="event-card-general" key={venue.venueId}>
-                <Link
-                  to={`/venue/editor/${venue.venueId}`}
-                  className="event-card block h-full"
-                >
-                  <div className="event-card-image-wrapper">
-                    <img
-                      src={venue.backgroundImageUrl || defaultImage}
-                      alt={venue.name}
-                      className="event-card-image"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="event-card-content">
-                    <div className="event-card-date-tittle">
-                      <p className="event-card-date">{venue.address}</p>
-                      <h3 className="event-card-title">{venue.name}</h3>
-                    </div>
-                    <div className="event-card-category-status">
-                      <p className="event-card-category">{venue.venueType.name}</p>
-                      <p className="event-card-status">
-                        Capacidad: {venue.totalCapacity}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              </article>
-            ))}
-          </div>
-        )}
       </div>
-    </Layout>
+      
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-4xl px-4">
+        {venues.map((venue) => (
+          <Link
+            key={venue.venueId}
+            to={`/venue/editor/${venue.venueId}`}
+            className="group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-700 shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1"
+          >
+            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            <div className="relative z-10 flex flex-col items-center text-center space-y-3">
+              {venue.backgroundImageUrl && (
+                <img
+                  src={venue.backgroundImageUrl}
+                  alt={venue.name}
+                  className="w-full h-32 object-cover rounded-lg mb-2"
+                />
+              )}
+              <h2 className="text-xl font-semibold">{venue.name}</h2>
+              <p className="text-sm text-neutral-200">{venue.address}</p>
+              <p className="text-sm text-neutral-200">Capacidad: {venue.totalCapacity}</p>
+              <p className="text-sm text-neutral-200">Tipo: {venue.venueType.name}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <footer className="mt-12 text-neutral-600 text-sm">
+        <Link to="/" className="text-blue-400 hover:underline">Volver al inicio</Link>
+      </footer>
+    </div>
+  </Layout>
   );
 }

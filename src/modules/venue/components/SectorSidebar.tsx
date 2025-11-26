@@ -327,31 +327,7 @@ export default function SectorSidebar({
             }
             className="w-full bg-gray-800 border border-gray-600 rounded p-2"
           />
-        </div>
-
-        {local.isControlled && (
-          <div className="mt-3">
-            <label className="text-sm">Tipo</label>
-            <select
-              value={local.shape.type}
-              onChange={(e) =>
-                handleShapeChange("type", e.target.value)
-              }
-              className="w-full bg-gray-800 border border-gray-600 rounded p-2"
-            >
-              <option value="rectangle">Rectángulo</option>
-              <option value="circle">Círculo</option>
-              <option value="semicircle">Semicírculo</option>
-              <option value="arc">Arco</option>
-            </select>
-          </div>
-        )}
-
-        {!local.isControlled && (
-          <p className="text-xs text-gray-500 mt-3">
-            Forma fija: Área libre (no controlada)
-          </p>
-        )}
+        </div>        
       </div>
 
       <div className="mt-6 flex flex-col gap-3">

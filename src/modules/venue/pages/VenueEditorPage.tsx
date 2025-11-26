@@ -4,10 +4,9 @@ import VenueCanvas from "../components/VenueCanvas";
 import SectorSidebar from "../components/SectorSidebar";
 import { getVenueById, updateVenue } from "../api/venueApi";
 import { getSectorsForVenue, createSector, updateSector, getSeatsForSector, getSectorById } from "../api/sectorApi";
-import Layout from "../../../shared/components/Layout";
-import "../../../shared/pages/Home/css/HomePage.css";
 
 import type { Sector, Shape, Seat } from "../components/Types";
+import Layout from "../../../shared/components/Layout";
 
 const CANVAS_WIDTH = 900;
 
@@ -192,99 +191,98 @@ export default function VenueEditorPage() {
 
   return (
     <Layout>
-      <div className="flex flex-col h-[calc(100vh-64px)] bg-[var(--color-bg-dark)] text-[var(--color-text-light)]">
-        <div className="flex flex-row flex-nowrap flex-1 overflow-hidden">
-          <div
-            className="flex flex-col gap-3 p-4 flex-none relative"
-            style={{ width: CANVAS_WIDTH + 32 }}
+  <div className="flex flex-col bg-neutral-950 text-white h-full">
+
+    {/* WORKSPACE */}
+    <div className="flex flex-1 overflow-hidden">
+
+      {/* CANVAS SECTION */}
+      <div className="flex-1 flex justify-center items-center p-6">
+
+        <div className="relative border border-neutral-800 rounded-xl shadow-lg bg-neutral-900">
+          {venueId && (
+            <VenueCanvas
+              background={background}
+              sectors={sectors}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              onTransformLive={replaceLocal}
+              onTransformCommit={handleCommitToDb}
+              onMoveLive={replaceLocal}
+              onMoveCommit={handleCommitToDb}
+              onSeatHoverEnter={handleSeatHoverEnter}
+              onSeatHoverLeave={handleSeatHoverLeave}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={() => setIsDragging(false)}
+            />
+          )}
+
+          <button
+            onClick={() => window.location.reload()}
+            className="absolute top-3 right-3 bg-neutral-800/80 px-3 py-1 rounded-md border border-neutral-700 hover:bg-neutral-700 transition"
           >
-            {venueId && (
-              <div className="flex gap-2 items-center bg-[var(--color-card)] p-3 rounded-lg border border-[var(--color-surface)] shadow-sm">
-                <input
-                  type="text"
-                  placeholder="URL de imagen de fondo"
-                  value={backgroundImageUrlInput}
-                  onChange={(e) => setBackgroundImageUrlInput(e.target.value)}
-                  className="flex-1 bg-[var(--color-bg-secondary)] border border-[var(--color-surface)] text-[var(--color-text-light)] p-2 rounded focus:outline-none focus:border-[var(--color-blue-start)] transition-colors text-sm"
-                />
-                <button
-                  onClick={onBackgroundImageUrlChange}
-                  className="bg-[var(--color-blue-start)] hover:bg-[var(--color-blue-end)] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-md"
-                >
-                  Actualizar Fondo
-                </button>
-              </div>
-            )}
-
-            {venueId && (
-              <div className="relative border border-[var(--color-surface)] rounded-lg overflow-hidden shadow-lg">
-                <VenueCanvas
-                  background={background}
-                  sectors={sectors}
-                  selectedId={selectedId}
-                  onSelect={setSelectedId}
-                  onTransformLive={replaceLocal}
-                  onTransformCommit={handleCommitToDb}
-                  onMoveLive={replaceLocal}
-                  onMoveCommit={handleCommitToDb}
-                  onSeatHoverEnter={handleSeatHoverEnter}
-                  onSeatHoverLeave={handleSeatHoverLeave}
-                  onDragStart={() => setIsDragging(true)}
-                  onDragEnd={() => setIsDragging(false)}
-                />
-
-                <button
-                  onClick={() => window.location.reload()}
-                  className="absolute top-3 right-3 bg-[var(--color-surface)]/80 backdrop-blur-sm hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-light)] px-3 py-1.5 rounded-md text-xs font-medium border border-[var(--color-surface)] transition-all shadow-sm"
-                  title="Reset Zoom"
-                >
-                  Reset Zoom
-                </button>
-              </div>
-            )}
-          </div>
-
-          {selectedId && venueId && (
-            <div className="flex-1 border-l border-[var(--color-surface)] bg-[var(--color-bg-secondary)] overflow-y-auto">
-              <SectorSidebar
-                sector={sectors.find((s) => s.sectorId === selectedId)!}
-                onUpdateLocal={replaceLocal}
-                onRemoveLocal={(id: string) => {
-                  setSectors((prev) => prev.filter((s) => s.sectorId !== id));
-                  if (selectedId === id) setSelectedId(null);
-                }}
-              />
-            </div>
-          )}
-
-          {hoveredSeat && (
-            <div className="absolute top-24 left-8 bg-black/90 text-white p-2 rounded shadow-lg text-sm pointer-events-none z-50 border border-white/20">
-              Fila {hoveredSeat.rowNumber}, Col {hoveredSeat.columnNumber}
-            </div>
-          )}
+            Reset Zoom
+          </button>
         </div>
 
-        {venueId && (
-          <div className="h-20 border-t border-[var(--color-surface)] bg-[var(--color-card)] flex items-center justify-center gap-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-10">
-            {[
-              { type: "rectangle", icon: "▭", label: "Rectángulo" },
-              { type: "circle", icon: "○", label: "Círculo" },
-              { type: "semicircle", icon: "◐", label: "Semicírculo" },
-              { type: "arc", icon: "⌒", label: "Arco" },
-            ].map(({ type, icon, label }) => (
-              <button
-                key={type}
-                onClick={() => createWithShape(type as Shape["type"])}
-                className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-surface)] hover:bg-[var(--color-blue-start)] text-[var(--color-text-light)] hover:text-white transition-all duration-200 transform hover:-translate-y-0.5 shadow-sm hover:shadow-md"
-                title={`Agregar ${label}`}
-              >
-                <span className="text-xl font-bold">{icon}</span>
-                <span className="hidden sm:inline font-medium">{label}</span>
-              </button>
-            ))}
+        {hoveredSeat && (
+          <div className="absolute top-24 left-8 bg-neutral-900/90 text-white px-3 py-1 rounded shadow-lg border border-neutral-700">
+            Fila {hoveredSeat.rowNumber}, Col {hoveredSeat.columnNumber}
           </div>
         )}
       </div>
-    </Layout>
+
+      {/* SIDEBAR SIEMPRE VISIBLE */}
+      <div className="w-[480px] border-l border-neutral-800 bg-neutral-900 shadow-inner overflow-y-auto">
+
+        {selectedId && venueId ? (
+          <SectorSidebar
+            sector={sectors.find((s) => s.sectorId === selectedId)!}
+            onUpdateLocal={replaceLocal}
+            onRemoveLocal={(id) => {
+              setSectors((p) => p.filter((s) => s.sectorId !== id));
+              setSelectedId(null);
+            }}
+          />
+        ) : (
+          <div className="h-full flex flex-col justify-center items-center text-neutral-400 px-10 text-center">
+            <p className="text-lg opacity-60">Seleccioná un sector para editarlo</p>
+            <p className="text-sm mt-2 opacity-40">O creá uno nuevo desde la barra inferior</p>
+          </div>
+        )}
+
+      </div>
+
+    </div>
+
+    {/* TOOLBAR DE FORMAS (RE DISEÑADA) */}
+    {venueId && (
+      <div className="h-20 bg-neutral-900 border-t border-neutral-800 flex items-center justify-center gap-6">
+
+        {[
+          { type: "rectangle", icon: "▭", label: "Rectángulo" },
+          { type: "circle", icon: "○", label: "Círculo" },
+          { type: "semicircle", icon: "◐", label: "Semicírculo" },
+          { type: "arc", icon: "⌒", label: "Arco" },
+        ].map(({ type, icon, label }) => (
+          <button
+            key={type}
+            onClick={() => createWithShape(type)}
+            className="flex flex-col items-center justify-center w-16 h-16 
+                       rounded-xl border border-neutral-700 bg-neutral-800 
+                       hover:bg-blue-600 hover:border-blue-500 transition-all shadow-sm"
+            title={label}
+          >
+            <span className="text-xl">{icon}</span>
+            <span className="text-[11px] mt-1">{label}</span>
+          </button>
+        ))}
+
+      </div>
+    )}
+
+  </div>
+</Layout>
+
   );
 }
