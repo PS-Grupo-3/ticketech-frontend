@@ -2,82 +2,84 @@
 @import "../../../styles/typography.css";
 
 .event-card-general {
-    position: relative;
-    overflow: visible;
+  position: relative;
+  overflow: visible;
 }
 
 .event-card {
-    position: relative;
-    background-color: var(--color-card);
-    border-radius: 0.8rem;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s ease;
+  position: relative;
+  background-color: var(--color-card);
+  border-radius: 0.8rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  border: 2px solid transparent;
 }
 
 .event-card:hover {
-    transform: scale(1.02);
+  transform: scale(1.02);
+  border-color: var(--color-blue-start);
 }
 
 .event-card-image-wrapper {
-    height: 18rem;
-    width: 100%;
-    background-color: var(--color-card-image);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
+  height: 18rem;
+  width: 100%;
+  background-color: var(--color-card-image);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
 }
 
 .event-card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .event-card-content {
-    padding: 1.1rem;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    gap: 0.6rem;
+  padding: 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 0.6rem;
 
-    min-height: 11rem;
-    max-height: 11rem;
+  min-height: 11rem;
+  max-height: 11rem;
 }
 
 .event-card-date {
-    color: var(--color-text-muted);
-    font-size: var(--font-size-semibase);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-semibase);
 }
 
 .event-card-title {
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-    text-transform: uppercase;
-    color: var(--color-text-light);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  color: var(--color-text-light);
 
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .event-card-category {
-    font-size: var(--font-size-semibase);
-    color: var(--color-text-muted);
+  font-size: var(--font-size-semibase);
+  color: var(--color-text-muted);
 }
 
 .event-card-status {
-    font-size: var(--font-size-semibase);
-    background-color: var(--color-status);
-    padding: 0.4rem 0.6rem;
-    border-radius: 0.3rem;
-    display: inline-block;
-    width: fit-content;
+  font-size: var(--font-size-semibase);
+  background-color: var(--color-status);
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.3rem;
+  display: inline-block;
+  width: fit-content;
 }
 
 .event-card-menu {
@@ -144,14 +146,14 @@
 }
 
 .status-dropdown {
-    position: absolute;
-    top: 0;
-    left: 102%;
-    min-width: 150px;
-    z-index: 20;
-    flex-direction: column;
-    border-radius: 0.8rem;
-    background-color: var(--color-card);
+  position: absolute;
+  top: 0;
+  left: 102%;
+  min-width: 150px;
+  z-index: 20;
+  flex-direction: column;
+  border-radius: 0.8rem;
+  background-color: var(--color-card);
 }
 
 .status-dropdown button {
@@ -172,4 +174,3 @@
   cursor: not-allowed;
   background: none;
 }
-

@@ -24,6 +24,11 @@ export type serverResponse =
 
 };
 
+export type ServerResponse = {
+    status: number;
+    message: string;
+};
+
 function parseJwt(token: string) {
     try {
         const base64Url = token.split('.')[1];
@@ -37,6 +42,34 @@ function parseJwt(token: string) {
     }
 }
 
+export type ChangePasswordPayload = {
+    currentPassword: string;
+    newPassword: string;
+};
+
+export const changePassword = async (payload: ChangePasswordPayload): Promise<ServerResponse> => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No hay token de autenticación");
+
+    console.log("Payload enviado:", payload);
+
+    try {
+        const { data } = await api.patch<ServerResponse>(
+            "/User/change-password",
+            payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+        console.log("Respuesta del servidor:", data);
+        return data;
+    } catch (err: any) {
+        console.error("Error al cambiar contraseña:", err.response?.data || err);
+        throw new Error(err.response?.data?.message || "Error al cambiar la contraseña");
+    }
+};
 
 export const login = async (payload:LoginCredentials): Promise<loginResponse> =>
     {
@@ -65,3 +98,5 @@ export const login = async (payload:LoginCredentials): Promise<loginResponse> =>
         throw new Error(error.response?.data?.error || "Error al iniciar sesión");
     }
 };
+
+export { parseJwt };
