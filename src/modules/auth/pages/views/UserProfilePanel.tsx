@@ -3,6 +3,7 @@ import { parseJwt, changePassword } from "../../api/authApi";
 import type { ServerResponse } from "../../api/authApi";
 import "../styles/userPanel.css";
 import ChangePasswordView from "./ChangePassword";
+import { useNotification } from "../../../../shared/components/NotificationContext";
 
 type Props = {
     onClose: () => void;
@@ -20,6 +21,8 @@ export default function UserProfile({ onClose }: Props) {
         }
     }, []);
 
+    const { show } = useNotification();
+
     const handleChangePassword = async (
         current: string,
         newPass: string,
@@ -28,12 +31,12 @@ export default function UserProfile({ onClose }: Props) {
         if (!decodedUser) return;
 
         // Validaciones
-        if (!current || !newPass || !repeatPass) {
-            alert("Todos los campos son obligatorios");
+        if (!current || !newPass || !repeatPass) {            
+            show("Todos los campos son obligatorios.");
             return;
         }
-        if (newPass !== repeatPass) {
-            alert("La nueva contraseña no coincide");
+        if (newPass !== repeatPass) {            
+            show("La nueva contraseña no coincide");
             return;
         }
 
@@ -45,10 +48,10 @@ export default function UserProfile({ onClose }: Props) {
                 newPassword: newPass,
             };
             const response: ServerResponse = await changePassword(payload);
-            alert(response.message);
+            show(response.message);
             setChangePasswordMode(false);
         } catch (err: any) {
-            alert(err.message || "Error al cambiar la contraseña");
+            show("Error al cambiar la contraseña");
         } finally {
             setLoading(false);
         }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { updateSector, getSeatsForSector, deleteSector } from "../api/sectorApi";
 import { generateSeats } from "../api/seatApi";
-
+import { NotificationProvider, useNotification } from "../../../shared/components/NotificationContext";
 import type { Sector, Shape } from "../components/Types";
 
 function debounce<T extends (...a: any[]) => void>(fn: T, wait: number) {
@@ -50,6 +50,8 @@ export default function SectorSidebar({
       columns: getInitialCols(sector)
     }
   });
+
+  const { show } = useNotification();
 
   const hasSeats = (local.seats?.length ?? 0) > 0;
 
@@ -151,7 +153,7 @@ export default function SectorSidebar({
 
       setLocal(updated);
       onUpdateLocal(updated);
-      alert("Asientos generados.");
+      show("Asientos generados.");
     } catch (err) {
       console.error("[SEATS ERROR]", err);
     }
