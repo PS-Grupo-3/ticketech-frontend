@@ -81,13 +81,13 @@ export default function EventVenueCanvas({ background, sectors, selectedSeatId, 
         <Layer listening={false}>          
           <Group x={tooltip.x} y={tooltip.y - 60}>
             <Rect
-              width={130}
+              width={150}
               height={50}
               fill="#ffffff"
               opacity={1}
               cornerRadius={6}
               stroke="white"
-              strokeWidth={1}
+              strokeWidth={3}
             />
             <Text
               x={8}

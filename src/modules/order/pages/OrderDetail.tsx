@@ -34,9 +34,10 @@ interface EventDetail {
 }
 
 interface UserInfo {
-  userName: string;
-  userLastName: string;
-  userPhone: string;
+  Username: string;
+  UserLastName: string;
+  UserPhone: string;
+  UserEmail:string;
 }
 
 export default function OrderDetailsRender({ orderId }: Props) {
@@ -163,12 +164,17 @@ export default function OrderDetailsRender({ orderId }: Props) {
           <div className="UserInfo">
             <div className="UserInfoLine">
               <span>Nombre:</span>
-              <span>{userData?.userName} {userData?.userLastName}</span>
+              <span>{userData?.Username} {userData?.UserLastName}</span>
             </div>
             <div className="UserInfoLine">
               <span>Teléfono:</span>
-              <span>{userData?.userPhone}</span>
+              <span>{userData?.UserPhone}</span>
             </div>
+              <div className="UserInfoLine">
+              <span>Email:</span>
+              <span>{userData?.UserEmail}</span>
+            </div>
+              
           </div>
 
         </div>

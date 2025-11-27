@@ -6,6 +6,13 @@ type NavbarProps = {
   user?: { name: string };
 };
 
+ function fixEncoding(str: string): string {
+  try {
+    return decodeURIComponent(escape(str));
+  } catch {
+    return str;
+  }
+}
 export default function Navbar({ onUserClick, user }: NavbarProps) {
   return (
     <header className="w-full bg-neutral-900 border-b border-neutral-800">
@@ -27,7 +34,7 @@ export default function Navbar({ onUserClick, user }: NavbarProps) {
 
           {user && (
             <span className="text-sm text-gray-300">
-              Hola, {user.name}
+              Hola, {fixEncoding(user.name)}
             </span>
           )}
 

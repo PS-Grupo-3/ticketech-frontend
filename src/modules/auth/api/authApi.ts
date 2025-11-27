@@ -12,7 +12,7 @@ export type loginResponse=
 {
     token:string,
     userId:string;
-    name: string;
+    Username: string;
     role: string;
 };
 
@@ -86,12 +86,13 @@ export const login = async (payload:LoginCredentials): Promise<loginResponse> =>
         localStorage.setItem("token", token);
 
         const decoded = parseJwt(token);
+        console.log(decoded);
 
         return {
             token: token,
             userId: decoded.userId || "0",
             role: decoded.userRole || "User", // Aquí sacamos el rol real
-            name: "Usuario" // Nombre por defecto
+            Username: decoded.Username // Nombre por defecto
         };
         } catch (error: any) {
         console.error("Error en login:", error);

@@ -19,7 +19,7 @@ export default function TicketsPage() {
 
   return (
     <Layout>
-    <div className="min-h-screen bg-slate-100 text-black py-12 px-4 flex justify-center">
+    <div className=" flex justify-center">
       <div className="w-full max-w-5xl">
         <OrderDetailsRender orderId={orderId} />
       </div>
