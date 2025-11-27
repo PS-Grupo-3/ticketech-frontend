@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import UserProfile from "./UserProfilePanel";
 
 type Props = {
-    user: { name: string; role: string; userId: string; token: string } | null;
+    user: { Username: string; role: string; userId: string; token: string } | null;
     logout: () => void;
     setView: React.Dispatch<
         React.SetStateAction<"login" | "register" | "user" | "profile">
@@ -17,7 +17,7 @@ const UserView = ({ user, logout, setView }: Props) => {
     const [showProfile, setShowProfile] = useState(false);
 
     if (!user) return null;
-
+   
     return (
         <>
             <div className="userPanel">
