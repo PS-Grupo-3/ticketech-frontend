@@ -4,6 +4,11 @@ import {
   getCategoryTypes 
 } from "../../api/eventApi";
 
+import {
+  categoryTranslate,
+  categoryTypeTranslate
+} from "../../utils/eventTranslate";
+
 interface EventCategory {
   categoryId: number;
   name: string;
@@ -19,10 +24,12 @@ export default function Step2CategoryType({ data, onNext, onBack }: any) {
   const [categories, setCategories] = useState<EventCategory[]>([]);
   const [types, setTypes] = useState<CategoryType[]>([]);
 
-  const [local, setLocal] = useState(data as {
-    categoryId: number | null;
-    typeId: number | null;
-    [key: string]: any;
+  const [local, setLocal] = useState({
+    ...data,
+    categoryId: data.categoryId ?? null,
+    typeId: data.typeId ?? null,
+    categoryName: data.categoryName ?? "",
+    typeName: data.typeName ?? ""
   });
 
   useEffect(() => {
@@ -38,41 +45,56 @@ export default function Step2CategoryType({ data, onNext, onBack }: any) {
       )
     : [];
 
+  const updateCategory = (categoryId: number | null) => {
+    const category = categories.find((c) => c.categoryId === categoryId);
+
+    setLocal({
+      ...local,
+      categoryId,
+      categoryName: category?.name ?? "",
+      typeId: null,
+      typeName: ""
+    });
+  };
+
+  const updateType = (typeId: number | null) => {
+    const type = filteredTypes.find((t) => t.typeId === typeId);
+
+    setLocal({
+      ...local,
+      typeId,
+      typeName: type?.name ?? ""
+    });
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-2">Categoría y tipo</h2>
+
       <p className="text-sm text-gray-400">
-        Definí cómo se clasifica el evento dentro del sistema.
+        Definí cómo se clasifica el evento.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
-        {/* -------- CATEGORÍA -------- */}
+
         <div>
           <label className="block text-sm text-gray-300 mb-1">Categoría</label>
           <select
             className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
             value={local.categoryId ?? ""}
-            onChange={(e) => {
-              const newCategory = e.target.value ? Number(e.target.value) : null;
-
-              setLocal((prev) => ({
-                ...prev,
-                categoryId: newCategory,
-                typeId: prev.categoryId !== newCategory ? null : prev.typeId,
-              }));
-            }}
+            onChange={(e) =>
+              updateCategory(e.target.value ? Number(e.target.value) : null)
+            }
           >
             <option value="">Seleccione categoría</option>
             {categories.map((c) => (
               <option key={c.categoryId} value={c.categoryId}>
-                {c.name}
+                {categoryTranslate[c.name] ?? c.name}
               </option>
             ))}
           </select>
         </div>
-        
-        {/* -------- TIPO -------- */}
+
         <div>
           <label className="block text-sm text-gray-300 mb-1">Tipo</label>
           <select
@@ -80,16 +102,13 @@ export default function Step2CategoryType({ data, onNext, onBack }: any) {
             disabled={!local.categoryId}
             value={local.typeId ?? ""}
             onChange={(e) =>
-              setLocal({
-                ...local,
-                typeId: e.target.value ? Number(e.target.value) : null,
-              })
+              updateType(e.target.value ? Number(e.target.value) : null)
             }
           >
             <option value="">Seleccione tipo</option>
             {filteredTypes.map((t) => (
               <option key={t.typeId} value={t.typeId}>
-                {t.name}
+                {categoryTypeTranslate[t.name] ?? t.name}
               </option>
             ))}
           </select>
@@ -97,7 +116,6 @@ export default function Step2CategoryType({ data, onNext, onBack }: any) {
 
       </div>
 
-      {/* -------- BOTONES -------- */}
       <div className="flex justify-between pt-4">
         <button
           onClick={onBack}

@@ -5,6 +5,12 @@ import {
   getCategoryTypes 
 } from "../../api/eventApi";
 
+import {
+  categoryTranslate,
+  categoryTypeTranslate,
+  statusTranslate
+} from "../../utils/eventTranslate";
+
 interface EventCategory {
   categoryId: number;
   name: string;
@@ -22,10 +28,17 @@ interface EventStatus {
 }
 
 export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
+  // TIPAR CORRECTAMENTE LOS ARRAYS
   const [categories, setCategories] = useState<EventCategory[]>([]);
   const [types, setTypes] = useState<CategoryType[]>([]);
   const [statuses, setStatuses] = useState<EventStatus[]>([]);
-  const [local, setLocal] = useState(data);
+
+  const [local, setLocal] = useState({
+    ...data,
+    categoryName: data.categoryName ?? "",
+    typeName: data.typeName ?? "",
+    statusName: data.statusName ?? ""
+  });
 
   useEffect(() => {
     getEventCategories().then(setCategories);
@@ -33,6 +46,7 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
     getCategoryTypes().then(setTypes);
   }, []);
 
+  // TIPADO AUTOMÁTICO → YA NO DA NEVER
   const filteredTypes = local.categoryId
     ? types.filter(
         (t) =>
@@ -41,37 +55,60 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
       )
     : [];
 
+  const updateCategory = (id: number | null) => {
+    const cat = categories.find((c) => c.categoryId === id);
+    setLocal({
+      ...local,
+      categoryId: id,
+      categoryName: cat?.name ?? "",
+      typeId: null,
+      typeName: ""
+    });
+  };
+
+  const updateType = (id: number | null) => {
+    const t = filteredTypes.find((x) => x.typeId === id);
+    setLocal({
+      ...local,
+      typeId: id,
+      typeName: t?.name ?? ""
+    });
+  };
+
+  const updateStatus = (id: number | null) => {
+    const st = statuses.find((s) => s.statusId === id);
+    setLocal({
+      ...local,
+      statusId: id,
+      statusName: st?.name ?? ""
+    });
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-2">Categoría, tipo y estado</h2>
-      <p className="text-sm text-gray-400">
-        Definí cómo se clasifica el evento dentro del sistema.
-      </p>
+      <p className="text-sm text-gray-400">Definí cómo se clasifica el evento dentro del sistema.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
+
         <div>
           <label className="block text-sm text-gray-300 mb-1">Categoría</label>
           <select
             className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
             value={local.categoryId ?? ""}
             onChange={(e) =>
-              setLocal({
-                ...local,
-                categoryId: e.target.value ? Number(e.target.value) : null,
-                typeId: null,
-              })
+              updateCategory(e.target.value ? Number(e.target.value) : null)
             }
           >
             <option value="">Seleccione categoría</option>
             {categories.map((c) => (
               <option key={c.categoryId} value={c.categoryId}>
-                {c.name}
+                {categoryTranslate[c.name] ?? c.name}
               </option>
             ))}
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm text-gray-300 mb-1">Tipo</label>
           <select
@@ -79,37 +116,31 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
             disabled={!local.categoryId}
             value={local.typeId ?? ""}
             onChange={(e) =>
-              setLocal({
-                ...local,
-                typeId: e.target.value ? Number(e.target.value) : null,
-              })
+              updateType(e.target.value ? Number(e.target.value) : null)
             }
           >
             <option value="">Seleccione tipo</option>
             {filteredTypes.map((t) => (
               <option key={t.typeId} value={t.typeId}>
-                {t.name}
+                {categoryTypeTranslate[t.name] ?? t.name}
               </option>
             ))}
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm text-gray-300 mb-1">Estado</label>
           <select
             className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
             value={local.statusId ?? ""}
             onChange={(e) =>
-              setLocal({
-                ...local,
-                statusId: e.target.value ? Number(e.target.value) : null,
-              })
+              updateStatus(e.target.value ? Number(e.target.value) : null)
             }
           >
             <option value="">Seleccione estado</option>
             {statuses.map((s) => (
               <option key={s.statusId} value={s.statusId}>
-                {s.name}
+                {statusTranslate[s.name] ?? s.name}
               </option>
             ))}
           </select>

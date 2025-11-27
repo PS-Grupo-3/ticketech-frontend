@@ -1,6 +1,11 @@
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { categoryTranslate, statusTranslate } from "../../../modules/event/utils/eventTranslate";
+import { 
+  categoryTranslate, 
+  statusTranslate, 
+  categoryTypeTranslate 
+} from "../../../modules/event/utils/eventTranslate";
+
 import "./css/EventCard.css";
 import defaultImage from "../../../assets/default-image.webp";
 import { useState, useRef, useEffect } from "react";
@@ -19,7 +24,6 @@ type Event = {
   thumbnailUrl?: string | null;
 };
 
-
 export default function EventCard({ event, showMenu = false }: { event: Event; showMenu?: boolean }) {
   const navigate = useNavigate();
   const date = new Date(event.time);
@@ -29,24 +33,18 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
   const [menuOpen, setMenuOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-
   const [currentStatus, setCurrentStatus] = useState(event.status);
-  
+
   const menuRef = useRef<HTMLDivElement>(null);
 
   const goToEventPreview = () => {
     if (showMenu) {
-      console.log("ID DEL EVENTO:", event);
-      console.log("event.eventId:", event.eventId);
-
-      navigate(`/event/${event.eventId}/metrics`); // si está en panel admin → métricas
+      navigate(`/event/${event.eventId}/metrics`);
     } else {
-      navigate(`/event/${event.eventId}`); // si está en home → detalle
+      navigate(`/event/${event.eventId}`);
     }
   };
 
-
-  // cerrar menú al hacer click afuera
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -54,6 +52,7 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
         setStatusOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -68,11 +67,12 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
           >
             ⋮
           </button>
+
           {menuOpen && (
             <div className="menu-dropdown">
               <button
                 onClick={() => navigate(`/event/${event.eventId}/update`)}
-                disabled={currentStatus === "Finished"}   // opción A funcionando
+                disabled={currentStatus === "Finished"}
                 title={
                   currentStatus === "Finished"
                     ? "No se puede editar un evento finalizado."
@@ -90,42 +90,28 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (currentStatus !== "Finished") {
-                    setStatusOpen(!statusOpen);
-                  }
+                  if (currentStatus !== "Finished") setStatusOpen(!statusOpen);
                 }}
                 disabled={currentStatus === "Finished"}
-                title={
-                  currentStatus === "Finished"
-                    ? "Este evento ya está finalizado y no puede cambiar de estado."
-                    : ""
-                }
               >
                 Actualizar estado
               </button>
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (currentStatus === "Scheduled") {
-                    setDeleteOpen(true);
-                  }
+                  if (currentStatus === "Scheduled") setDeleteOpen(true);
                 }}
                 disabled={currentStatus !== "Scheduled"}
-                title={
-                  currentStatus !== "Scheduled"
-                    ? "Solo se pueden eliminar eventos programados."
-                    : ""
-                }
               >
                 Eliminar
               </button>
 
-            
               {statusOpen && (
                 <StatusChange
                   eventId={event.eventId}
                   currentStatus={currentStatus}
-                  eventDate={event.time}   // <<--- agregar esto
+                  eventDate={event.time}
                   onChange={(newStatus) => {
                     setCurrentStatus(newStatus);
                     setStatusOpen(false);
@@ -151,6 +137,7 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
           )}
         </div>
       )}
+
       <div className="event-card" role="button" tabIndex={0}>
         
         <div className="event-card-image-wrapper" onClick={goToEventPreview}>
@@ -168,18 +155,21 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
             <p className="event-card-date">{dateStr}</p>
             <h3 className="event-card-title">{event.name}</h3>
           </div>
+
           <div className="event-card-category-status">
             <p className="event-card-category">
-              {categoryTranslate[event.category] ?? event.category} · {event.categoryType}
+              {categoryTranslate[event.category] ?? event.category}
+              {" · "}
+              {categoryTypeTranslate[event.categoryType] ?? event.categoryType}
             </p>
+
             <p className="event-card-status">
               {statusTranslate[currentStatus] ?? currentStatus}
             </p>
-
           </div>
+
         </div>
       </div>
     </article>
-    
   );
 }

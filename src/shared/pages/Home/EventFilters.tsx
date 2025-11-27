@@ -18,6 +18,12 @@ const STATUS_OPTIONS = [
 export default function EventFilters({ onChange }: { onChange: (f: any) => void }) {
   const [local, setLocal] = useState<any>({});
 
+  const toIso = (value: string | undefined) => {
+    if (!value) return undefined;    
+    const date = new Date(value);
+    return date.toISOString(); 
+  };
+
   const update = (field: string, rawValue: any) => {
     const value = rawValue === "" ? undefined : rawValue;
 
@@ -27,14 +33,17 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
     };
 
     setLocal(updated);
-
     onChange(updated);
   };
 
   return (
     <div className="event-filters">
 
-      <select onChange={(e) => update("categoryId", e.target.value ? Number(e.target.value) : undefined)}>
+      <select
+        onChange={(e) =>
+          update("categoryId", e.target.value ? Number(e.target.value) : undefined)
+        }
+      >
         <option value="">Categoría</option>
         {CATEGORY_OPTIONS.map((c) => (
           <option key={c.id} value={c.id}>
@@ -43,7 +52,11 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
         ))}
       </select>
 
-      <select onChange={(e) => update("statusId", e.target.value ? Number(e.target.value) : undefined)}>
+      <select
+        onChange={(e) =>
+          update("statusId", e.target.value ? Number(e.target.value) : undefined)
+        }
+      >
         <option value="">Estado</option>
         {STATUS_OPTIONS.map((s) => (
           <option key={s.id} value={s.id}>
@@ -54,17 +67,17 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
 
       <input
         type="datetime-local"
-        onChange={(e) => update("from", e.target.value)}
+        onChange={(e) => update("from", toIso(e.target.value))}
       />
 
       <input
         type="datetime-local"
-        onChange={(e) => update("to", e.target.value)}
+        onChange={(e) => update("to", toIso(e.target.value))}
       />
 
       <input
         type="text"
-        placeholder="Buscar evento..."
+        placeholder="Buscar evento..."        
         onChange={(e) => update("name", e.target.value)}
       />
     </div>

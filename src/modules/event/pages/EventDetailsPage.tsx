@@ -4,6 +4,12 @@ import Layout from "../../../shared/components/Layout";
 import { getEventById } from "../api/eventApi";
 import { format } from "date-fns";
 
+import {
+  categoryTranslate,
+  categoryTypeTranslate,
+  statusTranslate
+} from "../utils/eventTranslate";
+
 export default function EventDetailPage() {
   const { eventId } = useParams();
   const navigate = useNavigate();
@@ -41,8 +47,20 @@ export default function EventDetailPage() {
     );
   }
 
-  const date = event.time ? format(new Date(event.time), "dd/MM/yyyy HH:mm") : "Sin fecha";
+  const date = event.time
+    ? format(new Date(event.time), "dd/MM/yyyy HH:mm")
+    : "Sin fecha";
+
   const theme = event.themeColor || "#1e40af";
+
+  const translatedCategory =
+    categoryTranslate[event.category] ?? event.category;
+
+  const translatedType =
+    categoryTypeTranslate[event.type] ?? event.type;
+
+  const translatedStatus =
+    statusTranslate[event.status] ?? event.status;
 
   return (
     <Layout>
@@ -64,7 +82,7 @@ export default function EventDetailPage() {
         </div>
 
         <div className="max-w-6xl mx-auto px-6 -mt-32 relative z-10 space-y-14">
-
+          
           <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-8 shadow-xl">
             <div className="flex flex-col md:flex-row gap-8">
 
@@ -93,15 +111,15 @@ export default function EventDetailPage() {
                       border: `1px solid ${theme}`
                     }}
                   >
-                    {event.category}
+                    {translatedCategory}
                   </span>
 
                   <span className="px-3 py-1 rounded-md bg-neutral-900 text-gray-200 text-sm">
-                    {event.type}
+                    {translatedType}
                   </span>
 
                   <span className="px-3 py-1 rounded-md bg-neutral-900 text-gray-200 text-sm">
-                    {event.status}
+                    {translatedStatus}
                   </span>
                 </div>
 
@@ -125,7 +143,7 @@ export default function EventDetailPage() {
 
               <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-4">
                 <p className="text-gray-400">Estado</p>
-                <p className="text-white font-semibold text-lg">{event.status}</p>
+                <p className="text-white font-semibold text-lg">{translatedStatus}</p>
               </div>
 
             </div>
@@ -149,7 +167,8 @@ export default function EventDetailPage() {
             )}
           </div>
 
-          <div className="rounded-2xl p-8 shadow-xl border"
+          <div
+            className="rounded-2xl p-8 shadow-xl border"
             style={{ backgroundColor: theme + "22", borderColor: theme }}
           >
             <h2 className="text-3xl font-bold mb-4" style={{ color: theme }}>

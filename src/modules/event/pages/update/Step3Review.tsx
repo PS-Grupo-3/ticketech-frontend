@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { updateEvent } from "../../api/eventApi";
 import { useNavigate } from "react-router-dom";
+import {
+  categoryTranslate,
+  categoryTypeTranslate
+} from "../../utils/eventTranslate";
 
 export default function Step3Review({ data, onBack, onUpdated, eventId }: any) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const navigate = useNavigate();
 
   const handleUpdate = async () => {
@@ -21,24 +24,28 @@ export default function Step3Review({ data, onBack, onUpdated, eventId }: any) {
         typeId: data.typeId,
         bannerImageUrl: data.bannerImageUrl,
         thumbnailUrl: data.thumbnailUrl,
-        themeColor: data.themeColor,
+        themeColor: data.themeColor
       };
 
       const updated = await updateEvent(eventId, payload);
-
-      // 🔥 Redirige automáticamente a /event
       navigate("/event");
-
-      // Si querés mantener onUpdated por si lo usás para un toast o algo
       if (onUpdated) onUpdated(updated.eventId);
-
-    } catch (err) {
-      console.error(err);
-      setError("No se pudo actualizar el evento. Revisá la consola.");
+    } catch {
+      setError("No se pudo actualizar el evento.");
     } finally {
       setLoading(false);
     }
   };
+
+  const categoryName =
+    categoryTranslate[data.categoryName] ??
+    data.categoryName ??
+    "Sin categoría";
+
+  const typeName =
+    categoryTypeTranslate[data.typeName] ??
+    data.typeName ??
+    "Sin tipo";
 
   return (
     <div className="space-y-6">
@@ -47,7 +54,6 @@ export default function Step3Review({ data, onBack, onUpdated, eventId }: any) {
         Confirmá que los datos sean correctos antes de actualizar.
       </p>
 
-      {/* tabla */}
       <div className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
         <table className="w-full text-sm">
           <tbody>
@@ -55,26 +61,32 @@ export default function Step3Review({ data, onBack, onUpdated, eventId }: any) {
               <td className="px-4 py-2 text-gray-400">Nombre</td>
               <td className="px-4 py-2 text-gray-100">{data.name}</td>
             </tr>
+
             <tr className="border-b border-neutral-800">
               <td className="px-4 py-2 text-gray-400">Descripción</td>
               <td className="px-4 py-2 text-gray-100">{data.description}</td>
             </tr>
+
             <tr className="border-b border-neutral-800">
               <td className="px-4 py-2 text-gray-400">Fecha y hora</td>
               <td className="px-4 py-2 text-gray-100">{data.time}</td>
             </tr>
+
             <tr className="border-b border-neutral-800">
               <td className="px-4 py-2 text-gray-400">Categoría</td>
-              <td className="px-4 py-2 text-gray-100">{data.categoryId}</td>
+              <td className="px-4 py-2 text-gray-100">{categoryName}</td>
             </tr>
+
             <tr className="border-b border-neutral-800">
               <td className="px-4 py-2 text-gray-400">Tipo</td>
-              <td className="px-4 py-2 text-gray-100">{data.typeId}</td>
+              <td className="px-4 py-2 text-gray-100">{typeName}</td>
             </tr>
+
             <tr className="border-b border-neutral-800">
               <td className="px-4 py-2 text-gray-400">Banner</td>
               <td className="px-4 py-2 text-gray-100">{data.bannerImageUrl}</td>
             </tr>
+
             <tr>
               <td className="px-4 py-2 text-gray-400">Thumbnail</td>
               <td className="px-4 py-2 text-gray-100">{data.thumbnailUrl}</td>

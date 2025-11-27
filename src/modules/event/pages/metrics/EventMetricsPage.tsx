@@ -3,6 +3,12 @@ import { useParams } from "react-router-dom";
 import Layout from "../../../../shared/components/Layout";
 import { getEventMetrics } from "../../api/eventApi";
 
+import {
+  categoryTranslate,
+  categoryTypeTranslate,
+  statusTranslate
+} from "../../utils/eventTranslate";
+
 export default function EventMetricsPage() {
   const { eventId } = useParams();
 
@@ -39,6 +45,15 @@ export default function EventMetricsPage() {
   }
 
   const theme = metrics.themeColor || "#1e40af";
+
+  const translatedCategory =
+    categoryTranslate[metrics.category] ?? metrics.category;
+
+  const translatedType =
+    categoryTypeTranslate[metrics.type] ?? metrics.type;
+
+  const translatedStatus =
+    statusTranslate[metrics.status] ?? metrics.status;
 
   return (
     <Layout>
@@ -89,15 +104,15 @@ export default function EventMetricsPage() {
                       border: `1px solid ${theme}`
                     }}
                   >
-                    {metrics.category}
+                    {translatedCategory}
                   </span>
 
                   <span className="px-3 py-1 rounded-md bg-neutral-900 text-gray-200 text-sm">
-                    {metrics.type}
+                    {translatedType}
                   </span>
 
                   <span className="px-3 py-1 rounded-md bg-neutral-900 text-gray-200 text-sm">
-                    {metrics.status}
+                    {translatedStatus}
                   </span>
                 </div>
 
@@ -110,17 +125,23 @@ export default function EventMetricsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 text-sm">
               <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-4">
                 <p className="text-gray-400">Fecha y hora</p>
-                <p className="text-white font-semibold text-lg">{metrics.time}</p>
+                <p className="text-white font-semibold text-lg">
+                  {metrics.time}
+                </p>
               </div>
 
               <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-4">
                 <p className="text-gray-400">Dirección</p>
-                <p className="text-white font-semibold text-lg">{metrics.address}</p>
+                <p className="text-white font-semibold text-lg">
+                  {metrics.address}
+                </p>
               </div>
 
               <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-4">
                 <p className="text-gray-400">Estado</p>
-                <p className="text-white font-semibold text-lg">{metrics.status}</p>
+                <p className="text-white font-semibold text-lg">
+                  {translatedStatus}
+                </p>
               </div>
             </div>
 
@@ -172,7 +193,7 @@ export default function EventMetricsPage() {
   );
 }
 
-/* COMPONENTE TARJETA REUTILIZABLE */
+/* Tarjeta reutilizable */
 function MetricCard({ title, value, extra }: any) {
   return (
     <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-5">

@@ -73,6 +73,8 @@ export default function ReaderSectorShape({
   scale,
   selectedSeatId,
   onSeatClick,
+  onSeatHover,
+  onSeatLeave
 }: any) {
   const shape = sector.shape;
 
@@ -149,9 +151,12 @@ export default function ReaderSectorShape({
           shape={shape}
           sector={sector}
           onSeatClick={onSeatClick}
+          onSeatHover={onSeatHover}
+          onSeatLeave={onSeatLeave}
           selectedSeatId={selectedSeatId}
         />
       )}
+
     </>
   );
 }

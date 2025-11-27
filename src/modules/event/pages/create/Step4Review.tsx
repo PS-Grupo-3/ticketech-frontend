@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { createEvent } from "../../api/eventApi";
 
+import {
+  categoryTranslate,
+  categoryTypeTranslate,
+  statusTranslate
+} from "../../utils/eventTranslate";
+
 export default function Step4Review({ data, onBack, onCreated }: any) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,24 +24,28 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
         typeId: data.typeId,
         statusId: data.statusId,
         venueId: data.venueId,
-        
         address: data.address,
         thumbnailUrl: data.thumbnailUrl,
         bannerImageUrl: data.bannerImageUrl
       };
 
-
-
       const created = await createEvent(payload);
-  
       onCreated(created.eventId);
-    } catch (err: any) {
-      console.error(err);
+    } catch {
       setError("No se pudo crear el evento. Revisá la consola.");
     } finally {
       setLoading(false);
     }
   };
+
+  const categoryName =
+    categoryTranslate[data.categoryName] ?? data.categoryName ?? "Sin categoría";
+
+  const typeName =
+    categoryTypeTranslate[data.typeName] ?? data.typeName ?? "Sin tipo";
+
+  const statusName =
+    statusTranslate[data.statusName] ?? data.statusName ?? "Sin estado";
 
   return (
     <div className="space-y-6">
@@ -69,22 +79,17 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
 
             <tr className="border-b border-neutral-800">
               <td className="px-4 py-2 text-gray-400">Categoría</td>
-              <td className="px-4 py-2 text-gray-100">{data.categoryId}</td>
+              <td className="px-4 py-2 text-gray-100">{categoryName}</td>
             </tr>
 
             <tr className="border-b border-neutral-800">
               <td className="px-4 py-2 text-gray-400">Tipo</td>
-              <td className="px-4 py-2 text-gray-100">{data.typeId}</td>
-            </tr>
-
-            <tr className="border-b border-neutral-800">
-              <td className="px-4 py-2 text-gray-400">Estado</td>
-              <td className="px-4 py-2 text-gray-100">{data.statusId}</td>
-            </tr>
+              <td className="px-4 py-2 text-gray-100">{typeName}</td>
+            </tr>            
 
             <tr>
               <td className="px-4 py-2 text-gray-400">Venue</td>
-              <td className="px-4 py-2 text-gray-100">{data.venueId}</td>
+              <td className="px-4 py-2 text-gray-100">{data.venueName}</td>
             </tr>
           </tbody>
         </table>

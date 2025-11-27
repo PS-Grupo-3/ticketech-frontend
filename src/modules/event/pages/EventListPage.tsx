@@ -27,7 +27,7 @@ export default function EventListPage() {
     statusId?: number;
     from?: string;
     to?: string;
-    search?: string;
+    name?: string;
   }>({});
 
   const loadEvents = async () => {

@@ -10,7 +10,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
     setError(null);
     const eventDate = local.time?.split("T")[0];
 
-    if (!local.name || !local.description || !eventDate || !local.address) {
+    if (!local.name || !local.description || !eventDate) {
       setError("Por favor completa todos los campos obligatorios.");
       return;
     }
@@ -90,20 +90,6 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
               }}
             />
           </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Dirección
-          </label>
-          <input
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="Dirección o referencia del lugar"
-            value={local.address}
-            onChange={(e) =>
-              setLocal({ ...local, address: e.target.value })
-            }
-          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

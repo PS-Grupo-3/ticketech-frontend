@@ -120,7 +120,7 @@ export default function ReaderSeatDots({
           opacity={0.9}
           listening={true}
           onClick={() => onSeatClick(s, sector)}
-          onMouseEnter={(evt) => onSeatHover(s, evt)}
+          onMouseEnter={(evt) => onSeatHover(s, evt, sector)}
           onMouseLeave={onSeatLeave}
         />
       );
