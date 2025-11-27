@@ -117,18 +117,17 @@ export type RegisterResponse = {
 export const register = async (payload: RegisterPayload): Promise<RegisterResponse> => {
     try {
         const { data } = await api.post<string>("/User/register", payload);
-        const token = data;
 
-        if (!token || typeof token !== "string") {
+        if (!data || typeof data !== "string") {
             throw new Error("Formato de token inválido recibido del servidor.");
         }
 
-        localStorage.setItem("token", token);
+        localStorage.setItem("token", data);
 
-        const decoded = parseJwt(token);
+        const decoded = parseJwt(data);
 
         return {
-            token,
+            token: data,
             userId: decoded.userId || "0",
             role: decoded.userRole || "User",
             name: payload.name,
@@ -137,6 +136,7 @@ export const register = async (payload: RegisterPayload): Promise<RegisterRespon
         throw new Error(err.response?.data?.message || "Error al registrar usuario");
     }
 };
+
 
 
 export { parseJwt };

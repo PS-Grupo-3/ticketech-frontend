@@ -27,6 +27,7 @@ const LoginSidebar = ({ open, onClose }: Props) => {
         handleRegister,
         closeSidebar,
         resetModal,
+        successMessage,
         user,
         logout
     } = useLoginSidebar(onClose);
@@ -79,7 +80,7 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                             credsError={credsError}
                             credsAnimation={credsAnimation}
                             shakeAnimation={shakeAnimation}
-                            handleRegister={handleRegister}
+                            successMessage={successMessage}
                         />
                     )}
 
@@ -125,7 +126,7 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                         <>
                             <button
                                 className="register"
-                                onClick={() => (window as any).triggerRegister()}
+                                onClick={handleRegister} // Usa handleRegister directamente
                             >
                                 Crear cuenta
                             </button>
@@ -138,6 +139,7 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                             </button>
                         </>
                     )}
+
 
                     {view === "user" && (
                         <button className="login" onClick={logout}>

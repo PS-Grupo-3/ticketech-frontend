@@ -80,7 +80,7 @@ export default function UserProfile({ onClose }: Props) {
                         </div>
                         <div className="user-field">
                             <span className="label">Email:</span>
-                            <span className="value">{decodedUser?.email || "—"}</span>
+                            <span className="value">{decodedUser?.UserEmail || "—"}</span>
                         </div>
                         <div className="user-field">
                             <span className="label">Rol:</span>
@@ -98,7 +98,6 @@ export default function UserProfile({ onClose }: Props) {
                 )}
             </div>
 
-            {/* FOOTER */}
             <div className="btns">
                 {!changePasswordMode ? (
                     <>
