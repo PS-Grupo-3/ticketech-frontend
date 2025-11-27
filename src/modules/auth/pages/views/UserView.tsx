@@ -29,7 +29,7 @@ const UserView = ({ user, logout, setView }: Props) => {
                         />
                     </div>
 
-                    <h3 className="userPanel-name">Hola, {user.name}</h3>
+                    <h3 className="userPanel-name">Hola, {user.Username}</h3>
 
                     <div className="userPanel-roleBox">
                         <span className="userPanel-role">

@@ -1,26 +1,17 @@
-
 import { getApiClient } from "../../../core/apiClient";
 
 const api = getApiClient("auth");
 
-export type LoginCredentials=
-{
-    Email:string,
-    Password:string;
-}
-export type loginResponse=
-{
-    token:string,
-    userId:string;
-    Username: string;
-    role: string;
+export type LoginCredentials = {
+    Email: string;
+    Password: string;
 };
 
-export type serverResponse = 
-{
-    status:number,
-    message:string;
-
+export type loginResponse = {
+    token: string;
+    userId: string;
+    Username: string;
+    role: string;
 };
 
 export type ServerResponse = {
@@ -28,18 +19,23 @@ export type ServerResponse = {
     message: string;
 };
 
+
 function parseJwt(token: string) {
     try {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
+        const jsonPayload = decodeURIComponent(
+            window.atob(base64)
+                .split('')
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
         return JSON.parse(jsonPayload);
-    } catch (e) {
+    } catch {
         return {};
     }
 }
+
 
 export type ChangePasswordPayload = {
     currentPassword: string;
@@ -49,8 +45,6 @@ export type ChangePasswordPayload = {
 export const changePassword = async (payload: ChangePasswordPayload): Promise<ServerResponse> => {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No hay token de autenticación");
-
-    console.log("Payload enviado:", payload);
 
     try {
         const { data } = await api.patch<ServerResponse>(
@@ -62,41 +56,37 @@ export const changePassword = async (payload: ChangePasswordPayload): Promise<Se
                 }
             }
         );
-        console.log("Respuesta del servidor:", data);
         return data;
     } catch (err: any) {
-
         throw new Error(err.response?.data?.message || "Error al cambiar la contraseña");
     }
-
 };
 
-export const login = async (payload:LoginCredentials): Promise<loginResponse> =>
-    {
-        try
-        {
+export const login = async (payload: LoginCredentials): Promise<loginResponse> => {
+    try {
         const url = "/User/login";
-        const {data}= await api.post<string>(url, payload);
-        const token = data;
 
-        if (!token || typeof token !== 'string') {
+        // Backend NO devuelve string → devuelve JSON con { name, lastName, email, token }
+        const { data } = await api.post(url, payload);
+
+        if (!data || typeof data !== "object" || !data.token) {
             throw new Error("Formato de token inválido recibido del servidor.");
         }
 
+        const token = data.token;
         localStorage.setItem("token", token);
 
         const decoded = parseJwt(token);
-        console.log(decoded);
 
         return {
             token: token,
             userId: decoded.userId || "0",
-            role: decoded.userRole || "User", // Aquí sacamos el rol real
-            Username: decoded.Username // Nombre por defecto
+            role: decoded.userRole || "User",
+            Username: decoded.Username || data.name || "User"
         };
-        } catch (error: any) {
+    } catch (error: any) {
         console.error("Error en login:", error);
-        throw new Error(error.response?.data?.error || "Error al iniciar sesión");
+        throw new Error(error.response?.data?.message || "Error al iniciar sesión");
     }
 };
 
@@ -117,27 +107,26 @@ export type RegisterResponse = {
 
 export const register = async (payload: RegisterPayload): Promise<RegisterResponse> => {
     try {
-        const { data } = await api.post<string>("/User/register", payload);
+        const { data } = await api.post("/User/register", payload);
 
-        if (!data || typeof data !== "string") {
+        if (!data || typeof data !== "object" || !data.token) {
             throw new Error("Formato de token inválido recibido del servidor.");
         }
 
-        localStorage.setItem("token", data);
+        const token = data.token;
+        localStorage.setItem("token", token);
 
-        const decoded = parseJwt(data);
+        const decoded = parseJwt(token);
 
         return {
-            token: data,
+            token: token,
             userId: decoded.userId || "0",
             role: decoded.userRole || "User",
-            name: payload.name,
+            name: data.name
         };
     } catch (err: any) {
         throw new Error(err.response?.data?.message || "Error al registrar usuario");
     }
 };
-
-
 
 export { parseJwt };
