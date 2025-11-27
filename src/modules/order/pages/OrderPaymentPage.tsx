@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../../../shared/components/Layout";
 import { getOrder, payOrder } from "../api/orderApi";
 import { getApiClient } from "../../../core/apiClient";
+import { decodeToken } from "../components/DecodeToken";
 
 type PaymentType = {
   id: number;
@@ -17,11 +18,18 @@ export default function OrderPaymentPage() {
   const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([]);
   const [selectedPayment, setSelectedPayment] = useState<number | null>(null);
   const [snapshot, setSnapshot] = useState<any[]>([]);
+  const [userData, setUserData] = useState<any>(null);
 
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const info = decodeToken(token);
+      setUserData(info);
+    }
+
     getApiClient("order")
       .get("/PaymentType")
       .then((res) => setPaymentTypes(res.data))
@@ -83,6 +91,19 @@ export default function OrderPaymentPage() {
             </header>
 
             <div className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-slate-50">
+              <h2 className="text-2xl font-semibold mb-4">Datos del Comprador</h2>
+              <div className="grid grid-cols-2 gap-y-3 text-base">
+                <p className="font-medium text-black">Nombre</p>
+                <p className="text-right text-black">
+                  {userData?.userName} {userData?.userLastName}
+                </p>
+
+                <p className="font-medium text-black">Teléfono</p>
+                <p className="text-right text-black">{userData?.userPhone}</p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-slate-50">
               <h2 className="text-2xl font-semibold mb-4">Resumen</h2>
 
               <div className="grid grid-cols-2 gap-y-3 text-base">
@@ -133,10 +154,9 @@ export default function OrderPaymentPage() {
                   <label
                     key={p.id}
                     className={`flex items-center p-4 border rounded-xl cursor-pointer transition
-                      ${
-                        selectedPayment === p.id
-                          ? "border-green-600 bg-green-50"
-                          : "border-slate-300 hover:bg-slate-100"
+                      ${selectedPayment === p.id
+                        ? "border-green-600 bg-green-50"
+                        : "border-slate-300 hover:bg-slate-100"
                       }`}
                   >
                     <input
@@ -157,10 +177,9 @@ export default function OrderPaymentPage() {
               onClick={handlePay}
               disabled={paying || !selectedPayment}
               className={`w-full py-4 rounded-xl text-white text-xl font-semibold transition
-                ${
-                  paying || !selectedPayment
-                    ? "bg-green-300"
-                    : "bg-green-600 hover:bg-green-700"
+                ${paying || !selectedPayment
+                  ? "bg-green-300"
+                  : "bg-green-600 hover:bg-green-700"
                 }`}
             >
               {paying ? "Procesando pago..." : "Pagar ahora"}

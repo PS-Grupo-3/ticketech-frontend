@@ -6,7 +6,7 @@ import SectorEditorModal from "../../components/SectorEditorModal";
 
 import type { EventFullSnapshot, EventSectorFull } from "../../components/types";
 
-export default function Step5ConfigureSectors({ eventId, onBack } : any) {
+export default function Step5ConfigureSectors({ eventId, onBack }: any) {
   const [event, setEvent] = useState<EventFullSnapshot | null>(null);
   const [sectors, setSectors] = useState<EventSectorFull[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -54,7 +54,7 @@ export default function Step5ConfigureSectors({ eventId, onBack } : any) {
 
         <button
           onClick={() => navigate("/")}
-          className="px-5 py-2 text-sm rounded-md bg-green-600 hover:bg-green-500 text-white font-semibold"
+          className="px-5 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-500 text-white font-semibold"
         >
           Finalizar
         </button>

@@ -92,7 +92,7 @@ export default function VenueCreatePage() {
 
   const handleGoToList = () => navigate("/venues");
 
-    return (
+  return (
     <Layout>
       <div className="bg-neutral-950 text-white">
         <div className="max-w-lg mx-auto pt-12 pb-16 px-8">
@@ -171,7 +171,7 @@ export default function VenueCreatePage() {
 
               <button
                 type="submit"
-                className="px-6 py-2 bg-green-600 rounded-md text-white"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-md text-white"
               >
                 Guardar Venue
               </button>
