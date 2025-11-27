@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "../shared/pages/Home/HomePage";
-import OrderPage from "../modules/order/pages/OrderPage";
 import MyOrders from "../modules/order/pages/MyOrders";
 import AuthPage from "../modules/auth/pages/AuthPage";
 import VenueEditorPage from "../modules/venue/pages/VenueEditorPage";
@@ -21,18 +20,17 @@ export default function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<HomePage />} />                
-                <Route path="/order" element={<OrderPage />} />
-                <Route path="/myOrders" element={<MyOrders />} />
+                <Route path="/" element={<HomePage />} />
+                <Route path="/order/my-orders" element={<MyOrders />} />
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/venue" element={<VenueListPage />} />
                 <Route path="/venue/create" element={<VenueCreatePage />} />
                 <Route path="/venue/editor/:venueId" element={<VenueEditorPage />} />
                 <Route path="/event" element={<EventListPage />} />
-                <Route path="/event/create" element={<CreateEventPage />} /> 
+                <Route path="/event/create" element={<CreateEventPage />} />
                 <Route path="/event/:eventId/update" element={<UpdateEventPage />} />
-                <Route path="/event/:eventId/metrics" element={<EventMetricsPage />} />               
-                <Route path="/dashboard" element={<Dashboard />} />                
+                <Route path="/event/:eventId/metrics" element={<EventMetricsPage />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/venue/:venueId" element={<VenuePage />} />
                 <Route path="/event/:eventId" element={<EventPreviewPage />} />
                 <Route path="/event/:eventId/venue" element={<EventVenuePage />} />

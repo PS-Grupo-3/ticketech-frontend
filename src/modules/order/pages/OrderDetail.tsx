@@ -30,7 +30,7 @@ interface EventDetail {
   categoryType: string;
   time: Date;
   address: string;
-  bannerImageUrl: string;
+  thumbnailUrl: string;
 }
 
 interface UserInfo {
@@ -54,7 +54,7 @@ export default function OrderDetailsRender({ orderId }: Props) {
         const info = decodeToken(token);
         setUserData(info);
       }
-    } catch {}
+    } catch { }
   }, []);
 
   useEffect(() => {
@@ -100,8 +100,8 @@ export default function OrderDetailsRender({ orderId }: Props) {
       <div className="OrderInfoContainer">
 
         <div className="EventImg">
-          {eventSelected?.bannerImageUrl ? (
-            <img src={eventSelected.bannerImageUrl} alt={eventSelected.name} />
+          {eventSelected?.thumbnailUrl ? (
+            <img src={eventSelected.thumbnailUrl} alt={eventSelected.name} />
           ) : (
             "Imagen no disponible"
           )}
@@ -120,29 +120,21 @@ export default function OrderDetailsRender({ orderId }: Props) {
         </div>
 
         <div className="InfoOrder">
-          {orderDetail.details.map((ticket, idx) => {
-            const snapMatch = snapshot.find((s) => s.eventSeatId === ticket.eventSeatId);
+          {snapshot.map((snapItem, idx) => (
+            <div className="infotickets" key={idx}>
+              <span>
+                {snapItem.sectorName || "Sector General"}
+              </span>
 
-            return (
-              <div className="infotickets" key={idx}>
-                <span>
-                  {snapMatch
-                    ? snapMatch.sectorName
-                    : `Sector ID: ${ticket.eventSectorId}`}
-                </span>
+              <span>
+                {snapItem.eventSeatId
+                  ? `Fila ${snapItem.row || "-"} · Asiento ${snapItem.column || "-"}`
+                  : "Admisión General"}
+              </span>
 
-                <span>
-                  {snapMatch
-                    ? `Fila ${snapMatch.row} · Asiento ${snapMatch.column}`
-                    : ticket.eventSeatId
-                      ? `Asiento ID ${ticket.eventSeatId}`
-                      : ""}
-                </span>
-
-                <span>{ticket.quantity} x ${ticket.unitPrice}</span>
-              </div>
-            );
-          })}
+              <span>1 x ${snapItem.price || orderDetail.details[0]?.unitPrice || 0}</span>
+            </div>
+          ))}
 
           <div className="PriceInfo">
             <div className="PriceInfoLine">

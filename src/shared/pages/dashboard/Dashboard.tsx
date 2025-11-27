@@ -10,19 +10,19 @@ import { useState } from "react";
 export default function Dashboard() {
   const sections = [
     { name: "EventService", path: "/event", color: "bg-blue", desc: "Gestiona categorías y eventos", icon: "🎟️" },
-    { name: "VenueService", path: "/venue", color: "bg-green", desc: "Administra lugares y sectores", icon: "🏟️" },    
-    { name: "OrderService", path: "/order", color: "bg-purple", desc: "Procesa órdenes y pagos", icon: "💳" },
+    { name: "VenueService", path: "/venue", color: "bg-green", desc: "Administra lugares y sectores", icon: "🏟️" },
+    { name: "OrderService", path: "/order/my-orders", color: "bg-purple", desc: "Procesa órdenes y pagos", icon: "💳" },
     { name: "AuthService", path: "/auth", color: "bg-gray", desc: "Usuarios y autenticación", icon: "🔐" },
   ];
-  
-  const [sidebarOpen, setSidebarOpen]=useState(false);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
 
 
   return (
     <div className="homepage">
-      <Navbar onUserClick={()=>setSidebarOpen(true)}/>
-      <LoginSidebar open={sidebarOpen} onClose={()=>setSidebarOpen(false)}/>
+      <Navbar onUserClick={() => setSidebarOpen(true)} />
+      <LoginSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="homepage-header">
         <h1 className="homepage-title">Ticketech Dashboard</h1>
@@ -41,10 +41,10 @@ export default function Dashboard() {
           </Link>
         ))}
       </div>
-      
+
 
       <Footer />
     </div>
-    
+
   );
 }
