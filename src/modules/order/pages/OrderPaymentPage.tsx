@@ -92,16 +92,18 @@ export default function OrderPaymentPage() {
 
             <div className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-slate-50">
               <h2 className="text-2xl font-semibold mb-4">Datos del Comprador</h2>
+
               <div className="grid grid-cols-2 gap-y-3 text-base">
                 <p className="font-medium text-black">Nombre</p>
                 <p className="text-right text-black">
-                  {userData?.userName} {userData?.userLastName}
+                  {userData?.Username} {userData?.UserLastName}
                 </p>
 
                 <p className="font-medium text-black">Teléfono</p>
-                <p className="text-right text-black">{userData?.userPhone}</p>
+                <p className="text-right text-black">{userData?.UserPhone}</p>
               </div>
             </div>
+
 
             <div className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-slate-50">
               <h2 className="text-2xl font-semibold mb-4">Resumen</h2>

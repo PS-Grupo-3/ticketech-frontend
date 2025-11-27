@@ -3,9 +3,7 @@ import { useState, useEffect } from "react";
 import { decodeToken } from "../components/DecodeToken";
 import { getEventById } from "../../event/api/eventApi";
 
-interface Props {
-  orderId: string;
-}
+// --------------------- TIPOS ----------------------
 
 interface TicketDetail {
   detailId: string;
@@ -28,7 +26,7 @@ interface EventDetail {
   name: string;
   category: string;
   categoryType: string;
-  time: Date;
+  time: string;
   address: string;
   thumbnailUrl: string;
 }
@@ -37,37 +35,41 @@ interface UserInfo {
   Username: string;
   UserLastName: string;
   UserPhone: string;
-  UserEmail:string;
+  UserEmail: string;
 }
 
-export default function OrderDetailsRender({ orderId }: Props) {
+export default function OrderDetailsRender({ orderId }: { orderId: string }) {
+
   const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null);
   const [eventSelected, setEventSelected] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<UserInfo | null>(null);
   const [snapshot, setSnapshot] = useState<any[]>([]);
 
+  // ------------------- USER DATA --------------------
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
     try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        const info = decodeToken(token);
-        setUserData(info);
-      }
-    } catch { }
+      const info = decodeToken(token);
+      setUserData(info);
+    } catch {}
   }, []);
 
+  // ------------------- SNAPSHOT --------------------
   useEffect(() => {
     const raw = localStorage.getItem(`order_snapshot_${orderId}`);
-    if (raw) {
-      try {
-        setSnapshot(JSON.parse(raw));
-      } catch {
-        setSnapshot([]);
-      }
+    if (!raw) return;
+
+    try {
+      setSnapshot(JSON.parse(raw));
+    } catch {
+      setSnapshot([]);
     }
   }, [orderId]);
 
+  // ------------------- LOAD ORDER -------------------
   useEffect(() => {
     const load = async () => {
       try {
@@ -81,6 +83,7 @@ export default function OrderDetailsRender({ orderId }: Props) {
     load();
   }, [orderId]);
 
+  // ------------------- LOAD EVENT -------------------
   useEffect(() => {
     if (!orderDetail?.eventId) return;
 
@@ -92,83 +95,138 @@ export default function OrderDetailsRender({ orderId }: Props) {
     loadEvent();
   }, [orderDetail]);
 
-  if (loading) return <div style={{ padding: 20 }}>Cargando...</div>;
-  if (!orderDetail) return <div style={{ padding: 20 }}>Orden no encontrada</div>;
+  // ------------------- RENDER -------------------
+  if (loading)
+    return (
+      <div className="w-full py-20 text-center text-lg font-medium">
+        Cargando...
+      </div>
+    );
+
+  if (!orderDetail)
+    return (
+      <div className="w-full py-20 text-center text-lg font-medium">
+        Orden no encontrada
+      </div>
+    );
 
   return (
-    <div className="OrderDetails">
-      <div className="OrderInfoContainer">
+    <div className="min-h-screen bg-white text-black flex justify-center py-14 px-6">
+      <div className="w-full max-w-6xl flex flex-col gap-12">
 
-        <div className="EventImg">
-          {eventSelected?.thumbnailUrl ? (
-            <img src={eventSelected.thumbnailUrl} alt={eventSelected.name} />
-          ) : (
-            "Imagen no disponible"
-          )}
+        {/* EVENT HEADER */}
+        <div className="rounded-2xl border border-slate-300 shadow-sm bg-white overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2">
 
-          <div className="ImgText">
-            <span>
-              <p>#{orderDetail.orderId.toUpperCase()}</p>
-            </span>
-            <span>
-              <h1>{eventSelected?.name}</h1>
-            </span>
-            <span>{eventSelected?.address}</span>
-            <span>Fecha: {new Date(eventSelected?.time!).toLocaleDateString("es-AR")}</span>
-            <span>Horario: {new Date(eventSelected?.time!).toLocaleTimeString("es-AR")}</span>
+            <div className="h-72 md:h-full overflow-hidden">
+              {eventSelected?.thumbnailUrl ? (
+                <img
+                  src={eventSelected.thumbnailUrl}
+                  alt={eventSelected.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-500">
+                  Imagen no disponible
+                </div>
+              )}
+            </div>
+
+            <div className="p-8 flex flex-col justify-center gap-2">
+              <p className="text-slate-700 text-sm">
+                Orden #{orderDetail.orderId.toUpperCase()}
+              </p>
+
+              <h1 className="text-3xl font-bold">{eventSelected?.name}</h1>
+
+              <p className="text-slate-700">{eventSelected?.address}</p>
+
+              <span className="text-slate-700">
+                Fecha: {eventSelected ? new Date(eventSelected.time).toLocaleDateString("es-AR") : ""}
+              </span>
+
+              <span className="text-slate-700">
+                Horario: {eventSelected ? new Date(eventSelected.time).toLocaleTimeString("es-AR") : ""}
+              </span>
+
+            </div>
           </div>
         </div>
 
-        <div className="InfoOrder">
-          {snapshot.map((snapItem, idx) => (
-            <div className="infotickets" key={idx}>
-              <span>
-                {snapItem.sectorName || "Sector General"}
-              </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
 
-              <span>
-                {snapItem.eventSeatId
-                  ? `Fila ${snapItem.row || "-"} · Asiento ${snapItem.column || "-"}`
-                  : "Admisión General"}
-              </span>
+          {/* DETALLE DE TICKETS */}
+          <section className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-white">
+            <h2 className="text-2xl font-semibold mb-4">Entradas</h2>
 
-              <span>1 x ${snapItem.price || orderDetail.details[0]?.unitPrice || 0}</span>
-            </div>
-          ))}
+            <div className="space-y-4">
+              {snapshot.map((snapItem, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex justify-between"
+                >
+                  <div>
+                    <p className="font-semibold text-black">Entrada {idx + 1}</p>
 
-          <div className="PriceInfo">
-            <div className="PriceInfoLine">
-              <span>Total:</span>
-              <span>${orderDetail.totalAmount}</span>
+                    <p className="text-sm text-slate-700">
+                      {snapItem.sectorName || "Sector General"}
+                    </p>
+
+                    <p className="text-sm text-slate-700">
+                      {snapItem.eventSeatId
+                        ? `Fila ${snapItem.row} · Asiento ${snapItem.column}`
+                        : "Admisión General"}
+                    </p>
+                  </div>
+
+                  <p className="text-lg font-bold text-black">
+                    ${snapItem.price || orderDetail.details[0]?.unitPrice || 0}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* RESUMEN Y USUARIO */}
+          <section className="flex flex-col gap-8">
+
+            <div className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-slate-50">
+              <h2 className="text-2xl font-semibold mb-4">Resumen</h2>
+
+              <div className="grid grid-cols-2 gap-y-3 text-base">
+                <p className="font-medium text-black">Total</p>
+                <p className="text-right font-bold text-black">
+                  ${orderDetail.totalAmount}
+                </p>
+
+                <p className="font-medium text-black">Método de pago</p>
+                <p className="text-right text-black">
+                  {orderDetail.paymentType.name}
+                </p>
+
+                <p className="font-medium text-black">Transacción</p>
+                <p className="text-right text-black">{orderDetail.transaction}</p>
+              </div>
             </div>
 
-            <div className="PriceInfoLine">
-              <span>Método de pago:</span>
-              <span>{orderDetail.paymentType.name}</span>
+            <div className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-white">
+              <h2 className="text-2xl font-semibold mb-4">Datos del Comprador</h2>
+
+              <div className="grid grid-cols-2 gap-y-3 text-base">
+                <p className="font-medium text-black">Nombre</p>
+                <p className="text-right text-black">
+                  {userData?.Username} {userData?.UserLastName}
+                </p>
+
+                <p className="font-medium text-black">Teléfono</p>
+                <p className="text-right text-black">{userData?.UserPhone}</p>
+
+                <p className="font-medium text-black">Email</p>
+                <p className="text-right text-black">{userData?.UserEmail}</p>
+              </div>
             </div>
 
-            <div className="PriceInfoLine">
-              <span>Transacción:</span>
-              <span>{orderDetail.transaction}</span>
-            </div>
-          </div>
-
-          <div className="UserInfo">
-            <div className="UserInfoLine">
-              <span>Nombre:</span>
-              <span>{userData?.Username} {userData?.UserLastName}</span>
-            </div>
-            <div className="UserInfoLine">
-              <span>Teléfono:</span>
-              <span>{userData?.UserPhone}</span>
-            </div>
-              <div className="UserInfoLine">
-              <span>Email:</span>
-              <span>{userData?.UserEmail}</span>
-            </div>
-              
-          </div>
-
+          </section>
         </div>
       </div>
     </div>
