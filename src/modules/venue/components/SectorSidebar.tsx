@@ -25,8 +25,8 @@ export default function SectorSidebar({
 }: SidebarProps) {
   
   const getInitialRows = (s: any) => {
-    if (s.shape?.rows && s.shape.rows > 1) return s.shape.rows;
-    if (s.rows && s.rows > 1) return s.rows;
+    if (s.shape?.rows && s.shape.rows > 0) return s.shape.rows;
+    if (s.rows && s.rows > 0) return s.rows;
     if (s.seats && s.seats.length > 0) {
         return Math.max(...s.seats.map((seat: any) => seat.rowNumber || 0));
     }
@@ -34,8 +34,8 @@ export default function SectorSidebar({
   };
 
   const getInitialCols = (s: any) => {
-    if (s.shape?.columns && s.shape.columns > 1) return s.shape.columns;
-    if (s.cols && s.cols > 1) return s.cols;
+    if (s.shape?.columns && s.shape.columns > 0) return s.shape.columns;
+    if (s.cols && s.cols > 0) return s.cols;
     if (s.seats && s.seats.length > 0) {
         return Math.max(...s.seats.map((seat: any) => seat.columnNumber || 0));
     }

@@ -40,19 +40,42 @@ export default function VenueEditorPage() {
     }
   };
 
-  const loadSectors = async () => {
-    if (!venueId) return;
-    try {
-      const raw = await getSectorsForVenue(venueId);
-      const sectorsData = Array.isArray(raw) ? raw : [];
+const loadSectors = async () => {
+  if (!venueId) return;
 
-      const enriched: Sector[] = await Promise.all(
-        sectorsData.map(async (s: any) => {
-          const full = await getSectorById(s.sectorId);
-          const rows = full.rowNumber ?? 1;
-          const columns = full.columnNumber ?? 1;
+  try {
+    const raw = await getSectorsForVenue(venueId);
+    const sectorsData = Array.isArray(raw) ? raw : [];
 
-          const shape: Shape = {
+    const enriched: Sector[] = await Promise.all(
+      sectorsData.map(async (s: any) => {
+        const full = await getSectorById(s.sectorId);
+
+        const rows =
+          full.shape?.rows ??
+          full.rowNumber ??
+          (full.seats?.length ? Math.max(...full.seats.map((x: any) => x.rowNumber)) : 1);
+
+        const columns =
+          full.shape?.columns ??
+          full.shape?.cols ??       // ESTA es la clave
+          full.columnNumber ??
+          (full.seats?.length ? Math.max(...full.seats.map((x: any) => x.columnNumber)) : 1);
+
+
+        let seats: Seat[] = [];
+        if (full.isControlled) {
+          seats = await getSeatsForSector(full.sectorId);
+        }
+
+        return {
+          sectorId: full.sectorId,
+          name: full.name,
+          isControlled: full.isControlled,
+          seatCount: full.seatCount,
+          capacity: full.capacity,
+          seats,
+          shape: {          
             type: full.shape.type,
             width: full.shape.width,
             height: full.shape.height,
@@ -62,34 +85,20 @@ export default function VenueEditorPage() {
             padding: full.shape.padding,
             opacity: full.shape.opacity,
             colour: full.shape.colour,
+
             rows,
-            columns,
-          };
+            columns  
+          },        
+        };
+      })
+    );
 
-          let seats: Seat[] = [];
+    setSectors(enriched);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-          if (full.isControlled) {
-            const backendSeats = await getSeatsForSector(full.sectorId);
-            if (backendSeats && backendSeats.length > 0) seats = backendSeats;
-          }
-
-          return {
-            sectorId: full.sectorId,
-            name: full.name,
-            isControlled: full.isControlled,
-            seatCount: full.seatCount,
-            capacity: full.capacity,
-            shape,
-            seats,
-          };
-        })
-      );
-
-      setSectors(enriched);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const onBackgroundImageUrlChange = async () => {
     if (!venueId || !venue) return;
