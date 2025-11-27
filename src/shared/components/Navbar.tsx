@@ -18,7 +18,7 @@ export default function Navbar({ onUserClick, user }: NavbarProps) {
           </NavLink>
 
           <nav className="hidden md:flex gap-8 text-sm">
-            <NavLink to="/" className="hover:text-gray-300">Inicio</NavLink>            
+            <NavLink to="/" className="hover:text-gray-300">Inicio</NavLink>
           </nav>
         </div>
 
