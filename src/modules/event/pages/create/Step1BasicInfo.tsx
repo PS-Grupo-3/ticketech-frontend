@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Step1BasicInfo({ data, onNext, onBack }: any) {
   const [local, setLocal] = useState(data);
@@ -20,8 +20,14 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
       return;
     }
 
+    console.log("Step1BasicInfo sending:", local);
     onNext(local);
   };
+
+  // Debug: Track local state changes
+  useEffect(() => {
+    console.log("Step1BasicInfo local state updated:", local);
+  }, [local]);
 
   return (
     <div className="space-y-8">
@@ -132,18 +138,20 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
               type="color"
               className="w-12 h-10 rounded cursor-pointer border border-neutral-700"
               value={local.themeColor || "#000000"}
-              onChange={(e) =>
-                setLocal({ ...local, themeColor: e.target.value })
-              }
+              onChange={(e) => {
+                console.log("Color picker changed:", e.target.value);
+                setLocal({ ...local, themeColor: e.target.value });
+              }}
             />
 
             <input
               className="flex-1 bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               placeholder="#ff2244"
-              value={local.themeColor}
-              onChange={(e) =>
-                setLocal({ ...local, themeColor: e.target.value })
-              }
+              value={local.themeColor || ""}
+              onChange={(e) => {
+                console.log("Color text changed:", e.target.value);
+                setLocal({ ...local, themeColor: e.target.value });
+              }}
             />
           </div>
         </div>

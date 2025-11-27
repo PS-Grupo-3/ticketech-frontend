@@ -23,12 +23,12 @@ const UserView = ({ user, logout, setView }: Props) => {
             <div className="userPanel">
                 <div className="userPanel-info">
                     <div className="userPanel-avatar">
-                        <img 
+                        <img
                             src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
                             alt="user avatar"
                         />
                     </div>
-                    
+
                     <h3 className="userPanel-name">Hola, {user.name}</h3>
 
                     <div className="userPanel-roleBox">
@@ -48,7 +48,7 @@ const UserView = ({ user, logout, setView }: Props) => {
 
 
 
-                    <Link to="/order" className="userPanel-btn">
+                    <Link to="/order/my-orders" className="userPanel-btn">
                         Mis compras
                     </Link>
                 </div>

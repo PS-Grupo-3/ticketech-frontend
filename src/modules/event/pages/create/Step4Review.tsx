@@ -26,7 +26,8 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
         venueId: data.venueId,
         address: data.address,
         thumbnailUrl: data.thumbnailUrl,
-        bannerImageUrl: data.bannerImageUrl
+        bannerImageUrl: data.bannerImageUrl,
+        themeColor: data.themeColor || null
       };
 
       const created = await createEvent(payload);
@@ -85,7 +86,7 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
             <tr className="border-b border-neutral-800">
               <td className="px-4 py-2 text-gray-400">Tipo</td>
               <td className="px-4 py-2 text-gray-100">{typeName}</td>
-            </tr>            
+            </tr>
 
             <tr>
               <td className="px-4 py-2 text-gray-400">Venue</td>
@@ -114,11 +115,10 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
           type="button"
           onClick={handleCreate}
           disabled={loading}
-          className={`px-5 py-2 text-sm rounded-md font-semibold ${
-            loading
-              ? "bg-neutral-700 text-gray-400 cursor-wait"
-              : "bg-green-600 hover:bg-green-500 text-white"
-          }`}
+          className={`px-5 py-2 text-sm rounded-md font-semibold ${loading
+            ? "bg-neutral-700 text-gray-400 cursor-wait"
+            : "bg-blue-600 hover:bg-blue-500 text-white"
+            }`}
         >
           {loading ? "Creando..." : "Crear evento"}
         </button>

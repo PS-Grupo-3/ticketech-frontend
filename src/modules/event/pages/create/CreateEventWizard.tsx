@@ -35,7 +35,12 @@ export default function CreateEventWizard() {
   const [createdEventId, setCreatedEventId] = useState<string | null>(null);
 
   const goNext = (data: any) => {
-    setForm((prev: any) => ({ ...prev, ...data }));
+    console.log("CreateEventWizard received:", data);
+    setForm((prev: any) => {
+      const updated = { ...prev, ...data };
+      console.log("CreateEventWizard updated form:", updated);
+      return updated;
+    });
     setStep((prev) => prev + 1);
   };
 
@@ -45,7 +50,7 @@ export default function CreateEventWizard() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      
+
       {/* Stepper */}
       <div className="mb-6">
         <p className="text-sm text-gray-400 mb-2">
@@ -65,8 +70,8 @@ export default function CreateEventWizard() {
                     isDone
                       ? "bg-green-600 text-white"
                       : isActive
-                      ? "bg-blue-600 text-white"
-                      : "bg-neutral-700 text-gray-300",
+                        ? "bg-blue-600 text-white"
+                        : "bg-neutral-700 text-gray-300",
                   ].join(" ")}
                 >
                   {current}
@@ -82,7 +87,7 @@ export default function CreateEventWizard() {
           })}
         </div>
       </div>
-    
+
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 shadow-lg">
         {step === 1 && (
           <Step1BasicInfo data={form} onNext={goNext} onBack={goToEventList} />
