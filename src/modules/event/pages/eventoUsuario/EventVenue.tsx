@@ -13,6 +13,7 @@ import { useCartTimer } from "./hooks/useCartTimer";
 import TimerBar from "./components/TimerBar";
 import SeatInfoPanel from "./components/SeatInfoPanel";
 import CartPanel from "./components/CartPanel";
+import { useNotification } from "../../../../shared/components/NotificationContext";
 
 export default function EventVenuePage() {
   const { eventId } = useParams();
@@ -60,13 +61,14 @@ export default function EventVenuePage() {
     return () => clearInterval(interval);
   }, [eventId, selectedSeat]);
 
-  
+  const { show } = useNotification();
+    
   const handleAdd = async () => {
     const result = await addSeat(eventData, selectedSeat, selectedSector);
 
     if (!result.ok) {
-      if (result.reason === "limit") alert("Máximo 5 items.");
-      if (result.reason === "no-capacity") alert("No quedan lugares.");
+      if (result.reason === "limit") show("Máximo 5 items.");
+      if (result.reason === "no-capacity") show("No quedan lugares.");
       return;
     }
 

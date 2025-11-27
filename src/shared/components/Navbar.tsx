@@ -18,9 +18,7 @@ export default function Navbar({ onUserClick, user }: NavbarProps) {
           </NavLink>
 
           <nav className="hidden md:flex gap-8 text-sm">
-            <NavLink to="/" className="hover:text-gray-300">Inicio</NavLink>
-            <NavLink to="/event/create" className="hover:text-gray-300">Eventos</NavLink>
-            <NavLink to="/dashboard" className="hover:text-gray-300">Dashboard</NavLink>
+            <NavLink to="/" className="hover:text-gray-300">Inicio</NavLink>            
           </nav>
         </div>
 

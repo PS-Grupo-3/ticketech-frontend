@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { deleteEvent } from "../../api/eventApi";
 import "./DeleteEvent.css";
 import defaultImage from "../../../../assets/default-image.webp";
+import { useNotification } from "../../../../shared/components/NotificationContext";
 
 export default function DeleteEvent({
   eventId,
@@ -36,6 +37,8 @@ export default function DeleteEvent({
     };
   }, [onCancel]);
 
+  const { show } = useNotification();
+    
   const handleDelete = async () => {
     try {
       setLoading(true);
@@ -43,7 +46,7 @@ export default function DeleteEvent({
       onDeleted();
     } catch (err) {
       console.error("Error eliminando evento", err);
-      alert("No se pudo eliminar el evento.");
+      show("No se pudo eliminar el evento.");
     } finally {
       setLoading(false);
     }

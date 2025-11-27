@@ -5,11 +5,14 @@ import queryClient from "./core/queryClient";
 import AppRoutes from "./core/routes";
 import "@/index.css";
 import "./shared/styles/global.css";
+import { NotificationProvider } from "./shared/components/NotificationContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <QueryClientProvider client={queryClient}>
-            <AppRoutes />
+            <NotificationProvider>
+                <AppRoutes />
+            </NotificationProvider>
         </QueryClientProvider>
     </React.StrictMode>
 );
