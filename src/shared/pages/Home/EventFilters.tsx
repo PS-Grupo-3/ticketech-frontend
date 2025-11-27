@@ -5,7 +5,11 @@ import "./css/EventFilters.css";
 const CATEGORY_OPTIONS = [
   { id: 1, key: "Music" },
   { id: 2, key: "Stand-up" },
-  { id: 3, key: "Conference" }
+  { id: 3, key: "Conference" },
+  { id: 4, key: "Sports" },
+  { id: 5, key: "Theatre" },
+  { id: 6, key: "Arts" },
+  { id: 7, key: "Workshops" }
 ];
 
 const STATUS_OPTIONS = [
