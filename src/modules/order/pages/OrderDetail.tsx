@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import { decodeToken } from "../components/DecodeToken";
 import { getEventById } from "../../event/api/eventApi";
 
-// --------------------- TIPOS ----------------------
-
 interface TicketDetail {
   detailId: string;
   eventSeatId?: string | null;
@@ -39,14 +37,12 @@ interface UserInfo {
 }
 
 export default function OrderDetailsRender({ orderId }: { orderId: string }) {
-
   const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null);
   const [eventSelected, setEventSelected] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<UserInfo | null>(null);
   const [snapshot, setSnapshot] = useState<any[]>([]);
 
-  // ------------------- USER DATA --------------------
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -57,7 +53,6 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
     } catch {}
   }, []);
 
-  // ------------------- SNAPSHOT --------------------
   useEffect(() => {
     const raw = localStorage.getItem(`order_snapshot_${orderId}`);
     if (!raw) return;
@@ -69,7 +64,6 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
     }
   }, [orderId]);
 
-  // ------------------- LOAD ORDER -------------------
   useEffect(() => {
     const load = async () => {
       try {
@@ -83,7 +77,6 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
     load();
   }, [orderId]);
 
-  // ------------------- LOAD EVENT -------------------
   useEffect(() => {
     if (!orderDetail?.eventId) return;
 
@@ -95,27 +88,26 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
     loadEvent();
   }, [orderDetail]);
 
-  // ------------------- RENDER -------------------
   if (loading)
     return (
-      <div className="w-full py-20 text-center text-lg font-medium">
+      <div className="w-full py-20 text-center text-lg font-medium text-white bg-neutral-900">
         Cargando...
       </div>
     );
 
   if (!orderDetail)
     return (
-      <div className="w-full py-20 text-center text-lg font-medium">
+      <div className="w-full py-20 text-center text-lg font-medium text-white bg-neutral-900">
         Orden no encontrada
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-white text-black flex justify-center py-14 px-6">
+    <div className="min-h-screen bg-neutral-900 text-white flex justify-center py-14 px-6">
       <div className="w-full max-w-6xl flex flex-col gap-12">
 
         {/* EVENT HEADER */}
-        <div className="rounded-2xl border border-slate-300 shadow-sm bg-white overflow-hidden">
+        <div className="rounded-2xl border border-neutral-700 shadow-sm bg-neutral-800 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
 
             <div className="h-72 md:h-full overflow-hidden">
@@ -126,29 +118,34 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-500">
+                <div className="w-full h-full flex items-center justify-center text-neutral-500">
                   Imagen no disponible
                 </div>
               )}
             </div>
 
             <div className="p-8 flex flex-col justify-center gap-2">
-              <p className="text-slate-700 text-sm">
+              <p className="text-neutral-400 text-sm">
                 Orden #{orderDetail.orderId.toUpperCase()}
               </p>
 
-              <h1 className="text-3xl font-bold">{eventSelected?.name}</h1>
+              <h1 className="text-3xl font-bold text-white">{eventSelected?.name}</h1>
 
-              <p className="text-slate-700">{eventSelected?.address}</p>
+              <p className="text-neutral-300">{eventSelected?.address}</p>
 
-              <span className="text-slate-700">
-                Fecha: {eventSelected ? new Date(eventSelected.time).toLocaleDateString("es-AR") : ""}
+              <span className="text-neutral-300">
+                Fecha:{" "}
+                {eventSelected
+                  ? new Date(eventSelected.time).toLocaleDateString("es-AR")
+                  : ""}
               </span>
 
-              <span className="text-slate-700">
-                Horario: {eventSelected ? new Date(eventSelected.time).toLocaleTimeString("es-AR") : ""}
+              <span className="text-neutral-300">
+                Horario:{" "}
+                {eventSelected
+                  ? new Date(eventSelected.time).toLocaleTimeString("es-AR")
+                  : ""}
               </span>
-
             </div>
           </div>
         </div>
@@ -156,30 +153,30 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
 
           {/* DETALLE DE TICKETS */}
-          <section className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-white">
-            <h2 className="text-2xl font-semibold mb-4">Entradas</h2>
+          <section className="rounded-2xl border border-neutral-700 p-6 shadow-sm bg-neutral-800">
+            <h2 className="text-2xl font-semibold mb-4 text-white">Entradas</h2>
 
             <div className="space-y-4">
               {snapshot.map((snapItem, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex justify-between"
+                  className="p-4 rounded-xl border border-neutral-700 bg-neutral-800 flex justify-between"
                 >
                   <div>
-                    <p className="font-semibold text-black">Entrada {idx + 1}</p>
+                    <p className="font-semibold text-white">Entrada {idx + 1}</p>
 
-                    <p className="text-sm text-slate-700">
+                    <p className="text-sm text-neutral-400">
                       {snapItem.sectorName || "Sector General"}
                     </p>
 
-                    <p className="text-sm text-slate-700">
+                    <p className="text-sm text-neutral-400">
                       {snapItem.eventSeatId
                         ? `Fila ${snapItem.row} · Asiento ${snapItem.column}`
                         : "Admisión General"}
                     </p>
                   </div>
 
-                  <p className="text-lg font-bold text-black">
+                  <p className="text-lg font-bold text-white">
                     ${snapItem.price || orderDetail.details[0]?.unitPrice || 0}
                   </p>
                 </div>
@@ -190,39 +187,39 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
           {/* RESUMEN Y USUARIO */}
           <section className="flex flex-col gap-8">
 
-            <div className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-slate-50">
-              <h2 className="text-2xl font-semibold mb-4">Resumen</h2>
+            <div className="rounded-2xl border border-neutral-700 p-6 shadow-sm bg-neutral-800">
+              <h2 className="text-2xl font-semibold mb-4 text-white">Resumen</h2>
 
               <div className="grid grid-cols-2 gap-y-3 text-base">
-                <p className="font-medium text-black">Total</p>
-                <p className="text-right font-bold text-black">
+                <p className="font-medium text-neutral-300">Total</p>
+                <p className="text-right font-bold text-white">
                   ${orderDetail.totalAmount}
                 </p>
 
-                <p className="font-medium text-black">Método de pago</p>
-                <p className="text-right text-black">
+                <p className="font-medium text-neutral-300">Método de pago</p>
+                <p className="text-right text-white">
                   {orderDetail.paymentType.name}
                 </p>
 
-                <p className="font-medium text-black">Transacción</p>
-                <p className="text-right text-black">{orderDetail.transaction}</p>
+                <p className="font-medium text-neutral-300">Transacción</p>
+                <p className="text-right text-white">{orderDetail.transaction}</p>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-300 p-6 shadow-sm bg-white">
-              <h2 className="text-2xl font-semibold mb-4">Datos del Comprador</h2>
+            <div className="rounded-2xl border border-neutral-700 p-6 shadow-sm bg-neutral-800">
+              <h2 className="text-2xl font-semibold mb-4 text-white">Datos del Comprador</h2>
 
               <div className="grid grid-cols-2 gap-y-3 text-base">
-                <p className="font-medium text-black">Nombre</p>
-                <p className="text-right text-black">
+                <p className="font-medium text-neutral-300">Nombre</p>
+                <p className="text-right text-white">
                   {userData?.Username} {userData?.UserLastName}
                 </p>
 
-                <p className="font-medium text-black">Teléfono</p>
-                <p className="text-right text-black">{userData?.UserPhone}</p>
+                <p className="font-medium text-neutral-300">Teléfono</p>
+                <p className="text-right text-white">{userData?.UserPhone}</p>
 
-                <p className="font-medium text-black">Email</p>
-                <p className="text-right text-black">{userData?.UserEmail}</p>
+                <p className="font-medium text-neutral-300">Email</p>
+                <p className="text-right text-white">{userData?.UserEmail}</p>
               </div>
             </div>
 

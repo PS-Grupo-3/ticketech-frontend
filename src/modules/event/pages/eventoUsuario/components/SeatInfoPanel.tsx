@@ -11,7 +11,7 @@ export default function SeatInfoPanel({
 }: SeatInfoPanelProps) {
   if (!selectedSector) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm text-xs text-black">
+      <div className="rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-3 shadow-sm text-xs text-neutral-300">
         Seleccioná un sector.
       </div>
     );
@@ -21,22 +21,22 @@ export default function SeatInfoPanel({
   const disabled = isFree && selectedSector.capacity <= 0;
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm space-y-3">
-      <h2 className="text-sm font-semibold text-slate-900">Detalle</h2>
+    <div className="rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-3 shadow-sm space-y-3">
+      <h2 className="text-sm font-semibold text-white">Detalle</h2>
 
-      <div className="space-y-1 text-xs text-black">
-        <p className="text-black">
-          <span className="font-semibold text-black">Sector:</span> {selectedSector.name}
+      <div className="space-y-1 text-xs text-neutral-300">
+        <p>
+          <span className="font-semibold text-white">Sector:</span> {selectedSector.name}
         </p>
 
         {isFree ? (
-          <p className="text-black">
-            <span className="font-semibold text-black">Disponibles:</span>{" "}
+          <p>
+            <span className="font-semibold text-white">Disponibles:</span>{" "}
             {selectedSector.capacity}
           </p>
         ) : (
-          <p className="text-black">
-            <span className="font-semibold text-black">Lugar:</span>{" "}
+          <p>
+            <span className="font-semibold text-white">Lugar:</span>{" "}
             {selectedSeat
               ? `Fila ${selectedSeat.row} – Asiento ${selectedSeat.column}`
               : "Ninguno"}
@@ -45,8 +45,8 @@ export default function SeatInfoPanel({
       </div>
 
       <div className="flex items-baseline justify-between">
-        <span className="text-xs uppercase tracking-wide text-black">Precio</span>
-        <span className="text-2xl font-bold text-emerald-600">
+        <span className="text-xs uppercase tracking-wide text-neutral-300">Precio</span>
+        <span className="text-2xl font-bold text-emerald-500">
           ${isFree ? selectedSector.price : selectedSeat?.price ?? "—"}
         </span>
       </div>
@@ -58,7 +58,7 @@ export default function SeatInfoPanel({
         className={`w-full rounded-lg px-3 py-2 text-sm font-semibold transition
           ${
             disabled
-              ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+              ? "bg-neutral-700 text-neutral-500 cursor-not-allowed"
               : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
           }`}
       >
@@ -67,5 +67,3 @@ export default function SeatInfoPanel({
     </div>
   );
 }
-
-

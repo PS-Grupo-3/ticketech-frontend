@@ -175,7 +175,7 @@ const handleCheckout = async () => {
             />
           </div>
           
-          <aside className="w-[380px] rounded-2xl bg-slate-50/95 backdrop-blur shadow-2xl border border-slate-200 px-5 py-4 flex flex-col gap-4">
+          <aside className="w-[380px] rounded-2xl bg-neutral-800/95 backdrop-blur shadow-2xl border border-neutral-700 px-5 py-4 flex flex-col gap-4">
             <TimerBar timeLeft={timeLeft} />
 
             <SeatInfoPanel
@@ -191,6 +191,7 @@ const handleCheckout = async () => {
               onRemoveItem={handleRemoveItem}
             />
           </aside>
+
         </div>
       </div>
     </Layout>
