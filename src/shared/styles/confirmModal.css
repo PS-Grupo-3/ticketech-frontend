@@ -1,0 +1,73 @@
+@import "./colors.css";
+@import "./typography.css";
+
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-dark-semitransparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.confirm-modal {
+  background-color: var(--color-options);
+  padding: 1.5rem 2rem;
+  width: 21rem;
+  border-radius: 0.8rem;
+  text-align: center;
+  animation: slideIn 0.25s ease-out;
+  box-shadow: 0px 6px 25px var(--color-options);
+}
+
+.confirm-message {
+  font-size: var(--font-size-lg);
+  margin-bottom: 1rem;
+  color: var(--color-text-light);
+}
+
+.confirm-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.btn-confirm,
+.btn-cancel {
+  flex: 1;
+  font-size: var(--font-size-lg);
+  padding: 0.6rem 0;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease;
+}
+
+.btn-confirm {
+  background-color: var(--color-red-start);
+}
+.btn-confirm:hover {
+  background-color: var(--color-red-end);
+}
+
+.btn-cancel {
+  background-color: var(--color-gray-start);
+}
+.btn-cancel:hover {
+  background-color: var(--color-gray-end);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
