@@ -1,5 +1,5 @@
-import React from "react";
-import "../styles/confirmModal.css"
+import "../styles/confirmModal.css";
+import ReactDOM from "react-dom";
 
 type ConfirmModalProps = {
   message: string;
@@ -8,17 +8,17 @@ type ConfirmModalProps = {
 };
 
 export default function ConfirmModal({ message, onConfirm, onCancel }: ConfirmModalProps) {
-  return (
-    <div className="confirm-overlay">
-      <div className="confirm-modal">
+  return ReactDOM.createPortal(
+    <div className="confirm-overlay" onClick={onCancel}>
+      <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
         <p className="confirm-message">{message}</p>
-        
         <div className="confirm-buttons">
           <button className="btn-confirm" onClick={onConfirm}>Confirmar</button>
           <button className="btn-cancel" onClick={onCancel}>Cancelar</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
