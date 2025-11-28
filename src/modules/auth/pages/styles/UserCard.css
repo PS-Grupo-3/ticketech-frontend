@@ -87,3 +87,47 @@
 .view-button:hover {
   color: var(--color-blue-end);
 }
+
+.user-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(70% + 0.5rem);
+  background-color: var(--color-options);
+  border: 1px solid var(--color-card-image);
+  border-radius: 0.8rem;
+  display: flex;
+  flex-direction: row;
+  z-index: 50;
+  padding: 0.3rem;
+  white-space: nowrap;
+}
+
+
+
+.user-dropdown button {
+  width: 10rem;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: var(--color-text-light);
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.6rem;
+  transition: background 0.15s ease;
+  font-size: 0.9rem;
+}
+
+.user-dropdown button:hover:not(:disabled) {
+  background-color: var(--color-dark-blue-end);
+}
+
+.user-dropdown button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

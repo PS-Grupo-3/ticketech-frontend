@@ -8,6 +8,7 @@ import UserCard from "./UserCard";
 export default function AuthPage() {
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [error, setError] = useState<string>("");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const decoded = token ? parseJwt(token) : ({} as any);
@@ -46,6 +47,8 @@ export default function AuthPage() {
               key={user.id}
               user={user}
               loggedUserId={loggedUserId}
+              openMenuId={openMenuId}
+              setOpenMenuId={setOpenMenuId}
             />
           ))}
 
