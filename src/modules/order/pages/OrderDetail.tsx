@@ -35,6 +35,13 @@ interface UserInfo {
   UserPhone: string;
   UserEmail: string;
 }
+ function fixEncoding(str: string): string {
+  try {
+    return decodeURIComponent(escape(str));
+  } catch {
+    return str;
+  }
+}
 
 export default function OrderDetailsRender({ orderId }: { orderId: string }) {
   const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null);
@@ -212,7 +219,7 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
               <div className="grid grid-cols-2 gap-y-3 text-base">
                 <p className="font-medium text-neutral-300">Nombre</p>
                 <p className="text-right text-white">
-                  {userData?.Username} {userData?.UserLastName}
+                  {fixEncoding(userData?.Username+" "+userData?.UserLastName)}
                 </p>
 
                 <p className="font-medium text-neutral-300">Teléfono</p>

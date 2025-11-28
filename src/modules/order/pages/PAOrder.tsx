@@ -1,7 +1,6 @@
 import "../styles/PAOrder.css";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getPaymentStatuses } from "../api/orderApi";
+
 import Navbar from "../../../shared/components/Navbar";
 import Footer from "../../../shared/components/Footer";
 export default function PAOrder() {

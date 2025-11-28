@@ -135,12 +135,16 @@ export default function MyOrders() {
                             onClick={() => {
                                 setSelectOrder(order.orderId);
                                 setModalState(true);
+                                document.body.classList.add("active");
                             }}
                         />
                     ))}
                 </div>
                 {modalState && selectOrder && (
-                    <div className="modalOverlay" onClick={() => setModalState(false)}>
+                    <div className="modalOverlay" onClick={() =>{
+                            setModalState(false);
+                            document.body.classList.remove("active");
+                    } }>
                         <div className="modalContent" onClick={(e) => e.stopPropagation()}>
                             <OrderDetailsRender orderId={selectOrder} />
                         </div>
