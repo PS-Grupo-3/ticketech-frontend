@@ -20,6 +20,14 @@ export default function AuthPage() {
       .catch((err) => setError(err.message));
   }, []);
 
+  const handleRoleUpdate = (userId: string, newRoleName: string) => {
+    setUsers(prev =>
+      prev.map(u =>
+        u.id === userId ? { ...u, role: newRoleName } : u
+      )
+    );
+  };
+
   return (
     <Layout>
       <div className="page-container">
@@ -49,6 +57,7 @@ export default function AuthPage() {
               loggedUserId={loggedUserId}
               openMenuId={openMenuId}
               setOpenMenuId={setOpenMenuId}
+              onRoleUpdated={handleRoleUpdate}
             />
           ))}
 

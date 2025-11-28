@@ -19,6 +19,59 @@ export type ServerResponse = {
     message: string;
 };
 
+export type ChangePasswordPayload = {
+    currentPassword: string;
+    newPassword: string;
+};
+
+export type RegisterPayload = {
+    name: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    password: string;
+};
+
+export type RegisterResponse = {
+    token: string;
+    userId: string;
+    name: string;
+    role: string;
+};
+
+export type UserResponse = {
+    id: string;
+    name: string;
+    lastName: string;
+    email: string;
+    role: string;
+};
+
+export type RoleResponse = {
+    id: number;
+    name: string;
+};
+
+
+function logReq(label: string, url: string, payload?: unknown) {
+  console.groupCollapsed(`[API] ${label}: ${url}`);
+  if (payload !== undefined) console.log("payload:", payload);
+  console.groupEnd();
+}
+function logRes(label: string, url: string, ms: number, res: unknown) {
+  console.groupCollapsed(`[API] ${label} OK: ${url} (${ms.toFixed(1)} ms)`);
+  console.log("response:", res);
+  console.groupEnd();
+}
+function logErr(label: string, url: string, ms: number, err: any) {
+  console.groupCollapsed(`[API] ${label} FAIL: ${url} (${ms.toFixed(1)} ms)`);
+  console.error(err);
+  if (err?.response) {
+    console.log("status:", err.response.status);
+    console.log("data:", err.response.data);
+  }
+  console.groupEnd();
+}
 
 function parseJwt(token: string) {
     try {
@@ -35,12 +88,6 @@ function parseJwt(token: string) {
         return {};
     }
 }
-
-
-export type ChangePasswordPayload = {
-    currentPassword: string;
-    newPassword: string;
-};
 
 export const changePassword = async (payload: ChangePasswordPayload): Promise<ServerResponse> => {
     const token = localStorage.getItem("token");
@@ -66,7 +113,6 @@ export const login = async (payload: LoginCredentials): Promise<loginResponse> =
     try {
         const url = "/User/login";
 
-        // Backend NO devuelve string → devuelve JSON con { name, lastName, email, token }
         const { data } = await api.post(url, payload);
 
         if (!data || typeof data !== "object" || !data.token) {
@@ -88,21 +134,6 @@ export const login = async (payload: LoginCredentials): Promise<loginResponse> =
         console.error("Error en login:", error);
         throw new Error(error.response?.data?.message || "Error al iniciar sesión");
     }
-};
-
-export type RegisterPayload = {
-    name: string;
-    lastName: string;
-    phone: string;
-    email: string;
-    password: string;
-};
-
-export type RegisterResponse = {
-    token: string;
-    userId: string;
-    name: string;
-    role: string;
 };
 
 export const register = async (payload: RegisterPayload): Promise<RegisterResponse> => {
@@ -129,14 +160,6 @@ export const register = async (payload: RegisterPayload): Promise<RegisterRespon
     }
 };
 
-export type UserResponse = {
-    id: string;
-    name: string;
-    lastName: string;
-    email: string;
-    role: string;
-};
-
 export const getAllUsers = async (): Promise<UserResponse[]> => {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No hay token de autenticación");
@@ -155,11 +178,6 @@ export const getAllUsers = async (): Promise<UserResponse[]> => {
     } catch (err: any) {
         throw new Error(err.response?.data?.message || "Error al obtener los usuarios");
     }
-};
-
-export type RoleResponse = {
-    id: number;
-    name: string;
 };
 
 export const getAllRoles = async (): Promise<RoleResponse[]> => {
@@ -182,5 +200,18 @@ export const getAllRoles = async (): Promise<RoleResponse[]> => {
     }
 };
 
+export const changeUserRole = async (userId: string, newRole: number) => {
+  const url = `/User/change-role/${userId}`;
+  logReq("PATCH Change User Role", url, { newRole });
+  const t0 = performance.now();
+  try {
+    const { data } = await api.patch(url, { newRole });
+    logRes("PATCH Change User Role", url, performance.now() - t0, data);
+    return data;
+  } catch (err) {
+    logErr("PATCH Change User Role", url, performance.now() - t0, err);
+    throw err;
+  }
+};
 
 export { parseJwt };

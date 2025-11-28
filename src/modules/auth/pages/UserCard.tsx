@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import type { UserResponse } from "../api/authApi";
-import { getAllRoles } from "../api/authApi";
+import { getAllRoles, changeUserRole } from "../api/authApi";
+import ConfirmModal from "../../../shared/components/ConfirmModal";
+import { useNotification } from "../../../shared/components/NotificationContext";
 import "./styles/UserCard.css";
 
 type Props = {
@@ -8,14 +10,22 @@ type Props = {
   loggedUserId: string;
   openMenuId: string | null;
   setOpenMenuId: (id: string | null) => void;
+  onRoleUpdated: (userId: string, newRole: string) => void;
 };
 
 export default function UserCard({
   user,
   loggedUserId,
   openMenuId,
-  setOpenMenuId
+  setOpenMenuId,
+  onRoleUpdated
 }: Props) {
+
+  const { show } = useNotification(); // 👈 ahora lo usamos
+
+  const [showModal, setShowModal] = useState(false);
+  const [pendingRole, setPendingRole] = useState<{ id: number; name: string } | null>(null);
+
   const [roles, setRoles] = useState<{ id: number; name: string }[]>([]);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -31,9 +41,16 @@ export default function UserCard({
     setOpenMenuId(menuOpen ? null : user.id);
   };
 
-  const handleRoleChange = (newRole: string) => {
-    console.log("Nuevo rol seleccionado:", newRole);
-    setOpenMenuId(null);
+  const handleChangeRole = async (newRoleId: number, newRoleName: string) => {
+    try {
+      await changeUserRole(user.id, newRoleId);
+      onRoleUpdated(user.id, newRoleName);
+      show(`Rol actualizado correctamente a "${newRoleName}"`);
+      setOpenMenuId(null);
+    } catch (error) {
+      console.error(error);
+      show("No se pudo actualizar el rol");
+    }
   };
 
   return (
@@ -45,8 +62,8 @@ export default function UserCard({
 
         <span className="col-email">{user.email}</span>
 
-        <span className={`user-role col-role ${user.role?.toLowerCase()}`}>
-          {user.role === "current" ? "Usuario" : user.role}
+        <span className="user-role col-role">
+          {user.role}
         </span>
 
         <div className="user-actions">
@@ -65,13 +82,31 @@ export default function UserCard({
           {roles.map((r) => (
             <button
               key={r.id}
-              onClick={() => handleRoleChange(r.name)}
+              onClick={() => {
+                setPendingRole({ id: r.id, name: r.name });
+                setShowModal(true);
+              }}
               disabled={r.name === user.role}
             >
               {r.name}
             </button>
           ))}
         </div>
+      )}
+
+      {showModal && pendingRole && (
+        <ConfirmModal
+          message={`¿Seguro que deseas cambiar el rol de ${user.name} ${user.lastName} a "${pendingRole.name}"?`}
+          onConfirm={async () => {
+            await handleChangeRole(pendingRole.id, pendingRole.name);
+            setShowModal(false);
+            setPendingRole(null);
+          }}
+          onCancel={() => {
+            setShowModal(false);
+            setPendingRole(null);
+          }}
+        />
       )}
     </div>
   );
