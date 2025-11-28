@@ -1,0 +1,89 @@
+@import "../../../../shared/styles/colors.css";
+@import "../../../../shared/styles/typography.css";
+
+.user-list {
+    width: 100%;
+}
+
+.user-list-header {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr 0.7fr;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.6rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-light);
+  border-bottom: 2px solid var(--color-card-image);
+  font-size: var(--font-size-lg);
+}
+
+.user-card {
+  width: 100%;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-light);
+  background: var(--color-card);
+  border-radius: 0.8rem;
+  padding: 1.4rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--color-card-image);
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  transition: 0.2s;
+}
+
+.user-card:hover {
+  transform: scale(1.02);
+  border: 1px solid var(--color-blue-end);
+}
+
+.col-name,
+.col-email,
+.col-role {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.col-name {
+  font-weight: var(--font-weight-semibold);
+}
+
+.col-email {
+  font-weight: var(--font-weight-regular);
+}
+
+
+.user-role {
+  padding: 0.5rem 1rem;
+  border-radius: 0.4rem;
+  text-transform: uppercase;
+  font-weight: var(--font-weight-semibold);
+  background-color: var(--color-options);
+  border: 1px solid var(--color-card-image);
+  text-align: center;
+}
+
+.user-actions .view-button.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.view-button {
+  padding: 0.6rem 1rem;
+  font-size: var(--font-size-lg);
+  background-color: var(--color-options);
+  border: 1px solid var(--color-card-image);
+  border-radius: 0.4rem;
+  color: var(--color-text-light);
+  font-weight: 500;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.view-button:hover {
+  color: var(--color-blue-end);
+}

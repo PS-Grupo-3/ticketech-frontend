@@ -129,4 +129,33 @@ export const register = async (payload: RegisterPayload): Promise<RegisterRespon
     }
 };
 
+export type UserResponse = {
+    id: string;
+    name: string;
+    lastName: string;
+    email: string;
+    role: string;
+};
+
+export const getAllUsers = async (): Promise<UserResponse[]> => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No hay token de autenticación");
+
+    try {
+        const { data } = await api.get<UserResponse[]>(
+            "/User/users",
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        return data;
+    } catch (err: any) {
+        throw new Error(err.response?.data?.message || "Error al obtener los usuarios");
+    }
+};
+
+
 export { parseJwt };
