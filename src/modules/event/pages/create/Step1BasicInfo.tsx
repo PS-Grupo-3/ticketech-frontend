@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; 
 
-export default function Step1BasicInfo({ data, onNext, onBack }: any) {
+export default function Step1BasicInfo({ data, onNext }: any) { 
   const [local, setLocal] = useState(data);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -24,7 +26,10 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
     onNext(local);
   };
 
-  // Debug: Track local state changes
+  const handleBack = () => {
+    navigate("/event");
+  };
+
   useEffect(() => {
     console.log("Step1BasicInfo local state updated:", local);
   }, [local]);
@@ -166,7 +171,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
       <div className="flex justify-between pt-4">
         <button
           type="button"
-          onClick={onBack}
+          onClick={handleBack} 
           className="px-4 py-2 text-sm rounded-md border border-neutral-700 text-gray-300 hover:bg-neutral-800"
         >
           Volver
