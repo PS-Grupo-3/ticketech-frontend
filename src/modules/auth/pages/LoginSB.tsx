@@ -13,7 +13,6 @@ type Props = {
 };
 
 const LoginSidebar = ({ open, onClose }: Props) => {
-
     const {
         Email, setEmail,
         Password, setPassword,
@@ -28,18 +27,17 @@ const LoginSidebar = ({ open, onClose }: Props) => {
         closeSidebar,
         resetModal,
         successMessage,
+        sessionMessage,
         user,
         logout
     } = useLoginSidebar(onClose);
-
 
     return (
         <>
             <div
                 className={`overlay ${open ? "active" : ""}`}
                 onClick={closeSidebar}
-            >
-            </div>
+            />
 
             <div className={`SideBar ${open ? "open" : ""}`}>
                 <div className="headerSB">
@@ -53,17 +51,21 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                 </div>
 
                 <div className="bodySb">
-
                     {view === "login" && (
-                        <LoginView
-                            Email={Email}
-                            Password={Password}
-                            setEmail={setEmail}
-                            setPassword={setPassword}
-                            credsError={credsError}
-                            credsAnimation={credsAnimation}
-                            shakeAnimation={shakeAnimation}
-                        />
+                        <>
+                            <LoginView
+                                Email={Email}
+                                Password={Password}
+                                setEmail={setEmail}
+                                setPassword={setPassword}
+                                credsError={credsError}
+                                credsAnimation={credsAnimation}
+                                shakeAnimation={shakeAnimation}
+                            />
+                            {sessionMessage && (
+                                <p className="errormsg active">{sessionMessage}</p>
+                            )}
+                        </>
                     )}
 
                     {view === "register" && (
@@ -96,11 +98,9 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                     {view === "profile" && (
                         <UserProfile onClose={() => setView("user")} />
                     )}
-
                 </div>
 
                 <div className="btns">
-
                     {view === "login" && (
                         <>
                             <button
@@ -127,7 +127,7 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                         <>
                             <button
                                 className="register"
-                                onClick={handleRegister} // Usa handleRegister directamente
+                                onClick={handleRegister}
                             >
                                 Crear cuenta
                             </button>
@@ -141,12 +141,12 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                         </>
                     )}
 
-
                     {view === "user" && (
-                        <button className="login" onClick={logout}>
+                        <button className="login" onClick={() => logout()}>
                             Cerrar sesión
                         </button>
                     )}
+
 
                     {view === "profile" && (
                         <>
@@ -162,7 +162,6 @@ const LoginSidebar = ({ open, onClose }: Props) => {
                             </button>
                         </>
                     )}
-
                 </div>
             </div>
         </>

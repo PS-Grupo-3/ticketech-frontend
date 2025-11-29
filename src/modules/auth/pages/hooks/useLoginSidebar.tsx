@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { login, register } from "../../api/authApi";
+import { login, register, parseJwt } from "../../api/authApi";
 
 export const useLoginSidebar = (onClose: () => void) => {
     const [Email, setEmail] = useState("");
@@ -11,20 +11,25 @@ export const useLoginSidebar = (onClose: () => void) => {
     const [credsError, setMsg] = useState<string | null>(null);
     const [credsAnimation, setStatus] = useState(false);
     const [shakeAnimation, shakeStatus] = useState(false);
-
-    // Nuevo estado de éxito
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [sessionMessage, setSessionMessage] = useState<string | null>(null);
 
     const [view, setView] = useState<"login" | "register" | "user" | "profile">("login");
     const [user, setUser] = useState<any>(null);
 
-    // ⭐ RESTAURAR SESIÓN
     useEffect(() => {
         const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-            const parsed = JSON.parse(savedUser);
-            setUser(parsed);
-            setView("user");
+        const token = localStorage.getItem("token");
+
+        if (savedUser && token) {
+            const payload = parseJwt(token);
+            if (payload && payload.exp * 1000 > Date.now()) {
+                setUser(JSON.parse(savedUser));
+                setView("user");
+                startTokenTimer(token);
+            } else {
+                logout("La sesión ha expirado. Por favor, inicia sesión nuevamente.");
+            }
         }
     }, []);
 
@@ -38,7 +43,8 @@ export const useLoginSidebar = (onClose: () => void) => {
         setMsg(null);
         setStatus(false);
         shakeStatus(false);
-        setSuccessMessage(null); // Resetear mensaje de éxito
+        setSuccessMessage(null);
+        setSessionMessage(null);
     };
 
     const closeSidebar = () => {
@@ -49,24 +55,49 @@ export const useLoginSidebar = (onClose: () => void) => {
         onClose();
     };
 
+    const startTokenTimer = (token: string) => {
+        const payload = parseJwt(token);
+        if (!payload || !payload.exp) return;
+
+        const expiryTime = payload.exp * 1000;
+        const now = Date.now();
+        const timeout = expiryTime - now;
+
+        if (timeout > 0) {
+            setTimeout(() => {
+                logout("La sesión ha expirado. Por favor, inicia sesión nuevamente.");
+            }, timeout);
+        } else {
+            logout("La sesión ha expirado. Por favor, inicia sesión nuevamente.");
+        }
+    };
+
     const handlelogin = async () => {
         try {
             const result = await login({ Email, Password });
             localStorage.setItem("user", JSON.stringify(result));
+            localStorage.setItem("token", result.token);
+
             setUser(result);
             setView("user");
             resetModal();
-        } catch {
-            setMsg("Email o contraseña invalida");
+
+            startTokenTimer(result.token);
+        } catch (err: any) {
+            const message = err.message || "Error al iniciar sesión";
+
+            setMsg(message);
             setStatus(true);
             shakeStatus(true);
+
             setTimeout(() => {
                 setStatus(false);
                 shakeStatus(false);
                 setMsg(null);
-            }, 1500);
+            }, 2000);
         }
     };
+
 
     const handleRegister = async () => {
         if (!Name || !LastName || !Phone || !Email || !Password) {
@@ -91,12 +122,20 @@ export const useLoginSidebar = (onClose: () => void) => {
             });
 
             setUser(data);
-            setSuccessMessage("Cuenta creada con éxito ✔");  // Mostrar mensaje de éxito
-            setStatus(true); // Activar la animación de éxito
+
+            localStorage.setItem("user", JSON.stringify(data));
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+                startTokenTimer(data.token);
+            }
+
+            setSuccessMessage("Cuenta creada con éxito");
+            setStatus(true);
+
             setTimeout(() => {
-                setSuccessMessage(null);  // Resetear el mensaje de éxito
-                setView("user");  // Redirigir a la vista de usuario
-            }, 2000);  // Esperar 2 segundos para mostrar el mensaje
+                setSuccessMessage(null);
+                setView("user");
+            }, 2000);
 
         } catch (err: any) {
             setMsg(err.message || "Error al registrar usuario");
@@ -110,12 +149,14 @@ export const useLoginSidebar = (onClose: () => void) => {
         }
     };
 
-    const logout = () => {
+
+    const logout = (message?: string) => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         setUser(null);
         resetModal();
         setView("login");
+        if (message) setSessionMessage(message);
     };
 
     return {
@@ -128,7 +169,8 @@ export const useLoginSidebar = (onClose: () => void) => {
         credsError, credsAnimation,
         shakeAnimation,
         view, setView,
-        successMessage, // Devuelves el estado de éxito
+        successMessage,
+        sessionMessage,
         handlelogin,
         handleRegister,
         closeSidebar,
