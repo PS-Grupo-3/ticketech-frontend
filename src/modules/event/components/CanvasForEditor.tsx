@@ -16,10 +16,11 @@ export default function SectorMiniMap({ background, sectors, selectedId, onSelec
 
   const stageRef = useRef<any>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
+  
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!background) return setImage(null);
-
     const img = new Image();
     img.onload = () => setImage(img);
     img.src = background;
@@ -35,26 +36,56 @@ export default function SectorMiniMap({ background, sectors, selectedId, onSelec
       <Layer>
         {image && <KonvaImage image={image} width={WIDTH} height={HEIGHT} opacity={0.25} />}
 
-        {sectors.map(sector => (
-          <Group
-            key={sector.eventSectorId}
-            onClick={() => onSelect(sector.eventSectorId)}
-            listening={true}
-          >
-            <ReaderSectorShape sector={sector} scale={1} />
+        {sectors.map((sector) => {
+          const displaySector = {
+            ...sector,
+            shape: {
+              ...sector.shape,
+              colour: sector.available ? "#22c55e" : "#404040",
+              opacity: sector.available ? sector.shape.opacity : 40
+            }
+          };
 
-            {sector.eventSectorId === selectedId && (
-              <Rect
-                x={sector.shape.x}
-                y={sector.shape.y}
-                width={sector.shape.width}
-                height={sector.shape.height}
-                stroke="#3b82f6"
-                strokeWidth={4}
-              />
-            )}
-          </Group>
-        ))}
+          const isSelected = sector.eventSectorId === selectedId;
+          const isHovered = sector.eventSectorId === hoveredId;
+          const showBorder = isSelected || isHovered;
+
+          return (
+            <Group
+              key={sector.eventSectorId}
+              onClick={() => onSelect(sector.eventSectorId)}
+              listening={true}
+
+              onMouseEnter={(e) => {
+                const container = e.target.getStage()?.container();
+                if (container) container.style.cursor = "pointer";
+                setHoveredId(sector.eventSectorId);
+              }}
+              onMouseLeave={(e) => {
+                const container = e.target.getStage()?.container();
+                if (container) container.style.cursor = "default";
+                setHoveredId(null); 
+              }}
+            >
+              <ReaderSectorShape sector={displaySector} scale={1} />
+
+
+              {showBorder && (
+                <Rect
+                  x={sector.shape.x}
+                  y={sector.shape.y}
+                  width={sector.shape.width}
+                  height={sector.shape.height}
+                  stroke="#3b82f6"
+                  strokeWidth={isSelected ? 4 : 2}
+                  shadowColor="#3b82f6"
+                  shadowBlur={isSelected ? 15 : 0} 
+                  listening={false}
+                />
+              )}
+            </Group>
+          );
+        })}
       </Layer>
     </Stage>
   );
