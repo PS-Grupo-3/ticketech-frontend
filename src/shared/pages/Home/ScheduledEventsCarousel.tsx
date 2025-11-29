@@ -28,15 +28,22 @@ export default function ScheduledEventsCarousel({ events }: { events: any[] }) {
         )}
       </div>
 
-      <div className="scheduled-carousel-viewport">
-        <div ref={trackRef} className="scheduled-carousel-track">
+      <div className="scheduled-carousel-viewport overflow-x-auto overflow-y-visible">
+        <div
+          ref={trackRef}
+          className="scheduled-carousel-track flex gap-6 overflow-visible"
+        >
           {events.map((event) => (
-            <div key={event.eventId} className="scheduled-carousel-card-wrapper">
+            <div
+              key={event.eventId}
+              className="scheduled-carousel-card-wrapper overflow-visible ml-0.5" 
+            >
               <EventCard event={event} />
             </div>
           ))}
         </div>
       </div>
+
 
     </div>
   );
