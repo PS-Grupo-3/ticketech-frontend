@@ -10,8 +10,9 @@ export type LoginCredentials = {
 export type loginResponse = {
     token: string;
     userId: string;
-    Username: string;
     role: string;
+    name: string;
+    lastName: string;
 };
 
 export type ServerResponse = {
@@ -35,8 +36,9 @@ export type RegisterPayload = {
 export type RegisterResponse = {
     token: string;
     userId: string;
-    name: string;
     role: string;
+    name: string;
+    lastName: string;
 };
 
 export type UserResponse = {
@@ -90,114 +92,127 @@ function parseJwt(token: string) {
 }
 
 export const changePassword = async (payload: ChangePasswordPayload): Promise<ServerResponse> => {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No hay token de autenticación");
-
-    try {
-        const { data } = await api.patch<ServerResponse>(
-            "/User/change-password",
-            payload,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-        return data;
-    } catch (err: any) {
-        throw new Error(err.response?.data?.message || "Error al cambiar la contraseña");
-    }
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No hay token de autenticación");
+  const url = `/User/change-password`;
+  const t0 = performance.now();
+  logReq("PATCH Change Password", url, payload);
+  try {
+    const { data } = await api.patch(url, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    logRes("PATCH Change Password", url, performance.now() - t0, data);
+    return data;
+  } catch (err: any) {
+    const message = err.response?.data?.error || "Error al cambiar la contraseña";
+    logErr("PATCH Change Password", url, performance.now() - t0, {
+      error: err,
+      message
+    });
+    throw new Error(message);
+  }
 };
 
 export const login = async (payload: LoginCredentials): Promise<loginResponse> => {
-    try {
-        const url = "/User/login";
-
-        const { data } = await api.post(url, payload);
-
-        if (!data || typeof data !== "object" || !data.token) {
-            throw new Error("Formato de token inválido recibido del servidor.");
-        }
-
-        const token = data.token;
-        localStorage.setItem("token", token);
-
-        const decoded = parseJwt(token);
-
-        return {
-            token: token,
-            userId: decoded.userId || "0",
-            role: decoded.userRole || "User",
-            Username: decoded.Username || data.name || "User"
-        };
-    } catch (error: any) {
-        console.error("Error en login:", error);
-        throw new Error(error.response?.data?.message || "Error al iniciar sesión");
+  const url = "/User/login";
+  const t0 = performance.now();
+  logReq("POST Login", url, payload);
+  try {
+    const { data } = await api.post(url, payload);
+    if (!data || typeof data !== "object" || !data.token) {
+      throw new Error("Formato de token inválido recibido del servidor.");
     }
+    const token = data.token;
+    localStorage.setItem("token", token);
+    const decoded = parseJwt(token);
+    const response: loginResponse = {
+        token,
+        userId: decoded.userId || "0",
+        role: decoded.userRole || "User",
+        name: data.name || decoded.name || "Usuario",
+        lastName: data.lastName || decoded.lastName || ""
+    };
+    logRes("POST Login", url, performance.now() - t0, response);
+    return response;
+  } catch (err: any) {
+    const message = err.response?.data?.error || "Error al iniciar sesión";
+    logErr("POST Login", url, performance.now() - t0, {
+      error: err,
+      message
+    });
+    throw new Error(message);
+  }
 };
 
 export const register = async (payload: RegisterPayload): Promise<RegisterResponse> => {
-    try {
-        const { data } = await api.post("/User/register", payload);
-
-        if (!data || typeof data !== "object" || !data.token) {
-            throw new Error("Formato de token inválido recibido del servidor.");
-        }
-
-        const token = data.token;
-        localStorage.setItem("token", token);
-
-        const decoded = parseJwt(token);
-
-        return {
-            token: token,
-            userId: decoded.userId || "0",
-            role: decoded.userRole || "User",
-            name: data.name
-        };
-    } catch (err: any) {
-        throw new Error(err.response?.data?.message || "Error al registrar usuario");
+  const url = "/User/register";
+  const t0 = performance.now();
+  logReq("POST Register", url, payload);
+  try {
+    const { data } = await api.post(url, payload);
+    if (!data || typeof data !== "object" || !data.token) {
+      throw new Error("Formato de token inválido recibido del servidor.");
     }
+    const token = data.token;
+    localStorage.setItem("token", token);
+    const decoded = parseJwt(token);
+
+    logRes("POST Register", url, performance.now() - t0, data);
+    return {
+        token,
+        userId: decoded.userId || "0",
+        role: decoded.userRole || "User",
+        name: data.name || "Usuario",
+        lastName: data.lastName || ""
+    };
+  } catch (err: any) {
+    const message = err.response?.data?.error || "Error al registrar usuario";
+    logErr("POST Register", url, performance.now() - t0, {
+      error: err,
+      message
+    });
+    throw new Error(message);
+  }
 };
 
 export const getAllUsers = async (): Promise<UserResponse[]> => {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No hay token de autenticación");
-
-    try {
-        const { data } = await api.get<UserResponse[]>(
-            "/User/users",
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-
-        return data;
-    } catch (err: any) {
-        throw new Error(err.response?.data?.message || "Error al obtener los usuarios");
-    }
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No hay token de autenticación");
+  const url = "/User/users";
+  const t0 = performance.now();
+  logReq("GET Users", url);
+  try {
+    const { data } = await api.get<UserResponse[]>(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    logRes("GET Users", url, performance.now() - t0, data);
+    return data;
+  } catch (err: any) {
+    const message = err.response?.data?.error || "Error al obtener los usuarios";
+    logErr("GET Users", url, performance.now() - t0, { error: err, message });
+    throw new Error(message);
+  }
 };
 
 export const getAllRoles = async (): Promise<RoleResponse[]> => {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No hay token de autenticación");
-
-    try {
-        const { data } = await api.get<RoleResponse[]>(
-            "/Role",
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-
-        return data;
-    } catch (err: any) {
-        throw new Error(err.response?.data?.message || "Error al obtener los roles");
-    }
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No hay token de autenticación");
+  const url = "/Role";
+  const t0 = performance.now();
+  logReq("GET Roles", url);
+  try {
+    const { data } = await api.get<RoleResponse[]>(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    logRes("GET Roles", url, performance.now() - t0, data);
+    return data;
+  } catch (err: any) {
+    const message = err.response?.data?.error || "Error al obtener los roles";
+    logErr("GET Roles", url, performance.now() - t0, { error: err, message });
+    throw new Error(message);
+  }
 };
 
 export const changeUserRole = async (userId: string, newRole: number) => {
