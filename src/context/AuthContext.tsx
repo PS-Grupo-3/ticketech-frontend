@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       setUser({
         userId: data.userId,
-        name: data.Username, 
+        name: data.name, 
         role: data.role
       });
       

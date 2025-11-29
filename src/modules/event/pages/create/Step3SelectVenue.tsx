@@ -25,7 +25,7 @@ export default function Step3SelectVenue({ data, onNext, onBack }: any) {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold">Seleccionar venue</h2>
+      <h2 className="text-2xl font-bold">Seleccionar espacio</h2>
       <p className="text-sm text-gray-400">
         Elegí dónde se realizará el evento.
       </p>

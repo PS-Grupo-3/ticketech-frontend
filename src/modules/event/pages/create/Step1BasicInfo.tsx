@@ -38,7 +38,7 @@ export default function Step1BasicInfo({ data, onNext }: any) {
     <div className="space-y-8">
       <h2 className="text-2xl font-bold">Información básica</h2>
       <p className="text-sm text-gray-400">
-        Datos fundamentales del evento antes de clasificarlo o elegir el venue.
+        Datos fundamentales del evento antes de clasificarlo o elegir el espacio.
       </p>
 
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-6">

@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 const steps = [
   "Información básica",
   "Categoría, tipo y estado",
-  "Seleccionar venue",
+  "Seleccionar espacio",
   "Revisión final",
   "Configurar sectores"
 ];

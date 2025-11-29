@@ -89,7 +89,7 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
             </tr>
 
             <tr>
-              <td className="px-4 py-2 text-gray-400">Venue</td>
+              <td className="px-4 py-2 text-gray-400">Espacio</td>
               <td className="px-4 py-2 text-gray-100">{data.venueName}</td>
             </tr>
           </tbody>
