@@ -22,23 +22,24 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       {message && (
         <div
           className="
-            fixed inset-0 
-            flex items-center justify-center 
-            bg-black/20
+            fixed inset-0
+            flex items-center justify-center
+            bg-black/60
+            backdrop-blur-sm
             z-50
           "
         >
           <div
             className="
-              bg-white 
-              text-black 
-              border border-slate-300 
-              rounded-2xl 
-              shadow-lg 
-              px-8 py-5 
-              text-center 
-              text-lg 
-              font-medium 
+              bg-neutral-900
+              text-neutral-100
+              border border-neutral-700
+              rounded-2xl
+              shadow-2xl
+              px-8 py-5
+              text-center
+              text-lg
+              font-medium
               animate-fadeIn
               max-w-md
             "

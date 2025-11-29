@@ -21,7 +21,7 @@ export default function Navbar({ onUserClick, user }: NavbarProps) {
         {/* Logo + Links */}
         <div className="flex items-center gap-10">
           <NavLink to="/" className="flex items-center gap-3">
-            <span className="text-xl font-semibold">Ticketech</span>
+            <span className="text-xl font-semibold">TICKETECH</span>
           </NavLink>
 
         </div>

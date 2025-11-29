@@ -70,19 +70,7 @@ export default function SectorMiniMap({ background, sectors, selectedId, onSelec
               <ReaderSectorShape sector={displaySector} scale={1} />
 
 
-              {showBorder && (
-                <Rect
-                  x={sector.shape.x}
-                  y={sector.shape.y}
-                  width={sector.shape.width}
-                  height={sector.shape.height}
-                  stroke="#3b82f6"
-                  strokeWidth={isSelected ? 4 : 2}
-                  shadowColor="#3b82f6"
-                  shadowBlur={isSelected ? 15 : 0} 
-                  listening={false}
-                />
-              )}
+              
             </Group>
           );
         })}

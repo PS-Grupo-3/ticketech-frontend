@@ -37,12 +37,17 @@ export default function Step5ConfigureSectors({ eventId, onBack }: any) {
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Configurar sectores del evento</h2>
 
-      <SectorMiniMap
-        background={event.venueBackgroundImageUrl ?? null}
-        sectors={sectors}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-      />
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-[900px] overflow-hidden rounded border border-neutral-700 bg-neutral-900 grid grid-cols-1 place-items-center">
+          <SectorMiniMap
+            background={event.venueBackgroundImageUrl ?? null}
+            sectors={sectors}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+          />
+        </div>
+      </div>
+
 
       <div className="flex justify-between pt-6">
         <button
