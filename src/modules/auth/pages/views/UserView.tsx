@@ -68,6 +68,9 @@ const UserView = ({ user, logout, setView }: Props) => {
                         <Link to="/venue" className="userPanel-btn">
                             Panel de venues
                         </Link>
+                        <Link to="/auth" className="userPanel-btn">
+                            Panel de usuarios
+                        </Link>
                     </div>
                 )}
             </div>

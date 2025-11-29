@@ -1,16 +1,13 @@
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { 
-  categoryTranslate, 
-  statusTranslate, 
-  categoryTypeTranslate 
-} from "../../../modules/event/utils/eventTranslate";
-
+import { categoryTranslate, statusTranslate, categoryTypeTranslate } from "../../../modules/event/utils/eventTranslate";
+import ConfirmModal from "../../components/ConfirmModal";
+import { useNotification } from "../../components/NotificationContext";
+import { deleteEvent } from "../../../modules/event/api/eventApi";
 import "./css/EventCard.css";
 import defaultImage from "../../../assets/default-image.webp";
 import { useState, useRef, useEffect } from "react";
 import StatusChange from "../../../modules/event/pages/updateStatus/StatusChange";
-import DeleteEvent from "../../../modules/event/pages/delete/DeleteEvent";
 
 type Event = {
   eventId: string;
@@ -32,8 +29,11 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(event.status);
+
+  const { show } = useNotification();
 
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +47,7 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
+      if (showConfirmDelete) return; // ✅ usar el estado correcto
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
         setStatusOpen(false);
@@ -55,7 +56,22 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [showConfirmDelete]);
+
+  const handleDeleteEvent = async () => {
+    try {
+      await deleteEvent(event.eventId);
+      setShowConfirmDelete(false);
+      setMenuOpen(false);
+
+      show(`Evento "${event.name}" eliminado correctamente`);
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Error eliminando evento", error);
+      show(`No se pudo eliminar el evento "${event.name}"`);
+    }
+  };
 
   return (
     <article className="event-card-general">
@@ -100,12 +116,13 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (currentStatus === "Scheduled") setDeleteOpen(true);
+                  if (currentStatus === "Scheduled") setShowConfirmDelete(true);
                 }}
                 disabled={currentStatus !== "Scheduled"}
               >
                 Eliminar
               </button>
+
 
               {statusOpen && (
                 <StatusChange
@@ -120,19 +137,14 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                 />
               )}
 
-              {deleteOpen && (
-                <DeleteEvent
-                  eventId={event.eventId}
-                  eventName={event.name}
-                  thumbnailUrl={event.thumbnailUrl}
-                  onCancel={() => setDeleteOpen(false)}
-                  onDeleted={() => {
-                    setDeleteOpen(false);
-                    setMenuOpen(false);
-                    window.location.reload();
-                  }}
+              {showConfirmDelete && (
+                <ConfirmModal
+                  message={`¿Seguro que deseas eliminar el evento "${event.name}"? Esta acción no se puede deshacer.`}
+                  onConfirm={handleDeleteEvent}
+                  onCancel={() => setShowConfirmDelete(false)}
                 />
               )}
+
             </div>
           )}
         </div>

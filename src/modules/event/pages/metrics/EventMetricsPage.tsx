@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "../../../../shared/components/Layout";
 import { getEventMetrics } from "../../api/eventApi";
+import { format } from "date-fns";
 
 import {
   categoryTranslate,
@@ -43,6 +44,10 @@ export default function EventMetricsPage() {
       </Layout>
     );
   }
+
+  const date = metrics.time
+      ? format(new Date(metrics.time), "dd/MM/yyyy HH:mm")
+      : "Sin fecha";
 
   const theme = metrics.themeColor || "#1e40af";
 
@@ -126,7 +131,7 @@ export default function EventMetricsPage() {
               <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-4">
                 <p className="text-gray-400">Fecha y hora</p>
                 <p className="text-white font-semibold text-lg">
-                  {metrics.time}
+                  {date}
                 </p>
               </div>
 
