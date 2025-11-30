@@ -15,8 +15,7 @@ const CATEGORY_OPTIONS = [
 const STATUS_OPTIONS = [
   { id: 1, key: "Scheduled" },
   { id: 2, key: "Active" },
-  { id: 3, key: "Postponed" },
-  { id: 4, key: "Finished" }
+  { id: 3, key: "Postponed" }  
 ];
 
 export default function EventFilters({ onChange }: { onChange: (f: any) => void }) {
