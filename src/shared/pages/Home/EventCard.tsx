@@ -190,9 +190,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                 </span>
               )}
             </div>
-            <p className="event-card-status">
-              {statusTranslate[currentStatus] ?? currentStatus}
-            </p>
           </div>
         </div>
       </div>
