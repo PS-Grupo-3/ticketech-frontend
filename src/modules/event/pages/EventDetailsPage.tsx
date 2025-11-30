@@ -237,7 +237,7 @@ export default function EventDetailPage() {
             </h2>
 
             <p className="text-gray-200 text-sm max-w-2xl leading-relaxed">
-              Elegí tus asientos directamente desde el mapa interactivo del venue.
+              Elegí tus asientos directamente desde el mapa interactivo del espacio.
               La disponibilidad se actualiza en tiempo real.
             </p>
 
