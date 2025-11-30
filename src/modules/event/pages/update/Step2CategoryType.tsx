@@ -75,12 +75,12 @@ export default function Step2CategoryType({ data, onNext, onBack }: any) {
         Definí cómo se clasifica el evento.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Categoría</label>
+          <label className="block text-sm text-gray-300 mb-2">Categoría</label>
           <select
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-4 py-3 text-base"
             value={local.categoryId ?? ""}
             onChange={(e) =>
               updateCategory(e.target.value ? Number(e.target.value) : null)
@@ -96,9 +96,9 @@ export default function Step2CategoryType({ data, onNext, onBack }: any) {
         </div>
 
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Tipo</label>
+          <label className="block text-sm text-gray-300 mb-2">Tipo</label>
           <select
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-4 py-3 text-base"
             disabled={!local.categoryId}
             value={local.typeId ?? ""}
             onChange={(e) =>
@@ -115,6 +115,7 @@ export default function Step2CategoryType({ data, onNext, onBack }: any) {
         </div>
 
       </div>
+
 
       <div className="flex justify-between pt-4">
         <button
