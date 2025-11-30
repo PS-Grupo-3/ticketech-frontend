@@ -119,6 +119,13 @@ export default function EventMetricsPage() {
                   <span className="px-3 py-1 rounded-md bg-neutral-900 text-gray-200 text-sm">
                     {translatedStatus}
                   </span>
+
+                  {metrics.availableSeats === 0 && (
+                    <span className="px-3 py-1 rounded-md bg-red-600 text-gray-200 text-sm">
+                      Entradas agotadas
+                    </span>
+                  )}
+
                 </div>
 
                 <p className="mt-5 text-gray-300 text-base leading-relaxed whitespace-pre-line">
