@@ -1,17 +1,36 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
-export default function Step1BasicInfo({ data, onNext }: any) { // Removed onBack prop
-  const [local, setLocal] = useState(data);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate(); // Initialize navigate hook
+export default function Step1BasicInfo({ data, onNext, onBack }: any) {
+  const [local, setLocal] = useState({
+    ...data,
+    time: data.time ?? "2025-01-01T00:00"
+  });
 
   const today = new Date().toISOString().split("T")[0];
 
   const MAX_NAME = 100;
   const MAX_DESCRIPTION = 500;
-
   const MAX_WORD = 15;
+
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+
+  const validate = () => {
+    if (!local.name || !local.description || !local.time || !local.bannerImageUrl || !local.thumbnailUrl)
+      return false;
+
+    const eventDate = local.time.split("T")[0];
+    if (eventDate < today)
+      return false;
+
+    if (local.name.length > MAX_NAME || local.description.length > MAX_DESCRIPTION)
+      return false;
+
+    return true;
+  };
+
+  const isValid = validate();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -22,192 +41,139 @@ export default function Step1BasicInfo({ data, onNext }: any) { // Removed onBac
 
     if (words.some(w => w.length > MAX_WORD)) return;
 
-    setLocal((prev: typeof local) => ({ ...prev, [field]: value }));
+    setLocal({ ...local, [field]: value });
   };
-
 
   const handleNext = () => {
+    if (!isValid) {
+      setError("Por favor corrige los errores antes de continuar.");
+      return;
+    }
     setError(null);
-    const eventDate = local.time?.split("T")[0];
-
-    if (!local.name || !local.description || !eventDate || !local.bannerImageUrl || !local.thumbnailUrl) {
-      setError("Por favor completa todos los campos obligatorios.");
-      return;
-    }
-
-    if (eventDate < today) {
-      setError("La fecha del evento no puede ser anterior a hoy.");
-      return;
-    }
-
-    console.log("Step1BasicInfo sending:", local);
     onNext(local);
   };
-
-  // New function to handle navigation
-  const handleBack = () => {
-    navigate("/event");
-  };
-
-  // Debug: Track local state changes
-  useEffect(() => {
-    console.log("Step1BasicInfo local state updated:", local);
-  }, [local]);
 
   return (
     <div className="space-y-8">
       <h2 className="text-2xl font-bold">Información básica</h2>
-      <p className="text-sm text-gray-400">
-        Datos fundamentales del evento antes de clasificarlo o elegir el venue.
-      </p>
 
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-6">
 
+        {/* Nombre */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Nombre del evento
           </label>
           <input
             maxLength={MAX_NAME}
-            className={`w-full bg-neutral-800 border rounded-md px-3 py-2 text-sm
+            className={`w-full bg-neutral-800 border px-3 py-2 text-sm rounded-md
               ${local.name.length >= MAX_NAME ? "border-red-500" : "border-neutral-700"}
             `}
-            placeholder="Ej: Noche Electrónica - Edición 2025"
             value={local.name}
             onChange={(e) => handleInputChange(e, "name")}
           />
-
-          <p className={`text-xs mt-1 ${
-              local.name.length >= MAX_NAME ? "text-red-400" : "text-gray-500"
-            }`}>
+          <p className="text-xs text-gray-500 mt-1">
             {local.name.length}/{MAX_NAME}
           </p>
         </div>
 
+        {/* Descripción */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Descripción
-          </label>
+          <label className="block text-sm text-gray-300 mb-1">Descripción</label>
           <textarea
             maxLength={MAX_DESCRIPTION}
-            className={`w-full bg-neutral-800 border rounded-md px-3 py-2 text-sm min-h-[90px] resize-y
+            className={`w-full bg-neutral-800 border px-3 py-2 text-sm rounded-md min-h-[90px]
               ${local.description.length >= MAX_DESCRIPTION ? "border-red-500" : "border-neutral-700"}
             `}
-            placeholder="Detalles sobre artistas, temática, duración..."
             value={local.description}
             onChange={(e) => handleInputChange(e, "description")}
           />
-
-          <p className={`text-xs mt-1 ${
-              local.description.length >= MAX_DESCRIPTION ? "text-red-400" : "text-gray-500"
-            }`}>
+          <p className="text-xs text-gray-500 mt-1">
             {local.description.length}/{MAX_DESCRIPTION}
           </p>
         </div>
 
+        {/* Fecha / Hora */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Fecha del evento
-            </label>
+            <label className="block text-sm text-gray-300 mb-1">Fecha</label>
             <input
               type="date"
               min={today}
-              className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-              value={local.time?.split("T")[0] ?? ""}
-              onChange={(e) => {
-                const t = local.time ?? "";
-                const oldHour = t.includes("T") ? t.split("T")[1] : "00:00";
-                setLocal({ ...local, time: `${e.target.value}T${oldHour}` });
-              }}
+              className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+              value={local.time.split("T")[0]}
+              onChange={(e) =>
+                setLocal({ ...local, time: `${e.target.value}T${local.time.split("T")[1]}` })
+              }
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Hora del evento
-            </label>
+            <label className="block text-sm text-gray-300 mb-1">Hora</label>
             <input
               type="time"
-              className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-              value={local.time?.split("T")[1] ?? ""}
+              className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+              value={local.time.split("T")[1]}
               onChange={(e) => {
-                const date = local.time?.split("T")[0] ?? "2025-01-01";
+                const date = local.time.split("T")[0];
                 setLocal({ ...local, time: `${date}T${e.target.value}` });
               }}
             />
           </div>
         </div>
 
+        {/* URLs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Banner principal (URL)
-            </label>
+            <label className="text-sm text-gray-300 mb-1">Banner principal</label>
             <input
-              className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-              placeholder="https://..."
+              className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
               value={local.bannerImageUrl}
-              onChange={(e) =>
-                setLocal({ ...local, bannerImageUrl: e.target.value })
-              }
+              onChange={(e) => setLocal({ ...local, bannerImageUrl: e.target.value })}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Miniatura (URL)
-            </label>
+            <label className="text-sm text-gray-300 mb-1">Miniatura</label>
             <input
-              className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-              placeholder="https://..."
+              className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
               value={local.thumbnailUrl}
-              onChange={(e) =>
-                setLocal({ ...local, thumbnailUrl: e.target.value })
-              }
+              onChange={(e) => setLocal({ ...local, thumbnailUrl: e.target.value })}
             />
           </div>
         </div>
 
+        {/* Color */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Color del tema
-          </label>
-
+          <label className="text-sm text-gray-300 mb-1">Color del tema</label>
           <div className="flex items-center gap-3">
             <input
               type="color"
-              className="w-12 h-10 rounded cursor-pointer border border-neutral-700"
+              className="w-12 h-10 border border-neutral-700 rounded"
               value={local.themeColor || "#000000"}
-              onChange={(e) => {
-                console.log("Color picker changed:", e.target.value);
-                setLocal({ ...local, themeColor: e.target.value });
-              }}
+              onChange={(e) => setLocal({ ...local, themeColor: e.target.value })}
             />
 
             <input
-              className="flex-1 bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-              placeholder="#ff2244"
+              className="flex-1 bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
               value={local.themeColor || ""}
-              onChange={(e) => {
-                console.log("Color text changed:", e.target.value);
-                setLocal({ ...local, themeColor: e.target.value });
-              }}
+              onChange={(e) => setLocal({ ...local, themeColor: e.target.value })}
             />
           </div>
         </div>
       </div>
 
       {error && (
-        <div className="p-3 bg-red-900/20 border border-red-800 rounded-md text-red-400 text-sm">
+        <div className="p-3 bg-red-900/20 border border-red-800 text-red-400 rounded-md text-sm">
           {error}
         </div>
       )}
 
+      {/* Botones */}
       <div className="flex justify-between pt-4">
         <button
           type="button"
-          onClick={handleBack} // Updated to use handleBack
+          onClick={onBack}
           className="px-4 py-2 text-sm rounded-md border border-neutral-700 text-gray-300 hover:bg-neutral-800"
         >
           Volver
@@ -215,8 +181,13 @@ export default function Step1BasicInfo({ data, onNext }: any) { // Removed onBac
 
         <button
           type="button"
+          disabled={!isValid}
           onClick={handleNext}
-          className="px-5 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-500 text-white font-semibold"
+          className={`px-5 py-2 text-sm rounded-md text-white font-semibold
+            ${isValid
+              ? "bg-blue-600 hover:bg-blue-500"
+              : "bg-gray-500 cursor-not-allowed opacity-50"
+            }`}
         >
           Siguiente
         </button>
