@@ -174,3 +174,14 @@
   cursor: not-allowed;
   background: none;
 }
+
+.event-card-status-page {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.sold-out {
+  background-color: var(--color-red-start) !important;
+  color: var(--color-text-light);
+}

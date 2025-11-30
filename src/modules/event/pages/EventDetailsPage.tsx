@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../../../shared/components/Layout";
-import { getEventById } from "../api/eventApi";
+import { getEventById, getEventMetrics  } from "../api/eventApi";
 import { format } from "date-fns";
 
 import {
@@ -32,12 +32,19 @@ export default function EventDetailPage() {
 
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isSoldOut, setIsSoldOut] = useState(false);
 
   const load = async () => {
     setLoading(true);
     try {
       const res = await getEventById(eventId!);
       setEvent(res);
+
+      // 🔥 Extra: Consultar ocupación para saber si está agotado
+      const metrics = await getEventMetrics(res.eventId);
+      if (metrics?.ocupancyRate === 100) {
+        setIsSoldOut(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -155,6 +162,13 @@ export default function EventDetailPage() {
                   <span className="px-3 py-1 rounded-md bg-neutral-900 text-gray-200 text-sm">
                     {translatedStatus}
                   </span>
+
+                  {isSoldOut && (
+                    <span className="px-3 py-1 rounded-md bg-red-600 text-gray-200 text-sm">
+                      Entradas agotadas
+                    </span>
+                  )}
+
                 </div>
 
                 <p className="mt-5 text-gray-200 text-base leading-relaxed whitespace-pre-line">
@@ -238,20 +252,26 @@ export default function EventDetailPage() {
             </p>
 
             <button
-              disabled={eventPassed}
+              disabled={eventPassed || isSoldOut}
               className={`mt-6 px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition-transform
-                ${eventPassed ? "opacity-40 cursor-not-allowed" : "hover:scale-[1.02]"}
+                ${(eventPassed || isSoldOut)
+                  ? "opacity-40 cursor-not-allowed"
+                  : "hover:scale-[1.02]"}
               `}
               style={{
                 backgroundColor: theme,
                 color: textOnTheme
               }}
               onClick={() => {
-                if (eventPassed) return;
+                if (eventPassed || isSoldOut) return;
                 navigate(`/event/${event.eventId}/venue`);
               }}
             >
-              {eventPassed ? "Evento finalizado" : "Ver mapa de asientos"}
+              {eventPassed
+                ? "Evento finalizado"
+                : isSoldOut
+                ? "Entradas agotadas"
+                : "Ver mapa de asientos"}
             </button>
           </div>
 

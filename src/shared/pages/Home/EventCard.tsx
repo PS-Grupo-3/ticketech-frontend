@@ -8,6 +8,7 @@ import "./css/EventCard.css";
 import defaultImage from "../../../assets/default-image.webp";
 import { useState, useRef, useEffect } from "react";
 import StatusChange from "../../../modules/event/pages/updateStatus/StatusChange";
+import { getEventMetrics } from "../../../modules/event/api/eventApi";
 
 type Event = {
   eventId: string;
@@ -35,6 +36,8 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(event.status);
 
+  const [isSoldOut, setIsSoldOut] = useState(false);
+
   const { show } = useNotification();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -42,6 +45,21 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
     if (showMenu) navigate(`/event/${event.eventId}/metrics`);
     else navigate(`/event/${event.eventId}`);
   };
+
+  useEffect(() => {
+    const loadMetrics = async () => {
+      try {
+        const data = await getEventMetrics(event.eventId);
+        if (data?.ocupancyRate === 100) {
+          setIsSoldOut(true);
+        }
+      } catch (err) {
+        console.error("Error cargando métricas del evento", err);
+      }
+    };
+
+    loadMetrics();
+  }, [event.eventId]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -84,11 +102,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
               <button
                 onClick={() => navigate(`/event/${event.eventId}/update`)}
                 disabled={currentStatus === "Finished"}
-                title={
-                  currentStatus === "Finished"
-                    ? "No se puede editar un evento finalizado."
-                    : "Editar evento"
-                }
                 className={`px-3 py-1 rounded text-white ${
                   currentStatus === "Finished"
                     ? "bg-gray-600 cursor-not-allowed"
@@ -133,26 +146,23 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
 
               {showConfirmDelete && (
                 <ConfirmModal
-                  message={`¿Seguro que deseas eliminar el evento "${event.name}"? Esta acción no se puede deshacer.`}
+                  message={`¿Seguro que deseas eliminar el evento "${event.name}"?`}
                   onConfirm={handleDeleteEvent}
                   onCancel={() => setShowConfirmDelete(false)}
                 />
               )}
-
             </div>
           )}
         </div>
       )}
 
       <div className="event-card" role="button" tabIndex={0}>
-
         <div className="event-card-image-wrapper" onClick={goToEventPreview}>
           <img
             src={hasThumbnail ? event.thumbnailUrl! : defaultImage}
             alt={event.name}
             className="event-card-image"
             loading="lazy"
-            decoding="async"
           />
         </div>
 
@@ -162,16 +172,24 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
             <h3 className="event-card-title">{event.name}</h3>
           </div>
 
-          <div className="event-card-category-status">
+          <div className="event-card-category-status gap-2 items-center">
             <p className="event-card-category">
               {categoryTranslate[event.category] ?? event.category}
               {" · "}
               {categoryTypeTranslate[event.categoryType] ?? event.categoryType}
             </p>
 
-            <p className="event-card-status">
-              {statusTranslate[currentStatus] ?? currentStatus}
-            </p>
+            <div className="event-card-status-page">
+              <p className="event-card-status">
+                {statusTranslate[currentStatus] ?? currentStatus}
+              </p>
+
+              {isSoldOut && (
+                <span className="event-card-status sold-out text-xs">
+                  Entradas agotadas
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
