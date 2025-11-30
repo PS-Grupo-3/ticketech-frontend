@@ -215,6 +215,27 @@ export const getAllRoles = async (): Promise<RoleResponse[]> => {
   }
 };
 
+export const getRoleById = async (id: number): Promise<RoleResponse> => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No hay token de autenticación");
+
+  const url = `/Role/${id}`; // asumimos que tu API tiene endpoint GET /Role/{id}
+  const t0 = performance.now();
+  logReq("GET Role by ID", url);
+
+  try {
+    const { data } = await api.get<RoleResponse>(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    logRes("GET Role by ID", url, performance.now() - t0, data);
+    return data;
+  } catch (err: any) {
+    const message = err.response?.data?.error || `Error al obtener el rol con id ${id}`;
+    logErr("GET Role by ID", url, performance.now() - t0, { error: err, message });
+    throw new Error(message);
+  }
+};
+
 export const changeUserRole = async (userId: string, newRole: number) => {
   const url = `/User/change-role/${userId}`;
   logReq("PATCH Change User Role", url, { newRole });

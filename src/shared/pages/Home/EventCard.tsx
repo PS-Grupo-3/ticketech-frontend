@@ -9,6 +9,7 @@ import defaultImage from "../../../assets/default-image.webp";
 import { useState, useRef, useEffect } from "react";
 import StatusChange from "../../../modules/event/pages/updateStatus/StatusChange";
 import { getEventMetrics } from "../../../modules/event/api/eventApi";
+import { parseJwt } from "../../../modules/auth/api/authApi";
 
 type Event = {
   eventId: string;
@@ -37,6 +38,7 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
   const [currentStatus, setCurrentStatus] = useState(event.status);
 
   const [isSoldOut, setIsSoldOut] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   const { show } = useNotification();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -72,6 +74,14 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showConfirmDelete]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const payload = parseJwt(token);
+    setUserRole(payload.userRole || null);
+  }, []);
 
   const handleDeleteEvent = async () => {
     try {
@@ -121,15 +131,17 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                 Actualizar estado
               </button>
 
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (currentStatus === "Scheduled") setShowConfirmDelete(true);
-                }}
-                disabled={currentStatus !== "Scheduled"}
-              >
-                Eliminar
-              </button>
+              {userRole !== "Admin" && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (currentStatus === "Scheduled") setShowConfirmDelete(true);
+                  }}
+                  disabled={currentStatus !== "Scheduled"}
+                >
+                  Eliminar
+                </button>
+              )}
 
               {statusOpen && (
                 <StatusChange
