@@ -8,7 +8,12 @@ interface Props {
   reload: () => void;
 }
 
-export default function SectorEditorModal({ sector, onClose, onUpdateLocal, reload }: Props) {
+export default function SectorEditorModal({
+  sector,
+  onClose,
+  onUpdateLocal,
+  reload
+}: Props) {
   const updateField = (field: string, value: any) => {
     onUpdateLocal({ ...sector, [field]: value });
   };
@@ -20,12 +25,7 @@ export default function SectorEditorModal({ sector, onClose, onUpdateLocal, relo
   const save = async () => {
     await updateEventSector({
       eventSectorId: sector.eventSectorId,
-
-      // CAPACITY:
-      // - Controlado → backend la recalcula solo
-      // - Libre → enviamos la capacidad real (readonly)
       capacity: sector.isControlled ? null : Number(sector.capacity),
-
       price: Number(sector.price),
       available: sector.available
     });
@@ -33,6 +33,9 @@ export default function SectorEditorModal({ sector, onClose, onUpdateLocal, relo
     reload();
     onClose();
   };
+  
+  const priceNumber = Number(sector.price);
+  const isPriceValid = !sector.available || priceNumber > 0;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
@@ -41,7 +44,6 @@ export default function SectorEditorModal({ sector, onClose, onUpdateLocal, relo
         <h2 className="text-xl font-bold mb-4">Editar sector: {sector.name}</h2>
 
         <div className="space-y-4">
-
           <div>
             <label className="text-sm text-gray-300 block mb-1">Disponible</label>
             <select
@@ -56,13 +58,11 @@ export default function SectorEditorModal({ sector, onClose, onUpdateLocal, relo
 
           {sector.available && (
             <>
-              {/* CONTROLADO → capacidad automática */}
               {sector.isControlled ? (
                 <p className="text-sm text-gray-400">
                   Capacidad automática: {sector.capacity} asientos
                 </p>
               ) : (
-                /* LIBRE → capacidad fija del venue, readonly */
                 <p className="text-sm text-gray-400">
                   Capacidad del sector: {sector.capacity} personas
                 </p>
@@ -73,32 +73,51 @@ export default function SectorEditorModal({ sector, onClose, onUpdateLocal, relo
                 <input
                   type="number"
                   step="0.01"
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-md p-2 text-sm"
-                  value={sector.price}
+                  min="0"
+                  className={`w-full bg-neutral-800 border rounded-md p-2 text-sm ${
+                    isPriceValid ? "border-neutral-700" : "border-red-500"
+                  }`}
+                  value={sector.price ?? ""}
                   onChange={(e) => updateField("price", e.target.value)}
                 />
+                {!isPriceValid && (
+                  <p className="text-red-400 text-xs mt-1">
+                    El precio debe ser mayor a 0
+                  </p>
+                )}
               </div>
             </>
           )}
-
         </div>
 
         <div className="flex justify-between mt-6">
           <button
-            className="px-4 py-2 text-sm rounded-md border border-neutral-600 text-gray-300 hover:bg-neutral-800"
+            disabled={!isPriceValid}
+            className={`px-4 py-2 text-sm rounded-md border text-gray-300
+              ${isPriceValid
+                ? "border-neutral-600 hover:bg-neutral-800"
+                : "border-neutral-700 opacity-50 cursor-not-allowed"
+              }`}
             onClick={onClose}
           >
             Cerrar
           </button>
 
           <button
-            className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold"
+            disabled={!isPriceValid}
+            className={`px-4 py-2 rounded-md text-white text-sm font-semibold
+              ${isPriceValid
+                ? "bg-blue-600 hover:bg-blue-500"
+                : "bg-gray-600 opacity-50 cursor-not-allowed"
+              }`}
             onClick={save}
           >
             Guardar cambios
           </button>
         </div>
+
       </div>
     </div>
   );
+
 }
