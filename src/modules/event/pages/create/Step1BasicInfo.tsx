@@ -8,11 +8,29 @@ export default function Step1BasicInfo({ data, onNext }: any) { // Removed onBac
 
   const today = new Date().toISOString().split("T")[0];
 
+  const MAX_NAME = 100;
+  const MAX_DESCRIPTION = 500;
+
+  const MAX_WORD = 15;
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: "name" | "description"
+  ) => {
+    const value = e.target.value;
+    const words = value.trim().split(/\s+/);
+
+    if (words.some(w => w.length > MAX_WORD)) return;
+
+    setLocal((prev: typeof local) => ({ ...prev, [field]: value }));
+  };
+
+
   const handleNext = () => {
     setError(null);
     const eventDate = local.time?.split("T")[0];
 
-    if (!local.name || !local.description || !eventDate) {
+    if (!local.name || !local.description || !eventDate || !local.bannerImageUrl || !local.thumbnailUrl) {
       setError("Por favor completa todos los campos obligatorios.");
       return;
     }
@@ -50,11 +68,20 @@ export default function Step1BasicInfo({ data, onNext }: any) { // Removed onBac
             Nombre del evento
           </label>
           <input
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+            maxLength={MAX_NAME}
+            className={`w-full bg-neutral-800 border rounded-md px-3 py-2 text-sm
+              ${local.name.length >= MAX_NAME ? "border-red-500" : "border-neutral-700"}
+            `}
             placeholder="Ej: Noche Electrónica - Edición 2025"
             value={local.name}
-            onChange={(e) => setLocal({ ...local, name: e.target.value })}
+            onChange={(e) => handleInputChange(e, "name")}
           />
+
+          <p className={`text-xs mt-1 ${
+              local.name.length >= MAX_NAME ? "text-red-400" : "text-gray-500"
+            }`}>
+            {local.name.length}/{MAX_NAME}
+          </p>
         </div>
 
         <div>
@@ -62,13 +89,20 @@ export default function Step1BasicInfo({ data, onNext }: any) { // Removed onBac
             Descripción
           </label>
           <textarea
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm min-h-[90px] resize-y focus:outline-none focus:ring-2 focus:ring-blue-600"
+            maxLength={MAX_DESCRIPTION}
+            className={`w-full bg-neutral-800 border rounded-md px-3 py-2 text-sm min-h-[90px] resize-y
+              ${local.description.length >= MAX_DESCRIPTION ? "border-red-500" : "border-neutral-700"}
+            `}
             placeholder="Detalles sobre artistas, temática, duración..."
             value={local.description}
-            onChange={(e) =>
-              setLocal({ ...local, description: e.target.value })
-            }
+            onChange={(e) => handleInputChange(e, "description")}
           />
+
+          <p className={`text-xs mt-1 ${
+              local.description.length >= MAX_DESCRIPTION ? "text-red-400" : "text-gray-500"
+            }`}>
+            {local.description.length}/{MAX_DESCRIPTION}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
