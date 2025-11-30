@@ -159,6 +159,7 @@ export const useLoginSidebar = (onClose: () => void) => {
         resetModal();
         setView("login");
         if (message) setSessionMessage(message);
+        window.location.reload();
     };
 
     return {
