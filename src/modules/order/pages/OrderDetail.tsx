@@ -160,19 +160,7 @@ export default function OrderDetailsRender({ orderId, onClose }: Props) {
 
         <div className="rounded-2xl border border-neutral-700 shadow-sm bg-neutral-800 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
-            <div className="h-72 md:h-full overflow-hidden">
-              {eventSelected?.thumbnailUrl ? (
-                <img
-                  src={eventSelected.thumbnailUrl}
-                  alt={eventSelected.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-neutral-500">
-                  Imagen no disponible
-                </div>
-              )}
-            </div>
+
 
             <div className="p-8 flex flex-col justify-center gap-2">
               <p className="text-neutral-400 text-sm">
