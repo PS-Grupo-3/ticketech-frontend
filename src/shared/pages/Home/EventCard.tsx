@@ -24,13 +24,15 @@ type Event = {
 
 export default function EventCard({ event, showMenu = false }: { event: Event; showMenu?: boolean }) {
   const navigate = useNavigate();
-  const date = new Date(event.time);
-  const dateStr = format(date, "dd/MM/yyyy HH:mm");
+    
+  const utcDate = new Date(event.time);
+  const dateUTC3 = new Date(utcDate.getTime() - 3 * 60 * 60 * 1000);
+  const dateStr = format(dateUTC3, "dd/MM/yyyy HH:mm");
+
   const hasThumbnail = Boolean(event.thumbnailUrl && event.thumbnailUrl.trim());
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
-
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(event.status);
 
@@ -40,14 +42,10 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
   const menuRef = useRef<HTMLDivElement>(null);
 
   const goToEventPreview = () => {
-    if (showMenu) {
-      navigate(`/event/${event.eventId}/metrics`);
-    } else {
-      navigate(`/event/${event.eventId}`);
-    }
+    if (showMenu) navigate(`/event/${event.eventId}/metrics`);
+    else navigate(`/event/${event.eventId}`);
   };
 
-  // 🔥 Consultar métricas para saber si está agotado
   useEffect(() => {
     const loadMetrics = async () => {
       try {
@@ -71,7 +69,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
         setStatusOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showConfirmDelete]);
@@ -81,7 +78,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
       await deleteEvent(event.eventId);
       setShowConfirmDelete(false);
       setMenuOpen(false);
-
       show(`Evento "${event.name}" eliminado correctamente`);
       window.location.reload();
     } catch (error) {
@@ -194,6 +190,9 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                 </span>
               )}
             </div>
+            <p className="event-card-status">
+              {statusTranslate[currentStatus] ?? currentStatus}
+            </p>
           </div>
         </div>
       </div>
