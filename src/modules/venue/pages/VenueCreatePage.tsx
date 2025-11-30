@@ -26,6 +26,13 @@ const isValidUrl = (urlString: string) => {
   }
 };
 
+const typeMap: Record<string, string> = {
+  Stadium: "Estadio",
+  Theatre: "Teatro",
+  Field: "Campo"
+};
+
+
 export default function VenueCreatePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -151,7 +158,7 @@ export default function VenueCreatePage() {
               >
                 {venueTypes.map((t) => (
                   <option key={t.venueTypeId} value={t.venueTypeId}>
-                    {t.name}
+                    {typeMap[t.name] ?? t.name}
                   </option>
                 ))}
               </select>
