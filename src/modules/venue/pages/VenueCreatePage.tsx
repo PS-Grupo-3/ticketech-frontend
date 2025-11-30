@@ -17,6 +17,15 @@ interface FormData {
   backgroundImageUrl: string;
 }
 
+const isValidUrl = (urlString: string) => {
+  try {
+    new URL(urlString);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
 export default function VenueCreatePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -63,8 +72,27 @@ export default function VenueCreatePage() {
     e.preventDefault();
     setError(null);
 
-    if (!formData.name || formData.venueTypeId <= 0) {
-      setError("Nombre y Tipo son obligatorios.");
+   if (!formData.name.trim()) {
+      setError("El nombre del espacio es obligatorio.");
+      return;
+    }
+    if (formData.venueTypeId <= 0) {
+      setError("Debes seleccionar un tipo de espacio válido.");
+      return;
+    }
+
+     if (!formData.address.trim()) {
+      setError("La dirección del espacio es obligatorio.");
+      return;
+    }
+
+
+    if (formData.mapUrl && !isValidUrl(formData.mapUrl)) {
+      setError("La URL del mapa no es válida (debe empezar con http:// o https://).");
+      return;
+    }
+    if (formData.backgroundImageUrl && !isValidUrl(formData.backgroundImageUrl)) {
+      setError("La URL de la imagen de fondo no es válida.");
       return;
     }
 

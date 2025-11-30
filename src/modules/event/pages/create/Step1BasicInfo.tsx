@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-export default function Step1BasicInfo({ data, onNext }: any) { 
+export default function Step1BasicInfo({ data, onNext }: any) { // Removed onBack prop
   const [local, setLocal] = useState(data);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize navigate hook
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -26,10 +26,12 @@ export default function Step1BasicInfo({ data, onNext }: any) {
     onNext(local);
   };
 
+  // New function to handle navigation
   const handleBack = () => {
     navigate("/event");
   };
 
+  // Debug: Track local state changes
   useEffect(() => {
     console.log("Step1BasicInfo local state updated:", local);
   }, [local]);
@@ -38,7 +40,7 @@ export default function Step1BasicInfo({ data, onNext }: any) {
     <div className="space-y-8">
       <h2 className="text-2xl font-bold">Información básica</h2>
       <p className="text-sm text-gray-400">
-        Datos fundamentales del evento antes de clasificarlo o elegir el espacio.
+        Datos fundamentales del evento antes de clasificarlo o elegir el venue.
       </p>
 
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-6">
@@ -171,7 +173,7 @@ export default function Step1BasicInfo({ data, onNext }: any) {
       <div className="flex justify-between pt-4">
         <button
           type="button"
-          onClick={handleBack} 
+          onClick={handleBack} // Updated to use handleBack
           className="px-4 py-2 text-sm rounded-md border border-neutral-700 text-gray-300 hover:bg-neutral-800"
         >
           Volver
