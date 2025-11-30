@@ -1,9 +1,6 @@
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { categoryTranslate, statusTranslate, categoryTypeTranslate } from "../../../modules/event/utils/eventTranslate";
-import ConfirmModal from "../../components/ConfirmModal";
-import { useNotification } from "../../components/NotificationContext";
-import { deleteEvent } from "../../../modules/event/api/eventApi";
 import "./css/EventCard.css";
 import defaultImage from "../../../assets/default-image.webp";
 import { useState, useRef, useEffect } from "react";
@@ -24,7 +21,7 @@ type Event = {
 
 export default function EventCard({ event, showMenu = false }: { event: Event; showMenu?: boolean }) {
   const navigate = useNavigate();
-    
+
   const utcDate = new Date(event.time);
   const dateUTC3 = new Date(utcDate.getTime() - 3 * 60 * 60 * 1000);
   const dateStr = format(dateUTC3, "dd/MM/yyyy HH:mm");
@@ -33,12 +30,10 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(event.status);
 
   const [isSoldOut, setIsSoldOut] = useState(false);
 
-  const { show } = useNotification();
   const menuRef = useRef<HTMLDivElement>(null);
 
   const goToEventPreview = () => {
@@ -63,7 +58,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (showConfirmDelete) return;
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
         setStatusOpen(false);
@@ -71,20 +65,7 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showConfirmDelete]);
-
-  const handleDeleteEvent = async () => {
-    try {
-      await deleteEvent(event.eventId);
-      setShowConfirmDelete(false);
-      setMenuOpen(false);
-      show(`Evento "${event.name}" eliminado correctamente`);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error eliminando evento", error);
-      show(`No se pudo eliminar el evento "${event.name}"`);
-    }
-  };
+  }, []);
 
   return (
     <article className="event-card-general">
@@ -121,16 +102,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                 Actualizar estado
               </button>
 
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (currentStatus === "Scheduled") setShowConfirmDelete(true);
-                }}
-                disabled={currentStatus !== "Scheduled"}
-              >
-                Eliminar
-              </button>
-
               {statusOpen && (
                 <StatusChange
                   eventId={event.eventId}
@@ -141,14 +112,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                     setStatusOpen(false);
                     setMenuOpen(false);
                   }}
-                />
-              )}
-
-              {showConfirmDelete && (
-                <ConfirmModal
-                  message={`¿Seguro que deseas eliminar el evento "${event.name}"?`}
-                  onConfirm={handleDeleteEvent}
-                  onCancel={() => setShowConfirmDelete(false)}
                 />
               )}
             </div>
