@@ -83,6 +83,8 @@ export const useLoginSidebar = (onClose: () => void) => {
             resetModal();
 
             startTokenTimer(result.token);
+
+            window.location.reload();
         } catch (err: any) {
             const message = err.message || "Error al iniciar sesión";
 
