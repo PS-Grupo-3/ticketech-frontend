@@ -23,7 +23,7 @@ function isDark(hex: string): boolean {
   const b = parseInt(clean.substring(4, 6), 16);
 
   const y = 0.299 * r + 0.587 * g + 0.114 * b;
-  return y < 128; // oscuro
+  return y < 128;
 }
 
 export default function EventDetailPage() {
@@ -63,8 +63,11 @@ export default function EventDetailPage() {
     );
   }
 
+  const eventDate = new Date(event.time);
+  const eventPassed = eventDate.getTime() < Date.now();
+
   const date = event.time
-    ? format(new Date(event.time), "dd/MM/yyyy HH:mm")
+    ? format(eventDate, "dd/MM/yyyy HH:mm")
     : "Sin fecha";
 
   const theme = event.themeColor || "#1e40af";
@@ -87,7 +90,6 @@ export default function EventDetailPage() {
     <Layout>
       <div className="w-full bg-neutral-900 pb-24">
 
-        {/* BANNER */}
         <div className="relative w-full h-[420px]">
           {event.bannerImageUrl ? (
             <img
@@ -105,7 +107,6 @@ export default function EventDetailPage() {
 
         <div className="max-w-6xl mx-auto px-6 -mt-32 relative z-10 space-y-14">
 
-          {/* CARD PRINCIPAL */}
           <div
             className="rounded-2xl p-8 shadow-xl"
             style={{
@@ -136,7 +137,6 @@ export default function EventDetailPage() {
 
                 <div className="mt-4 flex flex-wrap gap-3">
 
-                  {/* CHIP PRINCIPAL */}
                   <span
                     className="px-3 py-1 rounded-md text-sm font-medium"
                     style={{
@@ -148,7 +148,6 @@ export default function EventDetailPage() {
                     {translatedCategory}
                   </span>
 
-                  {/* RESTO DE CHIPS */}
                   <span className="px-3 py-1 rounded-md bg-neutral-900 text-gray-200 text-sm">
                     {translatedType}
                   </span>
@@ -164,7 +163,6 @@ export default function EventDetailPage() {
               </div>
             </div>
 
-            {/* TRES CUADROS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 text-sm">
 
               {[
@@ -187,7 +185,6 @@ export default function EventDetailPage() {
             </div>
           </div>
 
-          {/* UBICACION */}
           <div
             className="rounded-2xl p-8 shadow-xl space-y-6"
             style={{
@@ -221,7 +218,6 @@ export default function EventDetailPage() {
             )}
           </div>
 
-          {/* COMPRAR ENTRADAS */}
           <div
             className="rounded-2xl p-8 shadow-xl border"
             style={{
@@ -237,20 +233,25 @@ export default function EventDetailPage() {
             </h2>
 
             <p className="text-gray-200 text-sm max-w-2xl leading-relaxed">
-              Elegí tus asientos directamente desde el mapa interactivo del venue.
+              Elegí tus asientos directamente desde el mapa interactivo del espacio.
               La disponibilidad se actualiza en tiempo real.
             </p>
 
-            {/* BOTÓN ADAPTADO */}
             <button
-              className="mt-6 px-8 py-3 rounded-lg font-semibold text-lg shadow-lg hover:scale-[1.02] transition-transform"
+              disabled={eventPassed}
+              className={`mt-6 px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition-transform
+                ${eventPassed ? "opacity-40 cursor-not-allowed" : "hover:scale-[1.02]"}
+              `}
               style={{
                 backgroundColor: theme,
                 color: textOnTheme
               }}
-              onClick={() => navigate(`/event/${event.eventId}/venue`)}
+              onClick={() => {
+                if (eventPassed) return;
+                navigate(`/event/${event.eventId}/venue`);
+              }}
             >
-              Ver mapa de asientos
+              {eventPassed ? "Evento finalizado" : "Ver mapa de asientos"}
             </button>
           </div>
 

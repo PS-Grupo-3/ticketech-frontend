@@ -6,7 +6,7 @@ import ScheduledEventsCarousel from "./ScheduledEventsCarousel";
 import EventCard from "./EventCard";
 import Layout from "../../components/Layout";
 import PromotionsCarousel from "./PromotionsCarousel";
-import "./css/HomePage.css"
+import "./css/HomePage.css";
 
 interface EventItem {
   eventId: string;
@@ -23,7 +23,7 @@ interface EventItem {
 export default function HomePage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(8); 
+  const [visibleCount, setVisibleCount] = useState(8);
   const [filters, setFilters] = useState<{
     categoryId?: number;
     statusId?: number;
@@ -36,8 +36,16 @@ export default function HomePage() {
     setLoading(true);
     try {
       const data = await getEvents(filters);
-      setEvents(data);
-      setVisibleCount(8); 
+
+      const now = Date.now();
+
+      const filtered = data.filter((e: { time: string | number | Date; }) => {
+        const date = new Date(e.time).getTime();
+        return date >= now; // NO se muestran eventos pasados
+      });
+
+      setEvents(filtered);
+      setVisibleCount(8);
     } finally {
       setLoading(false);
     }
@@ -89,8 +97,7 @@ export default function HomePage() {
       </div>
 
       <PromotionsCarousel />
-
-      <br></br>
+      <br />
     </Layout>
   );
 }

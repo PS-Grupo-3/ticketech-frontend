@@ -60,7 +60,7 @@ export default function Footer() {
 
         <div className="border-t border-neutral-800 pt-6 text-center text-xs">
           <p>
-            &copy; {currentYear} Ticketech. Trabajo Práctico Universitario.
+            &copy; {currentYear} TICKETECH.
           </p>
         </div>
       </div>
