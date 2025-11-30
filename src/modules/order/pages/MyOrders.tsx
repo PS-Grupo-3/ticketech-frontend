@@ -146,7 +146,11 @@ export default function MyOrders() {
                             document.body.classList.remove("active");
                     } }>
                         <div className="modalContent" onClick={(e) => e.stopPropagation()}>
-                            <OrderDetailsRender orderId={selectOrder} />
+                            <OrderDetailsRender orderId={selectOrder}
+                            onClose={() => {
+                    setModalState(false);
+                    document.body.classList.remove("active");
+                }} />
                         </div>
                     </div>
                 )}

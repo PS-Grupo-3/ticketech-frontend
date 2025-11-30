@@ -47,7 +47,7 @@ interface UserInfo {
   }
 }
 
-export default function OrderDetailsRender({ orderId }: { orderId: string }) {
+export default function OrderDetailsRender({ orderId,onClose }: { orderId: string; onClose: () => void; }) {
   const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null);
   const [eventSelected, setEventSelected] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +55,7 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
   const [snapshot, setSnapshot] = useState<any[]>([]);
 
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -119,10 +119,10 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
     <div className="min-h-screen bg-neutral-900 text-white flex justify-center py-14 px-6">
       <div className="w-full max-w-6xl flex flex-col gap-12">
         <button
-        onClick={() => navigate("/")}
+        onClick={onClose}
         className="self-start px-5 py-2 rounded-xl bg-neutral-700 hover:bg-neutral-600 text-white font-medium transition"
       >
-        ← Volver a la página principal
+        ← Volver a Mis Compras
       </button>
 
         {/* EVENT HEADER */}
