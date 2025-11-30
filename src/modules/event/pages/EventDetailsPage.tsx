@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import { useAuth } from "../../../context/AuthContext";
+import LoginSidebar from "../../auth/pages/LoginSB"; 
 import Layout from "../../../shared/components/Layout";
 import { getEventById } from "../api/eventApi";
-import { format } from "date-fns";
-
 import {
   categoryTranslate,
   categoryTypeTranslate,
@@ -25,6 +26,10 @@ export default function EventDetailPage() {
   const { eventId } = useParams();
   const navigate = useNavigate();
 
+  const { isAuthenticated } = useAuth();
+
+  const [showLogin, setShowLogin] = useState(false);
+
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,6 +46,14 @@ export default function EventDetailPage() {
   useEffect(() => {
     load();
   }, []);
+
+  const handleBuyClick = () => {
+    if (isAuthenticated) {
+      navigate(`/event/${event.eventId}/venue`);
+    } else {
+      setShowLogin(true);
+    }
+  };
 
   if (loading) {
     return (
@@ -78,6 +91,11 @@ export default function EventDetailPage() {
 
   return (
     <Layout>
+      <LoginSidebar 
+        open={showLogin} 
+        onClose={() => setShowLogin(false)} 
+      />
+
       <div className="w-full bg-neutral-900 pb-24">
 
         {/* BANNER */}
@@ -264,7 +282,7 @@ export default function EventDetailPage() {
               className="text-sm max-w-2xl leading-relaxed"
               style={{ color: autoTextSecondary }}
             >
-              Elegí tus asientos directamente desde el mapa interactivo del venue.
+              Elegí tus asientos directamente desde el mapa interactivo del espacio.
               La disponibilidad se actualiza en tiempo real.
             </p>
 

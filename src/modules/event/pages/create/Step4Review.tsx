@@ -19,21 +19,26 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
       const payload = {
         name: data.name,
         description: data.description,
-        time: data.time ? new Date(data.time).toISOString() : null,
-        categoryId: data.categoryId,
-        typeId: data.typeId,
-        statusId: data.statusId,
+        time: data.time ? new Date(data.time).toISOString() : new Date().toISOString(), 
+        categoryId: Number(data.categoryId), 
+        typeId: data.typeId ? Number(data.typeId) : null, 
+        statusId: Number(data.statusId), 
         venueId: data.venueId,
         address: data.address,
-        thumbnailUrl: data.thumbnailUrl,
-        bannerImageUrl: data.bannerImageUrl,
-        themeColor: data.themeColor || null
+        thumbnailUrl: data.thumbnailUrl || null, 
+        bannerImageUrl: data.bannerImageUrl || null, 
+        themeColor: data.themeColor || "#000000" 
       };
+
+      console.log("Enviando payload:", payload); // Debugging
 
       const created = await createEvent(payload);
       onCreated(created.eventId);
-    } catch {
-      setError("No se pudo crear el evento. Revisá la consola.");
+    } catch (err: any) {
+      console.error("Error creando evento:", err);
+      // Extract specific error message if available
+      const errorMessage = err.response?.data?.detail || err.message || "No se pudo crear el evento.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -89,7 +94,7 @@ export default function Step4Review({ data, onBack, onCreated }: any) {
             </tr>
 
             <tr>
-              <td className="px-4 py-2 text-gray-400">Venue</td>
+              <td className="px-4 py-2 text-gray-400">Espacio</td>
               <td className="px-4 py-2 text-gray-100">{data.venueName}</td>
             </tr>
           </tbody>

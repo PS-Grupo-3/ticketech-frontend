@@ -17,6 +17,15 @@ interface FormData {
   backgroundImageUrl: string;
 }
 
+const isValidUrl = (urlString: string) => {
+  try {
+    new URL(urlString);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
 export default function VenueCreatePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -43,7 +52,7 @@ export default function VenueCreatePage() {
           setFormData((prev) => ({ ...prev, venueTypeId: types[0].venueTypeId }));
         }
       } catch {
-        setError("No se pudieron cargar los tipos de venue.");
+        setError("No se pudieron cargar los tipos de espacio.");
       } finally {
         setLoading(false);
       }
@@ -63,8 +72,27 @@ export default function VenueCreatePage() {
     e.preventDefault();
     setError(null);
 
-    if (!formData.name || formData.venueTypeId <= 0) {
-      setError("Nombre y Tipo son obligatorios.");
+   if (!formData.name.trim()) {
+      setError("El nombre del espacio es obligatorio.");
+      return;
+    }
+    if (formData.venueTypeId <= 0) {
+      setError("Debes seleccionar un tipo de espacio válido.");
+      return;
+    }
+
+     if (!formData.address.trim()) {
+      setError("La dirección del espacio es obligatorio.");
+      return;
+    }
+
+
+    if (formData.mapUrl && !isValidUrl(formData.mapUrl)) {
+      setError("La URL del mapa no es válida (debe empezar con http:// o https://).");
+      return;
+    }
+    if (formData.backgroundImageUrl && !isValidUrl(formData.backgroundImageUrl)) {
+      setError("La URL de la imagen de fondo no es válida.");
       return;
     }
 
@@ -96,7 +124,7 @@ export default function VenueCreatePage() {
     <Layout>
       <div className="bg-neutral-950 text-white">
         <div className="max-w-lg mx-auto pt-12 pb-16 px-8">
-          <h1 className="text-4xl font-extrabold mb-8">Crear Nuevo Venue</h1>
+          <h1 className="text-4xl font-extrabold mb-8">Crear Nuevo Espacio</h1>
 
           <form
             onSubmit={handleSubmit}
@@ -173,7 +201,7 @@ export default function VenueCreatePage() {
                 type="submit"
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-md text-white"
               >
-                Guardar Venue
+                Guardar Espacio
               </button>
             </div>
           </form>
@@ -182,7 +210,7 @@ export default function VenueCreatePage() {
         {showModelModal && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
             <div className="bg-neutral-800 p-8 rounded-xl border border-neutral-700 w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">¡Venue Creado!</h2>
+              <h2 className="text-xl font-bold mb-4">Espacio Creado!</h2>
               <p className="text-neutral-300 mb-6">
                 ¿Querés empezar a modelar sectores?
               </p>

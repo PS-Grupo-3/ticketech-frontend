@@ -29,7 +29,7 @@ export default function AppRoutes() {
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/event/:eventId" element={<EventPreviewPage />} />
-                <Route path="/event/:eventId/venue" element={<EventVenuePage />} />
+                
 
 
                 
@@ -57,6 +57,7 @@ export default function AppRoutes() {
                     <Route path="/order/my-orders" element={<MyOrders />} />
                     <Route path="/tickets" element={<TicketsPage />} />
                     <Route path="/order/:orderId/pay" element={<OrderPaymentPage />} />
+                    <Route path="/event/:eventId/venue" element={<EventVenuePage />} />
                     
                 </Route>
 

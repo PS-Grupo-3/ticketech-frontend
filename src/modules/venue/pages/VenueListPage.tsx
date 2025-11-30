@@ -30,7 +30,7 @@ export default function VenueListPage() {
       const data = await getVenues();
       setVenues(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Failed to load venues:", err);
+      console.error("Failed to load espacios:", err);
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ export default function VenueListPage() {
     return (
       <Layout>
         <div className="page-container">
-          <p>Cargando venues...</p>
+          <p>Cargando espacios...</p>
         </div>
       </Layout>
     );
@@ -51,12 +51,12 @@ export default function VenueListPage() {
       <div className="page-container">
         <div className="page-header">
           <div className="page-title-section">
-            <h1 className="page-title">Venues</h1>
-            <p className="page-subtitle">Selecciona un venue para editar</p>
+            <h1 className="page-title">Espacios</h1>
+            <p className="page-subtitle">Selecciona un espacio para editar</p>
           </div>
 
           <Link to="/venue/create" className="create-button">
-            Crear Nuevo Venue
+            Crear Nuevo Espacio
           </Link>
         </div>
 
