@@ -45,9 +45,13 @@ export default function EventMetricsPage() {
     );
   }
 
-  const date = metrics.time
-      ? format(new Date(metrics.time), "dd/MM/yyyy HH:mm")
-      : "Sin fecha";
+  let date = "Sin fecha";
+
+  if (metrics.time) {
+    const utcDate = new Date(metrics.time);
+    const dateUTC3 = new Date(utcDate.getTime() - 3 * 60 * 60 * 1000);
+    date = format(dateUTC3, "dd/MM/yyyy HH:mm");
+  }
 
   const theme = metrics.themeColor || "#1e40af";
 
@@ -119,6 +123,13 @@ export default function EventMetricsPage() {
                   <span className="px-3 py-1 rounded-md bg-neutral-900 text-gray-200 text-sm">
                     {translatedStatus}
                   </span>
+
+                  {metrics.availableSeats === 0 && (
+                    <span className="px-3 py-1 rounded-md bg-red-600 text-gray-200 text-sm">
+                      Entradas agotadas
+                    </span>
+                  )}
+
                 </div>
 
                 <p className="mt-5 text-gray-300 text-base leading-relaxed whitespace-pre-line">

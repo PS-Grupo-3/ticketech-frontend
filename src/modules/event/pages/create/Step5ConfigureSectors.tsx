@@ -25,6 +25,8 @@ export default function Step5ConfigureSectors({ eventId, onBack }: any) {
 
   const selected = sectors.find((s) => s.eventSectorId === selectedId) ?? null;
 
+  const hasAvailableSector = sectors.some((s) => s.available);
+
   const updateLocal = (updated: EventSectorFull) => {
     setSectors((prev) =>
       prev.map((s) => (s.eventSectorId === updated.eventSectorId ? updated : s))
@@ -59,10 +61,17 @@ export default function Step5ConfigureSectors({ eventId, onBack }: any) {
 
         <button
           onClick={() => navigate("/")}
-          className="px-5 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-500 text-white font-semibold"
+          disabled={!hasAvailableSector}
+          className={`px-5 py-2 text-sm rounded-md font-semibold text-white
+            ${hasAvailableSector
+              ? "bg-blue-600 hover:bg-blue-500 cursor-pointer"
+              : "bg-gray-600 cursor-not-allowed opacity-60"
+            }`}
+          title={!hasAvailableSector ? "Debe haber al menos un sector disponible" : ""}
         >
           Finalizar
         </button>
+
       </div>
 
       {selected && (

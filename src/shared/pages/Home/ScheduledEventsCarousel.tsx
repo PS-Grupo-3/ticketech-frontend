@@ -7,11 +7,11 @@ export default function ScheduledEventsCarousel({ events }: { events: any[] }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
 
   const scroll = (direction: number) => {
-    const track = trackRef.current;
-    if (!track) return;
+    const viewport = trackRef.current; // ahora apunta al viewport
+    if (!viewport) return;
 
     const amount = 20 * 16;
-    track.scrollBy({ left: amount * direction, behavior: "smooth" });
+    viewport.scrollBy({ left: amount * direction, behavior: "smooth" });
   };
 
   return (
@@ -28,11 +28,11 @@ export default function ScheduledEventsCarousel({ events }: { events: any[] }) {
         )}
       </div>
 
-      <div className="scheduled-carousel-viewport overflow-x-auto overflow-y-visible">
-        <div
-          ref={trackRef}
-          className="scheduled-carousel-track flex gap-6 overflow-visible"
-        >
+      <div
+        ref={trackRef}
+        className="scheduled-carousel-viewport overflow-x-auto overflow-y-visible"
+      >
+        <div className="scheduled-carousel-track flex gap-6 overflow-visible">
           {events.map((event) => (
             <div
               key={event.eventId}
@@ -43,8 +43,6 @@ export default function ScheduledEventsCarousel({ events }: { events: any[] }) {
           ))}
         </div>
       </div>
-
-
     </div>
   );
 }
