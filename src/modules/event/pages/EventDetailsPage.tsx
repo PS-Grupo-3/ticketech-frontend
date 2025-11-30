@@ -70,11 +70,15 @@ export default function EventDetailPage() {
     );
   }
 
-  const eventDate = new Date(event.time);
-  const eventPassed = eventDate.getTime() < Date.now();
+  const utcDate = new Date(event.time);
+
+  // fuerza UTC-3 manualmente
+  const dateUTC3 = new Date(utcDate.getTime() - 3 * 60 * 60 * 1000);
+
+  const eventPassed = dateUTC3.getTime() < Date.now();
 
   const date = event.time
-    ? format(eventDate, "dd/MM/yyyy HH:mm")
+    ? format(dateUTC3, "dd/MM/yyyy HH:mm")
     : "Sin fecha";
 
   const theme = event.themeColor || "#1e40af";

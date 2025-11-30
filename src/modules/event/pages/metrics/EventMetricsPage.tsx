@@ -45,9 +45,13 @@ export default function EventMetricsPage() {
     );
   }
 
-  const date = metrics.time
-      ? format(new Date(metrics.time), "dd/MM/yyyy HH:mm")
-      : "Sin fecha";
+  let date = "Sin fecha";
+
+  if (metrics.time) {
+    const utcDate = new Date(metrics.time);
+    const dateUTC3 = new Date(utcDate.getTime() - 3 * 60 * 60 * 1000);
+    date = format(dateUTC3, "dd/MM/yyyy HH:mm");
+  }
 
   const theme = metrics.themeColor || "#1e40af";
 
