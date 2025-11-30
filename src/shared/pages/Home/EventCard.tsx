@@ -23,37 +23,34 @@ type Event = {
 
 export default function EventCard({ event, showMenu = false }: { event: Event; showMenu?: boolean }) {
   const navigate = useNavigate();
-  const date = new Date(event.time);
-  const dateStr = format(date, "dd/MM/yyyy HH:mm");
+    
+  const utcDate = new Date(event.time);
+  const dateUTC3 = new Date(utcDate.getTime() - 3 * 60 * 60 * 1000);
+  const dateStr = format(dateUTC3, "dd/MM/yyyy HH:mm");
+
   const hasThumbnail = Boolean(event.thumbnailUrl && event.thumbnailUrl.trim());
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
-
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(event.status);
 
   const { show } = useNotification();
-
   const menuRef = useRef<HTMLDivElement>(null);
 
   const goToEventPreview = () => {
-    if (showMenu) {
-      navigate(`/event/${event.eventId}/metrics`);
-    } else {
-      navigate(`/event/${event.eventId}`);
-    }
+    if (showMenu) navigate(`/event/${event.eventId}/metrics`);
+    else navigate(`/event/${event.eventId}`);
   };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (showConfirmDelete) return; // ✅ usar el estado correcto
+      if (showConfirmDelete) return;
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
         setStatusOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showConfirmDelete]);
@@ -63,9 +60,7 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
       await deleteEvent(event.eventId);
       setShowConfirmDelete(false);
       setMenuOpen(false);
-
       show(`Evento "${event.name}" eliminado correctamente`);
-
       window.location.reload();
     } catch (error) {
       console.error("Error eliminando evento", error);
@@ -123,7 +118,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
                 Eliminar
               </button>
 
-
               {statusOpen && (
                 <StatusChange
                   eventId={event.eventId}
@@ -151,7 +145,7 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
       )}
 
       <div className="event-card" role="button" tabIndex={0}>
-        
+
         <div className="event-card-image-wrapper" onClick={goToEventPreview}>
           <img
             src={hasThumbnail ? event.thumbnailUrl! : defaultImage}
@@ -179,7 +173,6 @@ export default function EventCard({ event, showMenu = false }: { event: Event; s
               {statusTranslate[currentStatus] ?? currentStatus}
             </p>
           </div>
-
         </div>
       </div>
     </article>
