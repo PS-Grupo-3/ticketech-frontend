@@ -2,6 +2,10 @@ import { getOrdersDetails } from "../api/getOrderDetails";
 import { useState, useEffect } from "react";
 import { decodeToken } from "../components/DecodeToken";
 import { getEventById } from "../../event/api/eventApi";
+import { useNavigate } from "react-router-dom";
+
+
+
 
 interface TicketDetail {
   detailId: string;
@@ -43,12 +47,14 @@ interface UserInfo {
   }
 }
 
-export default function OrderDetailsRender({ orderId }: { orderId: string }) {
+export default function OrderDetailsRender({ orderId,onClose }: { orderId: string; onClose: () => void; }) {
   const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null);
   const [eventSelected, setEventSelected] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<UserInfo | null>(null);
   const [snapshot, setSnapshot] = useState<any[]>([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -112,6 +118,12 @@ export default function OrderDetailsRender({ orderId }: { orderId: string }) {
   return (
     <div className="min-h-screen bg-neutral-900 text-white flex justify-center py-14 px-6">
       <div className="w-full max-w-6xl flex flex-col gap-12">
+        <button
+        onClick={onClose}
+        className="self-start px-5 py-2 rounded-xl bg-neutral-700 hover:bg-neutral-600 text-white font-medium transition"
+      >
+        ← Volver a Mis Compras
+      </button>
 
         {/* EVENT HEADER */}
         <div className="rounded-2xl border border-neutral-700 shadow-sm bg-neutral-800 overflow-hidden">

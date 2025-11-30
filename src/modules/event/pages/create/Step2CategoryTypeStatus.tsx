@@ -28,13 +28,16 @@ interface EventStatus {
 }
 
 export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
-  // TIPAR CORRECTAMENTE LOS ARRAYS
   const [categories, setCategories] = useState<EventCategory[]>([]);
   const [types, setTypes] = useState<CategoryType[]>([]);
   const [statuses, setStatuses] = useState<EventStatus[]>([]);
+  const [error, setError] = useState<string | null>(null); // Nuevo estado para errores
 
   const [local, setLocal] = useState({
     ...data,
+    categoryId: data.categoryId ? Number(data.categoryId) : null,
+    typeId: data.typeId ? Number(data.typeId) : null,
+    statusId: data.statusId ? Number(data.statusId) : null,
     categoryName: data.categoryName ?? "",
     typeName: data.typeName ?? "",
     statusName: data.statusName ?? ""
@@ -46,12 +49,11 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
     getCategoryTypes().then(setTypes);
   }, []);
 
-  // TIPADO AUTOMÁTICO → YA NO DA NEVER
   const filteredTypes = local.categoryId
     ? types.filter(
         (t) =>
           t.eventCategory ===
-          categories.find((c) => c.categoryId === local.categoryId)?.name
+          categories.find((c) => c.categoryId === Number(local.categoryId))?.name
       )
     : [];
 
@@ -84,6 +86,23 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
     });
   };
 
+  // --- VALIDACIÓN ---
+  const handleNext = () => {
+    setError(null);
+
+    if (!local.categoryId || !local.statusId) {
+      setError("Por favor selecciona una Categoría y un Estado.");
+      return;
+    }
+
+    if (filteredTypes.length > 0 && !local.typeId) {
+         setError("Por favor selecciona un Tipo.");
+         return;
+    }
+
+    onNext(local);
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-2">Categoría, tipo y estado</h2>
@@ -94,7 +113,7 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
         <div>
           <label className="block text-sm text-gray-300 mb-1">Categoría</label>
           <select
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
             value={local.categoryId ?? ""}
             onChange={(e) =>
               updateCategory(e.target.value ? Number(e.target.value) : null)
@@ -112,7 +131,7 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
         <div>
           <label className="block text-sm text-gray-300 mb-1">Tipo</label>
           <select
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
             disabled={!local.categoryId}
             value={local.typeId ?? ""}
             onChange={(e) =>
@@ -131,7 +150,7 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
         <div>
           <label className="block text-sm text-gray-300 mb-1">Estado</label>
           <select
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
             value={local.statusId ?? ""}
             onChange={(e) =>
               updateStatus(e.target.value ? Number(e.target.value) : null)
@@ -148,6 +167,12 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
 
       </div>
 
+      {error && (
+        <div className="p-3 bg-red-900/20 border border-red-800 rounded-md text-red-400 text-sm">
+          {error}
+        </div>
+      )}
+
       <div className="flex justify-between pt-4">
         <button
           onClick={onBack}
@@ -157,7 +182,7 @@ export default function Step2CategoryTypeStatus({ data, onNext, onBack }: any) {
         </button>
 
         <button
-          onClick={() => onNext(local)}
+          onClick={handleNext} 
           className="px-5 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-500 text-white font-semibold"
         >
           Siguiente

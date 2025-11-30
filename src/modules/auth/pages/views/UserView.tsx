@@ -66,7 +66,7 @@ const UserView = ({ user, logout, setView }: Props) => {
                     <div className="userPanel-section">
                         <h4>Super Administrador</h4>
                         <Link to="/venue" className="userPanel-btn">
-                            Panel de venues
+                            Panel de espacios
                         </Link>
                         <Link to="/auth" className="userPanel-btn">
                             Panel de usuarios
