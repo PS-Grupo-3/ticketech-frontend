@@ -68,6 +68,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
             className={`w-full bg-neutral-800 border px-3 py-2 text-sm rounded-md
               ${local.name.length >= MAX_NAME ? "border-red-500" : "border-neutral-700"}
             `}
+            placeholder="Ej: Noche Electrónica - Edición 2025"
             value={local.name}
             onChange={(e) => handleInputChange(e, "name")}
           />
@@ -83,6 +84,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
             className={`w-full bg-neutral-800 border px-3 py-2 text-sm rounded-md min-h-[90px]
               ${local.description.length >= MAX_DESCRIPTION ? "border-red-500" : "border-neutral-700"}
             `}
+            placeholder="Detalles sobre artistas, temática, duración..."
             value={local.description}
             onChange={(e) => handleInputChange(e, "description")}
           />
@@ -124,6 +126,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
             <label className="text-sm text-gray-300 mb-1">Banner principal</label>
             <input
               className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+              placeholder="https://..."
               value={local.bannerImageUrl}
               onChange={(e) => setLocal({ ...local, bannerImageUrl: e.target.value })}
             />
@@ -133,6 +136,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
             <label className="text-sm text-gray-300 mb-1">Miniatura</label>
             <input
               className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+              placeholder="https://..."
               value={local.thumbnailUrl}
               onChange={(e) => setLocal({ ...local, thumbnailUrl: e.target.value })}
             />
@@ -151,6 +155,7 @@ export default function Step1BasicInfo({ data, onNext, onBack }: any) {
 
             <input
               className="flex-1 bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm"
+              placeholder="#ff2244"
               value={local.themeColor || ""}
               onChange={(e) => setLocal({ ...local, themeColor: e.target.value })}
             />
