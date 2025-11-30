@@ -252,20 +252,26 @@ export default function EventDetailPage() {
             </p>
 
             <button
-              disabled={eventPassed}
+              disabled={eventPassed || isSoldOut}
               className={`mt-6 px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition-transform
-                ${eventPassed ? "opacity-40 cursor-not-allowed" : "hover:scale-[1.02]"}
+                ${(eventPassed || isSoldOut)
+                  ? "opacity-40 cursor-not-allowed"
+                  : "hover:scale-[1.02]"}
               `}
               style={{
                 backgroundColor: theme,
                 color: textOnTheme
               }}
               onClick={() => {
-                if (eventPassed) return;
+                if (eventPassed || isSoldOut) return;
                 navigate(`/event/${event.eventId}/venue`);
               }}
             >
-              {eventPassed ? "Evento finalizado" : "Ver mapa de asientos"}
+              {eventPassed
+                ? "Evento finalizado"
+                : isSoldOut
+                ? "Entradas agotadas"
+                : "Ver mapa de asientos"}
             </button>
           </div>
 
