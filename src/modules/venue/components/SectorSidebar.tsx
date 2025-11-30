@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { updateSector, getSeatsForSector, deleteSector } from "../api/sectorApi";
 import { generateSeats } from "../api/seatApi";
+import ConfirmModal from "../../../shared/components/ConfirmModal";
 import { NotificationProvider, useNotification } from "../../../shared/components/NotificationContext";
 import type { Sector, Shape } from "../components/Types";
 
@@ -160,19 +161,50 @@ export default function SectorSidebar({
   };
 
   const handleDelete = async () => {
+    // si tiene asientos -> abrimos modal
     if ((local.seats?.length ?? 0) > 0) {
-      if (!window.confirm("Este sector tiene asientos generados. ¿Eliminar?")) return;
+      setConfirmOpen(true);
+      return;
     }
+
+    // si no tiene asientos -> eliminar directo
     try {
       await deleteSector(local.sectorId);
       onRemoveLocal(local.sectorId);
+      show("Sector eliminado.");
     } catch (err) {
       console.error("[DELETE ERROR]", err);
     }
   };
 
+  const confirmDelete = async () => {
+    try {
+      await deleteSector(local.sectorId);
+      onRemoveLocal(local.sectorId);
+
+      show("Sector eliminado.");
+
+    } catch (err) {
+      console.error("[DELETE ERROR]", err);
+    } finally {
+      setConfirmOpen(false);
+    }
+  };
+
+  const cancelDelete = () => setConfirmOpen(false);
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   return (
     <aside className="w-96 bg-gray-900 text-gray-100 p-4 border-l border-gray-700 flex flex-col gap-4 h-full overflow-y-auto">
+      {confirmOpen && (
+        <ConfirmModal
+          message="Este sector tiene asientos generados. ¿Eliminar igualmente?"
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
+      )}
+
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Editar Sector</h2>
       </div>
