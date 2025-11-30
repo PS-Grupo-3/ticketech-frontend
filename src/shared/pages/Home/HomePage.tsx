@@ -19,11 +19,12 @@ interface EventItem {
   address: string;
   thumbnailUrl?: string | null;
 }
-
 export default function HomePage() {
-  const [events, setEvents] = useState<EventItem[]>([]);
+  const [eventsActive, setEventsActive] = useState<EventItem[]>([]);
+  const [eventsScheduled, setEventsScheduled] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(8);
+
   const [filters, setFilters] = useState<{
     categoryId?: number;
     statusId?: number;
@@ -35,16 +36,20 @@ export default function HomePage() {
   const loadEvents = async () => {
     setLoading(true);
     try {
-      const data = await getEvents(filters);
+      const data = await getEvents(filters);    
+      const all = await getEvents({});          
 
       const now = Date.now();
-
-      const filtered = data.filter((e: { time: string | number | Date; }) => {
+      
+      const active = data.filter((e: { time: string | number | Date; status: string; }) => {
         const date = new Date(e.time).getTime();
-        return date >= now; // NO se muestran eventos pasados
+        return e.status === "Active" && date >= now;
       });
 
-      setEvents(filtered);
+      const scheduled = all.filter((e: { status: string; }) => e.status === "Scheduled");
+
+      setEventsActive(active);
+      setEventsScheduled(scheduled);
       setVisibleCount(8);
     } finally {
       setLoading(false);
@@ -55,9 +60,7 @@ export default function HomePage() {
     loadEvents();
   }, [filters]);
 
-  const scheduledEvents = events.filter((e) => e.status === "Scheduled");
-
-  const visibleEvents = events.slice(0, visibleCount);
+  const visibleEvents = eventsActive.slice(0, visibleCount);
 
   return (
     <Layout>
@@ -73,12 +76,12 @@ export default function HomePage() {
         ) : (
           <>
             <div className="home-grid">
-              {visibleEvents.map((event) => (
-                <EventCard key={event.eventId} event={event} />
+              {visibleEvents.map((ev) => (
+                <EventCard key={ev.eventId} event={ev} />
               ))}
             </div>
 
-            {visibleCount < events.length && (
+            {visibleCount < eventsActive.length && (
               <div className="flex justify-center mt-10">
                 <button
                   onClick={() => setVisibleCount(visibleCount + 8)}
@@ -91,8 +94,8 @@ export default function HomePage() {
           </>
         )}
 
-        {!loading && scheduledEvents.length > 0 && (
-          <ScheduledEventsCarousel events={scheduledEvents} />
+        {!loading && eventsScheduled.length > 0 && (
+          <ScheduledEventsCarousel events={eventsScheduled} />
         )}
       </div>
 

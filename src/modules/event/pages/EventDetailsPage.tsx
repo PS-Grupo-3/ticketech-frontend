@@ -78,6 +78,7 @@ export default function EventDetailPage() {
   const utcDate = new Date(event.time);
   const dateUTC3 = new Date(utcDate.getTime() - 3 * 60 * 60 * 1000);
   const eventPassed = dateUTC3.getTime() < Date.now();
+  const isScheduled = event.status === "Scheduled";
 
   const date = event.time
     ? format(dateUTC3, "dd/MM/yyyy HH:mm")
@@ -95,7 +96,7 @@ export default function EventDetailPage() {
   const translatedStatus = statusTranslate[event.status] ?? event.status;
 
   const handleBuyClick = () => {
-    if (eventPassed || isSoldOut) return;
+    if (eventPassed || isSoldOut || isScheduled) return;
 
     if (isAuthenticated) {
       navigate(`/event/${event.eventId}/venue`);
@@ -260,9 +261,9 @@ export default function EventDetailPage() {
             </p>
 
             <button
-              disabled={eventPassed || isSoldOut}
+              disabled={eventPassed || isSoldOut || isScheduled}
               className={`mt-6 px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition-transform ${
-                eventPassed || isSoldOut
+                eventPassed || isSoldOut || isScheduled
                   ? "opacity-40 cursor-not-allowed"
                   : "hover:scale-[1.02]"
               }`}
@@ -276,6 +277,8 @@ export default function EventDetailPage() {
                 ? "Evento finalizado"
                 : isSoldOut
                 ? "Entradas agotadas"
+                : isScheduled
+                ? "Próximamente"
                 : "Ver mapa de asientos"}
             </button>
           </div>
