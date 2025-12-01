@@ -1,11 +1,7 @@
-@import "../../../styles/colors.css";
-@import "../../../styles/typography.css";
-
 .event-filters {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1rem;
 
     background-color: var(--color-card);
@@ -17,6 +13,7 @@
 
 .event-filters select,
 .event-filters input {
+    width: 100%;
     background-color: var(--color-options);
     color: var(--color-text-light);
 
@@ -33,8 +30,4 @@
 .event-filters select:focus,
 .event-filters input:focus {
     border-color: var(--color-dark-blue-end);
-}
-
-.event-filters input[type="text"] {
-    width: 15rem;
 }

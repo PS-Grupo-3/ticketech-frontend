@@ -68,6 +68,15 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
         ))}
       </select>
 
+      <select
+        onChange={(e) => update("sortBy", e.target.value || undefined)}
+      >
+        <option value="">Ordenar por fecha</option>
+        <option value="soon">Más próximos primero</option>
+        <option value="late">Más lejanos primero</option>
+      </select>
+
+        {/*  desde-hasta comentado
       <input
         type="datetime-local"
         onChange={(e) => update("from", toIso(e.target.value))}
@@ -77,6 +86,7 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
         type="datetime-local"
         onChange={(e) => update("to", toIso(e.target.value))}
       />
+      */}
 
       <input
         type="text"

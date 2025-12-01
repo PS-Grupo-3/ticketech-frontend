@@ -31,38 +31,44 @@ export default function HomePage() {
     from?: string;
     to?: string;
     search?: string;
+    sortBy?: "soon" | "late";
   }>({});
 
-  const loadEvents = async () => {
-    setLoading(true);
-    try {
-      const data = await getEvents(filters);
-      const all = await getEvents({});
+const loadEvents = async () => {
+  setLoading(true);
+  try {
+    const data = await getEvents(filters);
+    const all = await getEvents({});
 
-      const sortedData = [...data].sort((a, b) =>
-        a.name.localeCompare(b.name, "es", { sensitivity: "base" })
-      );
+    const now = Date.now();
 
-      const sortedAll = [...all].sort((a, b) =>
-        a.name.localeCompare(b.name, "es", { sensitivity: "base" })
-      );
+    // Orden básico alfabético
+    let sortedData = [...data].sort((a, b) =>
+      a.name.localeCompare(b.name, "es", { sensitivity: "base" })
+    );
 
-      const now = Date.now();
-
-      const active = sortedData.filter((e) => {
-        const date = new Date(e.time).getTime();
-        return e.status === "Active" && date >= now;
-      });
-
-      const scheduled = sortedAll.filter((e) => e.status === "Scheduled");
-
-      setEventsActive(active);
-      setEventsScheduled(scheduled);
-      setVisibleCount(8);
-    } finally {
-      setLoading(false);
+    // Si seleccionó orden por fecha, pisa el orden alfabético
+    if (filters.sortBy === "soon") {
+      sortedData.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
     }
-  };
+    if (filters.sortBy === "late") {
+      sortedData.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+    }
+
+    const active = sortedData.filter((e) => {
+      const date = new Date(e.time).getTime();
+      return e.status === "Active" && date >= now;
+    });
+
+    const scheduled = all.filter((e: { status: string; }) => e.status === "Scheduled");
+
+    setEventsActive(active);
+    setEventsScheduled(scheduled);
+    setVisibleCount(8);
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   useEffect(() => {
