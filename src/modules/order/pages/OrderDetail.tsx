@@ -46,8 +46,8 @@ function fixEncoding(str: string): string {
 }
 
 interface Props {
-    orderId: string;
-    onClose?: () => void; 
+  orderId: string;
+  onClose?: () => void;
 }
 
 export default function OrderDetailsRender({ orderId, onClose }: Props) {
@@ -105,9 +105,9 @@ export default function OrderDetailsRender({ orderId, onClose }: Props) {
 
   const handleBack = () => {
     if (onClose) {
-        onClose();
+      onClose();
     } else {
-        navigate("/order/my-orders");
+      navigate("/order/my-orders");
     }
   };
 
@@ -125,7 +125,6 @@ export default function OrderDetailsRender({ orderId, onClose }: Props) {
       </div>
     );
 
-
   let eventDateStr = "";
   let eventTimeStr = "";
 
@@ -133,19 +132,16 @@ export default function OrderDetailsRender({ orderId, onClose }: Props) {
     const utcDate = new Date(eventSelected.time);
     const dateUTC3 = new Date(utcDate.getTime() - 3 * 60 * 60 * 1000);
 
-    // formato manual dd/MM/yyyy
     const dd = String(dateUTC3.getDate()).padStart(2, "0");
     const mm = String(dateUTC3.getMonth() + 1).padStart(2, "0");
     const yyyy = dateUTC3.getFullYear();
 
     eventDateStr = `${dd}/${mm}/${yyyy}`;
 
-    // formato manual HH:mm
     const HH = String(dateUTC3.getHours()).padStart(2, "0");
     const MM = String(dateUTC3.getMinutes()).padStart(2, "0");
     eventTimeStr = `${HH}:${MM}`;
   }
-
 
   return (
     <div className="min-h-screen bg-neutral-900 text-white flex justify-center py-14 px-6">
@@ -157,12 +153,11 @@ export default function OrderDetailsRender({ orderId, onClose }: Props) {
         >
           {onClose ? "Cerrar" : "← Volver a Mis Compras"}
         </button>
-
+        
         <div className="rounded-2xl border border-neutral-700 shadow-sm bg-neutral-800 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
-
-
-            <div className="p-8 flex flex-col justify-center gap-2">
+            
+            <div className="p-8 flex flex-col justify-center gap-3 max-h-[260px] overflow-y-auto">
               <p className="text-neutral-400 text-sm">
                 Orden #{orderDetail.orderId.toUpperCase()}
               </p>
@@ -173,14 +168,8 @@ export default function OrderDetailsRender({ orderId, onClose }: Props) {
 
               <p className="text-neutral-300">{eventSelected?.address}</p>
 
-              <span className="text-neutral-300">
-                Fecha: {eventDateStr}
-              </span>
-
-              <span className="text-neutral-300">
-                Horario: {eventTimeStr}
-              </span>
-
+              <span className="text-neutral-300">Fecha: {eventDateStr}</span>
+              <span className="text-neutral-300">Horario: {eventTimeStr}</span>
             </div>
           </div>
         </div>
