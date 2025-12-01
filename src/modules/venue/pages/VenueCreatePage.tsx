@@ -217,7 +217,7 @@ export default function VenueCreatePage() {
         {showModelModal && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
             <div className="bg-neutral-800 p-8 rounded-xl border border-neutral-700 w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">Espacio Creado!</h2>
+              <h2 className="text-xl font-bold mb-4">¡Espacio Creado!</h2>
               <p className="text-neutral-300 mb-6">
                 ¿Querés empezar a modelar sectores?
               </p>

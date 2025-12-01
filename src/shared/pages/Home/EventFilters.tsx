@@ -55,6 +55,7 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
         ))}
       </select>
 
+      {/* 
       <select
         onChange={(e) =>
           update("statusId", e.target.value ? Number(e.target.value) : undefined)
@@ -67,7 +68,8 @@ export default function EventFilters({ onChange }: { onChange: (f: any) => void 
           </option>
         ))}
       </select>
-
+      */}
+      
       <select
         onChange={(e) => update("sortBy", e.target.value || undefined)}
       >
