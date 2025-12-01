@@ -144,9 +144,10 @@ export default function OrderDetailsRender({ orderId, onClose }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-white flex justify-center py-14 px-6">
-      <div className="w-full max-w-6xl flex flex-col gap-12">
-        
+    <div className="min-h-screen bg-neutral-900 text-white flex justify-center">
+      <div className="w-full max-w-6xl flex flex-col gap-12 py-14 px-6 
+                      overflow-y-auto max-h-screen">
+          
         <button
           onClick={handleBack}
           className="self-start px-5 py-2 rounded-xl bg-neutral-700 hover:bg-neutral-600 text-white font-medium transition"
