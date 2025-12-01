@@ -153,11 +153,11 @@ export default function OrderDetailsRender({ orderId, onClose }: Props) {
         >
           {onClose ? "Cerrar" : "← Volver a Mis Compras"}
         </button>
-        
-        <div className="rounded-2xl border border-neutral-700 shadow-sm bg-neutral-800 overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2">
-            
-            <div className="p-8 flex flex-col justify-center gap-3 max-h-[260px] overflow-y-auto">
+
+        <div className="rounded-2xl border border-neutral-700 shadow-sm bg-neutral-800 overflow-hidden min-h-[260px]">
+          <div className="md:grid-cols-2 h-full">
+
+            <div className="p-8 flex flex-col gap-3 h-full overflow-y-auto">
               <p className="text-neutral-400 text-sm">
                 Orden #{orderDetail.orderId.toUpperCase()}
               </p>
@@ -173,6 +173,7 @@ export default function OrderDetailsRender({ orderId, onClose }: Props) {
             </div>
           </div>
         </div>
+
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           <section className="rounded-2xl border border-neutral-700 p-6 shadow-sm bg-neutral-800">
