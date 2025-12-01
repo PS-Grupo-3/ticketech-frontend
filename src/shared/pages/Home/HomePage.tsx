@@ -36,17 +36,25 @@ export default function HomePage() {
   const loadEvents = async () => {
     setLoading(true);
     try {
-      const data = await getEvents(filters);    
-      const all = await getEvents({});          
+      const data = await getEvents(filters);
+      const all = await getEvents({});
+
+      const sortedData = [...data].sort((a, b) =>
+        a.name.localeCompare(b.name, "es", { sensitivity: "base" })
+      );
+
+      const sortedAll = [...all].sort((a, b) =>
+        a.name.localeCompare(b.name, "es", { sensitivity: "base" })
+      );
 
       const now = Date.now();
-      
-      const active = data.filter((e: { time: string | number | Date; status: string; }) => {
+
+      const active = sortedData.filter((e) => {
         const date = new Date(e.time).getTime();
         return e.status === "Active" && date >= now;
       });
 
-      const scheduled = all.filter((e: { status: string; }) => e.status === "Scheduled");
+      const scheduled = sortedAll.filter((e) => e.status === "Scheduled");
 
       setEventsActive(active);
       setEventsScheduled(scheduled);
@@ -55,6 +63,7 @@ export default function HomePage() {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     loadEvents();

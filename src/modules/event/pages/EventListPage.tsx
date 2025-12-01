@@ -44,9 +44,9 @@ export default function EventListPage() {
     loadEvents();
   }, [filters]);
 
-  // dentro del componente EventListPage
+
     const location = useLocation();
-    const showMenu = location.pathname === "/event"; // solo en EventListPage
+    const showMenu = location.pathname === "/event"; 
 
   return (
     <Layout>
